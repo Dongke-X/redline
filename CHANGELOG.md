@@ -6,6 +6,15 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.16 — 2026-05-12  ·  取色器迁到工具栏
+
+### Changed
+- 取色器从反馈面板 header 挪到 FAB bar（编辑栏），跟 export 同档 —— 始终可用，不需要先打开反馈面板
+- deck 模式的 overlay 工具栏也加上取色器按钮，跟 FAB bar 等价
+- **原因**：取色器产物是剪贴板 + 焦点反馈框，跟面板没有强绑定（不像 📷 截图，产物进 attachments）。放面板里多一步开面板的摩擦
+
+---
+
 ## 0.1.15 — 2026-05-12  ·  Design 分类 chip
 
 ### Added

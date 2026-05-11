@@ -2,7 +2,7 @@
 import { state } from './core/state.js';
 import { DBG, SECTION_SELECTORS } from './config.js';
 import { CSS } from './assets/styles.js';
-import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_MARQUEE, ICON_KEYBOARD, ICON_FOLD } from './assets/icons.js';
+import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_MARQUEE, ICON_KEYBOARD, ICON_FOLD, ICON_EYEDROPPER } from './assets/icons.js';
 import { t } from './i18n.js';
 import { toggleMarqueeMode } from './edit/marquee.js';
 import { attachTooltipDelegation } from './tooltip.js';
@@ -20,6 +20,7 @@ import { undo, redo } from './core/undo.js';
 import { copySelectedDescriptor } from './edit/clipboard.js';
 import { toggleAudit, refreshAuditIfOn } from './edit/audit.js';
 import { showMeasurement, hideMeasurement } from './edit/measure.js';
+import { pickColor } from './edit/eyedropper.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -69,6 +70,13 @@ function createDom() {
   marqueeFab.dataset.tooltip = t('overlay.marquee');
   marqueeFab.setAttribute('aria-label', t('overlay.marquee'));
   state.marqueeFab = marqueeFab;
+
+  const pickFab = document.createElement('button');
+  pickFab.className = 'fbw-fab fbw-pick-fab';
+  pickFab.innerHTML = ICON_EYEDROPPER;
+  pickFab.dataset.tooltip = t('overlay.pick');
+  pickFab.setAttribute('aria-label', t('overlay.pick'));
+  state.pickFab = pickFab;
 
   const exportFab = document.createElement('button');
   exportFab.className = 'fbw-fab fbw-export-fab';
@@ -125,6 +133,7 @@ function createDom() {
   fabBar.appendChild(editFab);
   fabBar.appendChild(fbFab);
   fabBar.appendChild(marqueeFab);
+  fabBar.appendChild(pickFab);
   fabBar.appendChild(exportFab);
   const fabDivider = document.createElement('span');
   fabDivider.className = 'fbw-fab-divider';
@@ -279,6 +288,7 @@ function attachFabClicks() {
   });
   state.exportFab.addEventListener('click', (e) => exportPDF({ image: e.shiftKey }, deselectElement));
   state.marqueeFab.addEventListener('click', toggleMarqueeMode);
+  state.pickFab.addEventListener('click', (e) => { e.stopPropagation(); pickColor(); });
   state.helpFab.addEventListener('click', (e) => { e.stopPropagation(); toggleHelpPopover(); });
   state.foldFab.addEventListener('click', (e) => { e.stopPropagation(); setFabCollapsed(true); });
   // fbFab click 由 panel.js 装载

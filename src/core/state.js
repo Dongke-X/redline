@@ -26,6 +26,7 @@ export const state = {
   /** @type {HTMLElement|null} */ editFab: null,
   /** @type {HTMLElement|null} */ fbFab: null,
   /** @type {HTMLElement|null} */ marqueeFab: null,
+  /** @type {HTMLElement|null} */ pickFab: null,
   /** @type {HTMLElement|null} */ exportFab: null,
   /** @type {HTMLElement|null} */ helpFab: null,
   /** @type {HTMLElement|null} */ helpPopover: null,
