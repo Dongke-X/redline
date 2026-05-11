@@ -6,22 +6,40 @@ import { getText } from '../core/elements.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
+// 元素的「主要 op」—— 用来决定描边颜色。多个 op 同时存在时按破坏性排序取最高优先级。
+const OP_PRIORITY = ['delete', 'hide', 'replace-img', 'tag', 'font', 'highlight', 'scale', 'rotate', 'move', 'href'];
+
+function primaryOp(ops, hasTextEdit) {
+  for (const p of OP_PRIORITY) {
+    if (ops.some(o => o.op === p)) return p;
+  }
+  return hasTextEdit ? 'text' : (ops[0]?.op || null);
+}
+
 function markChanged() {
-  // 文字改动
+  // 先标记所有文字改动元素到一个集合，方便和 op 改动合并
+  const textChanged = new Set();
   document.querySelectorAll('[data-fbw-edit-id]').forEach(el => {
     const id = el.dataset.fbwEditId;
     const orig = state.originals.get(id);
-    if (orig !== undefined && orig !== getText(el)) {
-      el.classList.add('fbw-audit-changed');
-      el.setAttribute('data-fbw-audit-kind', 'text');
-    }
+    if (orig !== undefined && orig !== getText(el)) textChanged.add(el);
   });
-  // op 改动
+
+  // 合并：文字 + op
+  const allChanged = new Set(textChanged);
   state.elementOps.forEach((rec, el) => {
-    if (!document.contains(el) || !rec.ops?.length) return;
+    if (document.contains(el) && rec.ops?.length) allChanged.add(el);
+  });
+
+  allChanged.forEach(el => {
+    const rec = state.elementOps.get(el);
+    const ops = rec?.ops || [];
+    const hasText = textChanged.has(el);
+    const op = primaryOp(ops, hasText);
     el.classList.add('fbw-audit-changed');
-    el.setAttribute('data-fbw-audit-count', String(rec.ops.length));
-    el.setAttribute('data-fbw-audit-kind', el.getAttribute('data-fbw-audit-kind') ? 'mixed' : 'ops');
+    if (op) el.setAttribute('data-fbw-audit-op', op);
+    const count = ops.length + (hasText ? 1 : 0);
+    if (count > 0) el.setAttribute('data-fbw-audit-count', String(count));
   });
 }
 
@@ -29,6 +47,7 @@ function unmarkChanged() {
   document.querySelectorAll('.fbw-audit-changed').forEach(el => {
     el.classList.remove('fbw-audit-changed');
     el.removeAttribute('data-fbw-audit-count');
+    el.removeAttribute('data-fbw-audit-op');
     el.removeAttribute('data-fbw-audit-kind');
   });
 }

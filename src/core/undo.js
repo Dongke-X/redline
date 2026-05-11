@@ -39,6 +39,12 @@ function snapshot(el) {
       href: el.tagName === 'A' ? el.getAttribute('href') : undefined,
       src: el.tagName === 'IMG' ? el.getAttribute('src') : undefined,
     },
+    // 文字内容（用于 text-edit undo）。textContent 而非 innerHTML，避免
+    // 重置 innerHTML 后子节点上 data-fbw-edit-id 的元素引用失效。
+    // 代价：撤销文字编辑时丢失内部 <strong> 等行内格式
+    text: el.textContent,
+    edited: el.dataset.fbwEdited ?? null,
+    fbwChanged: el.classList.contains('fbw-changed'),
     opsClone: opsRec ? JSON.parse(JSON.stringify(opsRec)) : null,
   };
 }
@@ -65,6 +71,14 @@ function applySnapshot(snap) {
   if (el.tagName === 'IMG' && snap.attrs.src !== undefined && snap.attrs.src !== null) {
     el.src = snap.attrs.src;
   }
+
+  // 文字内容还原（仅当跟现状不同时才碰 DOM，避免 input 事件多余 fire）
+  if (typeof snap.text === 'string' && el.textContent !== snap.text) {
+    el.textContent = snap.text;
+  }
+  if (snap.edited === null) delete el.dataset.fbwEdited;
+  else el.dataset.fbwEdited = snap.edited;
+  el.classList.toggle('fbw-changed', !!snap.fbwChanged);
 
   if (snap.opsClone) state.elementOps.set(el, snap.opsClone);
   else state.elementOps.delete(el);

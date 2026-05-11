@@ -10,6 +10,7 @@ import { exitMarqueeMode } from './marquee.js';
 import { closeNotePopover } from './toolbar.js';
 import { closeMarkerPopover } from './marker.js';
 import { closeTagPopover } from './tag-switch.js';
+import { pushUndo } from '../core/undo.js';
 import { getElementNote } from '../core/elements.js';
 import { showToast, updateCounter, pendingEditCount } from '../utils.js';
 import { t } from '../i18n.js';
@@ -158,6 +159,9 @@ export function deselectElement() {
 }
 
 export function enterTextEdit(el) {
+  // 进编辑前先 snapshot，撤销时能回到这次编辑之前的文字状态。
+  // contentEditable 内的逐字击键由浏览器原生 undo 处理；这一笔抓的是「整次编辑」的起点
+  pushUndo(el);
   deselectElement();
   el.contentEditable = 'true';
   el.spellcheck = false;

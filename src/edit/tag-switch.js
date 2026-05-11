@@ -11,6 +11,7 @@ import { t } from '../i18n.js';
 const TAGS = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
 let popover = null;
+let previewOrigTagAs = null; // 进入 hover 预览前的原值；关 popover 时还原
 
 export function createTagPopoverNode() {
   popover = document.createElement('div');
@@ -42,26 +43,47 @@ export function openTagPopover() {
   popover.style.top = (tb.bottom + 6) + 'px';
   popover.style.left = (tb.left + 24) + 'px';
   popover.classList.add('fbw-on');
+  // 记录打开前的 tag-as 原值，hover 预览结束（关 popover）时回到这值
+  previewOrigTagAs = state.selectedEl.getAttribute('data-fbw-tag-as');
   paintActive(state.selectedEl);
 }
 
 export function closeTagPopover() {
-  if (popover) popover.classList.remove('fbw-on');
+  if (!popover) return;
+  popover.classList.remove('fbw-on');
+  // 没提交的预览要还原
+  if (state.selectedEl && previewOrigTagAs !== undefined) {
+    if (previewOrigTagAs === null) state.selectedEl.removeAttribute('data-fbw-tag-as');
+    else state.selectedEl.setAttribute('data-fbw-tag-as', previewOrigTagAs);
+    previewOrigTagAs = null;
+  }
+}
+
+// hover 时只改视觉，不进 op 栈、不 pushUndo
+function previewTag(tag) {
+  if (!state.selectedEl) return;
+  if (tag === state.selectedEl.tagName.toLowerCase()) {
+    state.selectedEl.removeAttribute('data-fbw-tag-as');
+  } else {
+    state.selectedEl.setAttribute('data-fbw-tag-as', tag);
+  }
 }
 
 export function applyTagSwitch(el, toTag) {
   if (!el || !TAGS.includes(toTag)) return;
   const fromLive = el.tagName.toLowerCase();
-  const fromMark = (el.getAttribute('data-fbw-tag-as') || '').toLowerCase();
-  // 切回原生 tag → 撤销标记 + 清掉 tag op
-  if (toTag === fromLive && !fromMark) {
+  // 先把 preview 状态视为"已还原"，避免 closeTagPopover 把刚提交的值改回去
+  const beforeCommit = previewOrigTagAs;
+  previewOrigTagAs = null;
+
+  // 切回原生 tag 且原本就没标记过 → 关 popover 就完了
+  if (toTag === fromLive && (beforeCommit === null || beforeCommit === undefined)) {
     closeTagPopover();
     return;
   }
   if (toTag === fromLive) {
     pushUndo(el);
     el.removeAttribute('data-fbw-tag-as');
-    // 把 ops 里的 tag op 撤掉
     const rec = state.elementOps.get(el);
     if (rec) {
       rec.ops = rec.ops.filter(o => o.op !== 'tag');
@@ -85,6 +107,20 @@ export function attachTagPopoverEvents() {
     if (!btn || !state.selectedEl) return;
     e.stopPropagation();
     applyTagSwitch(state.selectedEl, btn.dataset.fbwTag);
+  });
+  // 鼠标 hover 选项 → 实时预览
+  popover.addEventListener('mouseover', (e) => {
+    const btn = e.target.closest('[data-fbw-tag]');
+    if (!btn) return;
+    previewTag(btn.dataset.fbwTag);
+    paintActive(state.selectedEl);
+  });
+  // 鼠标离开整个 popover → 还原到打开前的状态（不提交）
+  popover.addEventListener('mouseleave', () => {
+    if (!state.selectedEl) return;
+    if (previewOrigTagAs === null) state.selectedEl.removeAttribute('data-fbw-tag-as');
+    else if (previewOrigTagAs !== undefined) state.selectedEl.setAttribute('data-fbw-tag-as', previewOrigTagAs);
+    paintActive(state.selectedEl);
   });
   document.addEventListener('mousedown', (e) => {
     if (!popover.classList.contains('fbw-on')) return;

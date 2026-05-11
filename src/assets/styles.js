@@ -1223,15 +1223,22 @@ export const CSS = `
       color: #fff;
     }
 
-    /* 审计模式：按 A 切换，所有改过的元素描红 + 角标 op 数量 */
+    /* 审计模式：按 A 切换，所有改过的元素描边 + 角标 op 数量。颜色按 op 类型区分 */
     body.fbw-audit-mode .fbw-audit-changed {
-      outline: 2px solid rgba(220,60,60,0.7) !important;
+      outline: 2px solid rgba(220,60,60,0.75) !important;
       outline-offset: 3px !important;
       position: relative;
     }
-    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-kind="text"] {
-      outline-color: rgba(245,158,11,0.85) !important;
-    }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="hide"]        { outline-color: rgba(120,120,120,0.80) !important; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="tag"]         { outline-color: rgba(139,92,246,0.80) !important; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="replace-img"] { outline-color: rgba(6,182,212,0.80) !important; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="font"]        { outline-color: rgba(59,130,246,0.80) !important; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="highlight"]   { outline-color: rgba(234,179,8,0.90) !important; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="scale"],
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="rotate"],
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="move"]        { outline-color: rgba(34,197,94,0.80) !important; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="href"]        { outline-color: rgba(99,102,241,0.80) !important; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="text"]        { outline-color: rgba(245,158,11,0.90) !important; }
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-count]::after {
       content: attr(data-fbw-audit-count);
       position: absolute;
@@ -1249,6 +1256,16 @@ export const CSS = `
       pointer-events: none;
       z-index: 2147483540;
     }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="hide"]::after        { background: #888; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="tag"]::after         { background: #8b5cf6; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="replace-img"]::after { background: #06b6d4; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="font"]::after        { background: #3b82f6; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="highlight"]::after   { background: #eab308; color: #1a1a1a; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="scale"]::after,
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="rotate"]::after,
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="move"]::after        { background: #22c55e; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="href"]::after        { background: #6366f1; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="text"]::after        { background: #f59e0b; }
 
     /* 标签切换 popover：H 按钮点开后显示 P / H1 / H2 / H3 / H4 */
     .fbw-tag-popover {

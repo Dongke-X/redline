@@ -6,6 +6,17 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.8 — 2026-05-12  ·  审计上色 + Tag hover 预览 + 文字编辑入栈
+
+### Changed
+- **审计模式按 op 类型上色**：delete 红 / hide 灰 / tag 紫 / replace-img 青 / font 蓝 / highlight 黄 / scale·rotate·move 绿 / href 靛 / text-only 橙。角标背景色一并跟上。优先级排序：破坏性高的 op 优先标色
+- **标签切换 hover 预览**：H 按钮打开 popover 后，鼠标 hover P/H1-H6 任一项 → 元素实时变样式（不进 op 栈、不 pushUndo）。点击才提交；鼠标离开 popover 自动还原到打开前的状态
+
+### Added
+- **文字编辑也入撤销栈**：双击元素进入文字编辑模式时 pushUndo 一次，捕获编辑前的 textContent。退出编辑后按 ⌘+Z（contentEditable 外）能回到编辑前的文字。代价：仅保留 textContent，撤销会丢失内部行内格式（`<strong>` 等）
+
+---
+
 ## 0.1.7 — 2026-05-12  ·  Gmail 风格 Undo toast
 
 ### Added
