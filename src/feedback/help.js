@@ -19,31 +19,35 @@ export function buildHelpPopoverHTML() {
   const cmd = platformCmdLabel();
   return `
     <div class="fbw-help-title">${t('help.title')}</div>
-    <div class="fbw-help-groups">
-      <div class="fbw-help-group">
-        <div class="fbw-help-group-label">${t('help.group.modes')}</div>
-        ${row('E', t('help.shortcut.edit'))}
-        ${row('F', t('help.shortcut.feedback'))}
-        ${row('M', t('help.shortcut.marquee'))}
+    <div class="fbw-help-cols">
+      <div class="fbw-help-col">
+        <div class="fbw-help-group">
+          <div class="fbw-help-group-label">${t('help.group.modes')}</div>
+          ${row('E', t('help.shortcut.edit'))}
+          ${row('F', t('help.shortcut.feedback'))}
+          ${row('M', t('help.shortcut.marquee'))}
+        </div>
+        <div class="fbw-help-group">
+          <div class="fbw-help-group-label">${t('help.group.actions')}</div>
+          ${row('Esc', t('help.shortcut.cancel'))}
+          ${row([cmd, 'S'], t('help.shortcut.save'))}
+          ${row([cmd, 'M'], t('help.shortcut.copy'))}
+          ${row([cmd, 'Z'], t('help.shortcut.undo'))}
+          ${row([cmd, 'Shift', 'Z'], t('help.shortcut.redo'))}
+          ${row([cmd, 'C'], t('help.shortcut.copyDescriptor'))}
+          ${row('A', t('help.shortcut.audit'))}
+        </div>
       </div>
-      <div class="fbw-help-group">
-        <div class="fbw-help-group-label">${t('help.group.actions')}</div>
-        ${row('Esc', t('help.shortcut.cancel'))}
-        ${row([cmd, 'S'], t('help.shortcut.save'))}
-        ${row([cmd, 'M'], t('help.shortcut.copy'))}
-        ${row([cmd, 'Z'], t('help.shortcut.undo'))}
-        ${row([cmd, 'Shift', 'Z'], t('help.shortcut.redo'))}
-        ${row([cmd, 'C'], t('help.shortcut.copyDescriptor'))}
-        ${row('A', t('help.shortcut.audit'))}
-      </div>
-      <div class="fbw-help-group">
-        <div class="fbw-help-group-label">${t('help.group.export')}</div>
-        ${row(['Space', 'P'], t('help.shortcut.pdfVector'))}
-        ${row(['Shift', 'P'], t('help.shortcut.pdfImage'))}
-      </div>
-      <div class="fbw-help-group">
-        <div class="fbw-help-group-label">${t('help.group.misc')}</div>
-        ${row('?', t('help.shortcut.help'))}
+      <div class="fbw-help-col">
+        <div class="fbw-help-group">
+          <div class="fbw-help-group-label">${t('help.group.export')}</div>
+          ${row(['Space', 'P'], t('help.shortcut.pdfVector'))}
+          ${row(['Shift', 'P'], t('help.shortcut.pdfImage'))}
+        </div>
+        <div class="fbw-help-group">
+          <div class="fbw-help-group-label">${t('help.group.misc')}</div>
+          ${row('?', t('help.shortcut.help'))}
+        </div>
       </div>
     </div>
   `;

@@ -32,4 +32,4 @@ export const ICON_DRAG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 // 标签切换：H 字形 = heading 语义
 export const ICON_HEADING = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4v16M18 4v16M6 12h12"/></svg>';
 // "Aa" 用实文字渲染，小尺寸下比 path 描边版清晰得多
-export const ICON_FONT = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><text x="12" y="17" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif" font-size="14" font-weight="700" fill="currentColor" text-anchor="middle" letter-spacing="-0.5">Aa</text></svg>';
+export const ICON_FONT = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><text x="12" y="18.5" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif" font-size="18" font-weight="700" fill="currentColor" text-anchor="middle" letter-spacing="-0.5">Aa</text></svg>';

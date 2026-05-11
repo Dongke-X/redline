@@ -36,9 +36,7 @@ export const CSS = `
 
     .fbw-head {
       display: flex; justify-content: space-between;
-      /* 标题可能换行（EN locale 下"Feedback to Agent / Designer"会折两行）；
-         chip 和图标贴顶部，跟首行对齐而不是垂直居中 → 视觉锚点稳定 */
-      align-items: flex-start;
+      align-items: center;
       font-size: 13.5px; font-weight: 600;
       color: #f5f3ef;
       padding-bottom: 11px;
@@ -53,11 +51,7 @@ export const CSS = `
     }
     .fbw-head-title > span { word-break: break-word; }
     .fbw-head-title svg { width: 15px; height: 15px; opacity: 0.65; flex-shrink: 0; }
-    .fbw-head-actions {
-      flex-shrink: 0;
-      /* icon-btn 高度 22px，跟标题首行 ~22px 视觉基线对齐（标题 13.5*1.4≈19） */
-      margin-top: 1px;
-    }
+    .fbw-head-actions { flex-shrink: 0; }
     .fbw-head-actions { display: inline-flex; align-items: center; gap: 4px; }
     .fbw-icon-btn {
       width: 22px; height: 22px;
@@ -73,7 +67,7 @@ export const CSS = `
     .fbw-icon-btn.fbw-danger:hover { color: #ff6b6b; background: rgba(255,107,107,0.10); }
     .fbw-icon-btn svg { width: 13px; height: 13px; }
 
-    .fbw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .fbw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
     .fbw-pill {
       display: inline-flex; align-items: center; gap: 5px;
       background: rgba(255,255,255,0.05);
@@ -1108,17 +1102,20 @@ export const CSS = `
     .fbw-help-popover {
       position: fixed;
       z-index: 2147483600;
-      background: rgba(20, 22, 28, 0.96);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(28, 25, 22, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 12px;
-      padding: 14px 16px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.48), 0 2px 8px rgba(0,0,0,0.28);
+      padding: 14px 18px;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.52),
+        0 2px 8px rgba(0,0,0,0.30),
+        inset 0 1px 0 rgba(255,255,255,0.05);
       backdrop-filter: blur(24px) saturate(1.4);
       -webkit-backdrop-filter: blur(24px) saturate(1.4);
       display: none;
       font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
-      color: #f5f5f7;
-      min-width: 220px;
+      color: #f5f3ef;
+      min-width: 360px;
       box-sizing: border-box;
     }
     .fbw-help-popover.fbw-on { display: block; }
@@ -1135,6 +1132,25 @@ export const CSS = `
     }
     .fbw-help-rows { display: flex; flex-direction: column; gap: 8px; }
     .fbw-help-groups { display: flex; flex-direction: column; gap: 14px; }
+    /* 双列布局：左=模式+操作（高频），右=导出+其他（低频） */
+    .fbw-help-cols {
+      display: flex;
+      gap: 22px;
+      align-items: flex-start;
+    }
+    .fbw-help-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    /* 左右两列之间加一条极淡的分隔线，强化分栏视觉 */
+    .fbw-help-col + .fbw-help-col {
+      padding-left: 22px;
+      margin-left: 0;
+      border-left: 1px solid rgba(255,255,255,0.06);
+    }
     .fbw-help-group { display: flex; flex-direction: column; gap: 6px; }
     .fbw-help-group-label {
       font-family: ui-monospace, "SF Mono", monospace;
@@ -1216,8 +1232,7 @@ export const CSS = `
     body.fbw-mode-doc .fbw-mode-chip,
     body.fbw-mode-review .fbw-mode-chip {
       display: inline-block;
-      padding: 1px 7px;
-      margin-right: 6px;
+      padding: 2px 8px;
       font-size: 9.5px;
       font-weight: 600;
       letter-spacing: 0.08em;

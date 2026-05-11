@@ -6,6 +6,16 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.12 — 2026-05-12  ·  布局与排版微调
+
+### Changed
+- **快捷键面板改双列**：左列「模式 + 操作」（高频），右列「导出 + 其他」（低频），中间细分隔线。从 12+ 行单列竖条变成 ~7 行双列，扫视成本降一半。`min-width` 从 220 → 360 撑开双列
+- **mode chip 改贴左**：从 header-actions 挪到 pill row，再去掉 `margin-left: auto`，按 DOM 顺序坐左端。pill row 加 `justify-content: space-between`，文档 chip + 4 个 pill 均匀分布占满整行
+- **header 对齐回 center**：之前为 EN 折行加的 `align-items: flex-start` 让 ZH 单行标题视觉偏低。chip 搬走后 header-actions 只剩 4 个 icon，居中最稳
+- **Aa 字体图标放大**：toolbar 上的「Aa」字体按钮从 font-size 14 → 18，跟周围 stroke icon 视觉等重
+
+---
+
 ## 0.1.11 — 2026-05-12  ·  EN locale 适配
 
 ### Fixed

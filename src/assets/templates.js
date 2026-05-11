@@ -16,7 +16,6 @@ export function panelHTML() {
     <div class="fbw-head">
       <span class="fbw-head-title">${ICON_CHAT}<span>${t('panel.title')}</span></span>
       <span class="fbw-head-actions">
-        <span class="fbw-mode-chip"></span>
         <button class="fbw-icon-btn" data-fbw-shot data-tooltip="${t('panel.btn.shot.title')}">${ICON_CAMERA}</button>
         <button class="fbw-icon-btn" data-fbw-locale data-tooltip="${t('panel.btn.locale.title', { lang: nextLang })}">${ICON_GLOBE}</button>
         <button class="fbw-icon-btn fbw-danger" data-fbw-clear-all data-tooltip="${t('panel.btn.clearAll')}">${ICON_TRASH}</button>
@@ -24,6 +23,7 @@ export function panelHTML() {
       </span>
     </div>
     <div class="fbw-row">
+      <span class="fbw-mode-chip"></span>
       <span class="fbw-pill">${t('panel.pill.edit')} <span data-fbw-counter="edit">0</span></span>
       <span class="fbw-pill">${t('panel.pill.section')} <span data-fbw-counter="sec">0</span></span>
       <span class="fbw-pill">${t('panel.pill.element')} <span data-fbw-counter="ops">0</span></span>
