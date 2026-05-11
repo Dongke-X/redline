@@ -36,6 +36,7 @@ export const state = {
   /** @type {HTMLElement|null} */ markerPopover: null,
   /** @type {HTMLElement|null} */ tagPopover: null,
   /** @type {HTMLElement|null} */ resizeHandles: null,
+  /** @type {Function|null} */ onChangeHook: null,
 
   // ════════════════════════ 2. 模式 + 交互态（频繁变） ════════════════════════
   /** @type {HTMLElement|null} */ selectedEl: null,

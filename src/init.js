@@ -17,6 +17,8 @@ import { attachMarkerEvents } from './edit/marker.js';
 import { createResizeHandlesNode, attachResizeEvents } from './edit/resize.js';
 import { createTagPopoverNode, attachTagPopoverEvents } from './edit/tag-switch.js';
 import { undo, redo } from './core/undo.js';
+import { copySelectedDescriptor } from './edit/clipboard.js';
+import { toggleAudit, refreshAuditIfOn } from './edit/audit.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -197,6 +199,16 @@ function attachKeyboardShortcuts() {
       return;
     }
 
+    // ⌘+C / Ctrl+C：选中元素时复制描述符（无文字选区才生效，否则让浏览器原生复制）
+    if ((e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === 'c' || e.key === 'C')) {
+      const sel = window.getSelection?.()?.toString();
+      if (sel) return;
+      if (!state.selectedEl) return;
+      e.preventDefault();
+      copySelectedDescriptor();
+      return;
+    }
+
     // ⌘+M / Ctrl+M：复制反馈 markdown 到剪贴板（用 M 不用 C，避免抢系统 ⌘+C）
     if ((e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === 'm' || e.key === 'M')) {
       e.preventDefault();
@@ -210,6 +222,7 @@ function attachKeyboardShortcuts() {
     if (e.key === 'e' || e.key === 'E') { e.preventDefault(); toggleEdit(); }
     else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFbPanel(); }
     else if (e.key === 'm' || e.key === 'M') { e.preventDefault(); toggleMarqueeMode(); }
+    else if (e.key === 'a' || e.key === 'A') { e.preventDefault(); toggleAudit(); }
     else if (e.key === '?') { e.preventDefault(); toggleHelpPopover(); }
     else if ((e.key === 'Delete' || e.key === 'Backspace') && state.selectedEl && state.editMode) {
       e.preventDefault();
@@ -400,6 +413,7 @@ export function init() {
   attachSlideTracking(sections);
   attachAttachmentEvents();
   attachKeyboardShortcuts();
+  state.onChangeHook = refreshAuditIfOn;
   attachFabClicks();
   attachFabVisibility();
   attachFabBgDetection();

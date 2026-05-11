@@ -1207,6 +1207,33 @@ export const CSS = `
       color: #fff;
     }
 
+    /* 审计模式：按 A 切换，所有改过的元素描红 + 角标 op 数量 */
+    body.fbw-audit-mode .fbw-audit-changed {
+      outline: 2px solid rgba(220,60,60,0.7) !important;
+      outline-offset: 3px !important;
+      position: relative;
+    }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-kind="text"] {
+      outline-color: rgba(245,158,11,0.85) !important;
+    }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-count]::after {
+      content: attr(data-fbw-audit-count);
+      position: absolute;
+      top: -10px; right: -10px;
+      min-width: 18px; height: 18px;
+      padding: 0 5px;
+      background: #dc3c3c;
+      color: #fff;
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 11px; font-weight: 600;
+      line-height: 18px;
+      text-align: center;
+      border-radius: 9px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      pointer-events: none;
+      z-index: 2147483540;
+    }
+
     /* 标签切换 popover：H 按钮点开后显示 P / H1 / H2 / H3 / H4 */
     .fbw-tag-popover {
       position: fixed;
@@ -1283,6 +1310,11 @@ export const CSS = `
     body.fbw-printing .fbw-drag-readout {
       display: none !important;
     }
+    /* 截屏 / 打印时把 audit 红框也藏掉，避免拍进 PDF */
+    body.fbw-printing .fbw-audit-changed {
+      outline: none !important;
+    }
+    body.fbw-printing .fbw-audit-changed::after { display: none !important; }
 
     @media print {
       .fbw-panel, .fbw-fab, .fbw-fab-bar, .fbw-fab-divider,

@@ -33,6 +33,11 @@ export function updateCounter(getChangesFn) {
     const secPill = state.panel.querySelector('[data-fbw-counter="sec"]');
     if (secPill) secPill.textContent = state.sectionFeedback.size + state.annotations.length;
   }
+
+  // audit 模式开着的话，每次 counter 变都顺便刷新
+  if (typeof state.onChangeHook === 'function') {
+    try { state.onChangeHook(); } catch (_) {}
+  }
 }
 
 export function pendingEditCount(getChangesFn) {

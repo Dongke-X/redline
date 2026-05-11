@@ -31,6 +31,10 @@ export function buildHelpPopoverHTML() {
         ${row('Esc', t('help.shortcut.cancel'))}
         ${row([cmd, 'S'], t('help.shortcut.save'))}
         ${row([cmd, 'M'], t('help.shortcut.copy'))}
+        ${row([cmd, 'Z'], t('help.shortcut.undo'))}
+        ${row([cmd, 'Shift', 'Z'], t('help.shortcut.redo'))}
+        ${row([cmd, 'C'], t('help.shortcut.copyDescriptor'))}
+        ${row('A', t('help.shortcut.audit'))}
       </div>
       <div class="fbw-help-group">
         <div class="fbw-help-group-label">${t('help.group.export')}</div>
