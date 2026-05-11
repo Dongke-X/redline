@@ -5,6 +5,7 @@ import { state } from '../core/state.js';
 import { recordOp, clearOpsOn } from '../core/elements.js';
 import { pushUndo } from '../core/undo.js';
 import { showToast } from '../utils.js';
+import { showUndoToast } from '../utils/undo-toast.js';
 import { t } from '../i18n.js';
 
 const TAGS = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
@@ -66,14 +67,14 @@ export function applyTagSwitch(el, toTag) {
       rec.ops = rec.ops.filter(o => o.op !== 'tag');
       if (!rec.ops.length) clearOpsOn(el);
     }
-    showToast(t('op.tag.cleared') || `已撤销标签变更`);
+    showUndoToast(t('op.tag.cleared') || `已撤销标签变更`);
     closeTagPopover();
     return;
   }
   pushUndo(el);
   el.setAttribute('data-fbw-tag-as', toTag);
   recordOp(el, 'tag', { from: fromLive, to: toTag });
-  showToast(t('op.tag.done', { tag: toTag.toUpperCase() }) || `标签变更为 ${toTag.toUpperCase()}`);
+  showUndoToast(t('op.tag.done', { tag: toTag.toUpperCase() }) || `标签变更为 ${toTag.toUpperCase()}`);
   closeTagPopover();
 }
 

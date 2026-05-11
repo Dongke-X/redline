@@ -3,6 +3,7 @@
 import { state } from '../core/state.js';
 import { recordOp } from '../core/elements.js';
 import { pushUndo } from '../core/undo.js';
+import { showUndoToast } from '../utils/undo-toast.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
@@ -125,13 +126,13 @@ function applyHighlight(el, color, name, range) {
       el.dataset.fbwHighlight = name || '1';
     }
     recordOp(el, 'highlight', { color, name, scope: range ? 'range' : 'element' });
-    showToast(t('op.highlight') + (name ? ': ' + name : ''));
+    showUndoToast(t('op.highlight') + (name ? ': ' + name : ''));
   } else {
     clearInlineHighlights(el);
     el.style.background = '';
     delete el.dataset.fbwHighlight;
     recordOp(el, 'highlight', { color: null });
-    showToast(t('highlight.clear'));
+    showUndoToast(t('highlight.clear'));
   }
 }
 

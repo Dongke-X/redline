@@ -10,6 +10,7 @@ import { openFontPicker, closeFontPicker } from './fonts.js';
 import { openMarkerPopover, closeMarkerPopover } from './marker.js';
 import { openTagPopover, closeTagPopover } from './tag-switch.js';
 import { pushUndo } from '../core/undo.js';
+import { showUndoToast } from '../utils/undo-toast.js';
 import { renderAttachments } from '../feedback/attachments.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
@@ -86,8 +87,8 @@ export function attachToolbarEvents() {
     const el = state.selectedEl;
 
     if (op === 'close') { deselectElement(); return; }
-    if (op === 'delete') { pushUndo(el); recordOp(el, 'delete'); el.dataset.fbwOpDeleted = '1'; showToast(t('op.delete')); return; }
-    if (op === 'hide')   { pushUndo(el); recordOp(el, 'hide');   el.dataset.fbwOpHidden  = '1'; showToast(t('op.hide')); return; }
+    if (op === 'delete') { pushUndo(el); recordOp(el, 'delete'); el.dataset.fbwOpDeleted = '1'; showUndoToast(t('op.delete')); return; }
+    if (op === 'hide')   { pushUndo(el); recordOp(el, 'hide');   el.dataset.fbwOpHidden  = '1'; showUndoToast(t('op.hide')); return; }
     if (op === 'link') {
       // a[href] 才能改链接。selection.js 已经按元素类型显隐，这里再兜底防御。
       if (el.tagName !== 'A') return;
@@ -100,7 +101,7 @@ export function attachToolbarEvents() {
       pushUndo(el);
       el.setAttribute('href', trimmed);
       recordOp(el, 'href', { before, after: trimmed });
-      showToast(t('op.link.done') || `链接已改：${trimmed.slice(0, 40)}${trimmed.length > 40 ? '…' : ''}`);
+      showUndoToast(t('op.link.done') || `链接已改：${trimmed.slice(0, 40)}${trimmed.length > 40 ? '…' : ''}`);
       return;
     }
     if (op === 'restore') {
@@ -117,7 +118,7 @@ export function attachToolbarEvents() {
         delete el.dataset.fbwOriginalSrc;
       }
       clearOpsOn(el);
-      showToast(t('op.restore'));
+      showUndoToast(t('op.restore'));
       positionToolbar(el);
       return;
     }
@@ -187,7 +188,7 @@ export function attachToolbarEvents() {
             dataURL: reader.result, type: file.type,
           });
           renderAttachments();
-          showToast(t('op.replaceImg'));
+          showUndoToast(t('op.replaceImg'));
         };
         reader.readAsDataURL(file);
       };

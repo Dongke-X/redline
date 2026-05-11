@@ -1,12 +1,38 @@
 // 共享小工具：toast、counter 更新、模态确认。
 import { state } from './core/state.js';
 
-export function showToast(msg) {
+// 同时只显示一个 toast：新 toast 一来旧的立刻撤掉，避免堆叠 / 旧 toast 的撤销按钮误点
+let currentToast = null;
+
+// opts: { action: { label, onClick }, duration }
+export function showToast(msg, opts) {
+  if (currentToast && currentToast.parentNode) currentToast.remove();
   const t = document.createElement('div');
   t.className = 'fbw-toast';
-  t.textContent = msg;
+  if (opts?.action) {
+    const span = document.createElement('span');
+    span.textContent = msg;
+    t.appendChild(span);
+    const btn = document.createElement('button');
+    btn.className = 'fbw-toast-action';
+    btn.type = 'button';
+    btn.textContent = opts.action.label;
+    btn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      try { opts.action.onClick(); } catch (_) {}
+      if (t.parentNode) t.remove();
+      if (currentToast === t) currentToast = null;
+    });
+    t.appendChild(btn);
+  } else {
+    t.textContent = msg;
+  }
+  currentToast = t;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2400);
+  setTimeout(() => {
+    if (t.parentNode) t.remove();
+    if (currentToast === t) currentToast = null;
+  }, opts?.duration ?? 2400);
 }
 
 // 更新面板四个数字 pill + overlay 保存编辑按钮的 badge。

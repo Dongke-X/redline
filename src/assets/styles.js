@@ -238,6 +238,22 @@ export const CSS = `
       backdrop-filter: blur(20px);
     }
     @keyframes fbw-toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    /* toast 里的「撤销」按钮 —— Gmail 风格 */
+    .fbw-toast .fbw-toast-action {
+      margin-left: 12px;
+      background: transparent;
+      color: #ff8a8a;
+      border: 0;
+      padding: 2px 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border-radius: 4px;
+      transition: background 120ms;
+    }
+    .fbw-toast .fbw-toast-action:hover { background: rgba(255,138,138,0.12); }
 
     .fbw-confirm {
       position: fixed; inset: 0;

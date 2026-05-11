@@ -6,6 +6,14 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.7 — 2026-05-12  ·  Gmail 风格 Undo toast
+
+### Added
+- 每次有 op（delete / hide / restore / link / replace-img / font / highlight / tag）落地后，toast 旁出现「撤销」按钮，4 秒内可点。比记快捷键好用，也让用户知道有撤销栈
+- 同时只显示一个 toast：新 toast 一来旧的立刻撤掉，避免老 toast 的撤销按钮残留导致误点
+
+---
+
 ## 0.1.6 — 2026-05-11  ·  Cmd+C 描述符 + A 审计模式
 
 ### Added

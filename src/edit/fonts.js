@@ -3,6 +3,7 @@
 import { state } from '../core/state.js';
 import { recordOp } from '../core/elements.js';
 import { pushUndo } from '../core/undo.js';
+import { showUndoToast } from '../utils/undo-toast.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
@@ -175,7 +176,7 @@ export function attachFontPickerEvents() {
       el.dataset.fbwFontName = name;
       recordOp(el, 'font', { family: name });
     }
-    showToast(t('op.font', { name }));
+    showUndoToast(t('op.font', { name }));
     closeFontPicker();
   });
 
