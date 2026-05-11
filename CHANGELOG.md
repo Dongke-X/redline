@@ -6,6 +6,13 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.3 — 2026-05-11  ·  工具栏面包屑
+
+### Added
+- 元素工具栏左侧加上下文标签，显示「区域 · 标签 (位置)」，比如「场景 · p (2/3)」—— 在长文档里点段落不再迷路。区域名按 `data-screen-label` → `aria-label` → 第一个 heading → `#id` → `.class` 顺序兜底
+
+---
+
 ## 0.1.2 — 2026-05-11  ·  appMode 兼容公众号排版稿
 
 ### Fixed

@@ -58,6 +58,8 @@ export function confirmHTML() {
 
 export function toolbarHTML() {
   return `
+    <span class="fbw-tb-label" data-fbw-path title=""></span>
+    <span class="fbw-tb-divider" data-fbw-path-divider></span>
     <button data-op="font" data-tooltip="${t('tip.font')}">${ICON_FONT}</button>
     <button data-op="highlight" data-tooltip="${t('tip.highlight')}">${ICON_MARKER}</button>
     <button data-op="replace-img" data-tooltip="${t('tip.replaceImg')}" style="display:none;">${ICON_IMAGE}</button>

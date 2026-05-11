@@ -378,10 +378,11 @@ export const CSS = `
       width: 1px; height: 18px; background: rgba(255,255,255,0.10); margin: 0 2px;
     }
     .fbw-elem-toolbar .fbw-tb-label {
-      font-family: ui-monospace, "SF Mono", monospace;
-      font-size: 10px; color: rgba(255,255,255,0.5);
-      padding: 0 8px; max-width: 200px;
+      font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
+      font-size: 11px; color: rgba(255,255,255,0.55);
+      padding: 0 8px; max-width: 220px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      user-select: none; pointer-events: none;
     }
     /* 元素反馈按钮：有 note 时显示一个青绿色小圆点 */
     .fbw-elem-toolbar button[data-op="note"] { position: relative; }

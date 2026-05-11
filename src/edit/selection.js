@@ -13,6 +13,57 @@ import { getElementNote } from '../core/elements.js';
 import { showToast, updateCounter, pendingEditCount } from '../utils.js';
 import { t } from '../i18n.js';
 
+// 面包屑：选中元素时在工具栏左侧显示「区域 · 标签 (位置)」，帮用户判断自己在改哪一段。
+// 区域优先级：data-screen-label > aria-label > section/article 里第一个 heading 文字 > id > tag。
+function sectionLabel(sec) {
+  if (!sec) return '';
+  const screen = sec.getAttribute('data-screen-label') || sec.getAttribute('aria-label');
+  if (screen) return screen.trim();
+  const heading = sec.querySelector('h1, h2, h3, h4, h5, h6');
+  if (heading && heading.textContent) {
+    const txt = heading.textContent.trim().replace(/\s+/g, ' ');
+    if (txt) return txt.length > 18 ? txt.slice(0, 18) + '…' : txt;
+  }
+  if (sec.id) return '#' + sec.id;
+  const cls = (sec.className || '').toString().split(/\s+/).find(c => c && !c.startsWith('fbw-'));
+  if (cls) return '.' + cls;
+  return sec.tagName.toLowerCase();
+}
+
+function describePath(el) {
+  if (!el) return '';
+  const tag = el.tagName.toLowerCase();
+  // 区域：找最近的 section / article / [data-fbw-sec-id]，但跳过元素自己（避免 section 选中时显示自己）
+  let sec = el.parentElement ? el.parentElement.closest('section, article, [data-fbw-sec-id]') : null;
+  if (!sec && el.matches('section, article, [data-fbw-sec-id]')) sec = el;
+  const secStr = sec && sec !== el ? sectionLabel(sec) : '';
+  // 同标签兄弟里第几个（>1 才显示，单独一个就不啰嗦）
+  const parent = el.parentElement;
+  let nthStr = '';
+  if (parent) {
+    const sibs = [...parent.children].filter(c => c.tagName === el.tagName);
+    if (sibs.length > 1) nthStr = ` (${sibs.indexOf(el) + 1}/${sibs.length})`;
+  }
+  return [secStr, tag + nthStr].filter(Boolean).join(' · ');
+}
+
+function updateBreadcrumb(el) {
+  if (!state.elemToolbar) return;
+  const label = state.elemToolbar.querySelector('[data-fbw-path]');
+  const divider = state.elemToolbar.querySelector('[data-fbw-path-divider]');
+  if (!label || !divider) return;
+  const text = describePath(el);
+  if (text) {
+    label.textContent = text;
+    label.title = text;
+    label.style.display = '';
+    divider.style.display = '';
+  } else {
+    label.style.display = 'none';
+    divider.style.display = 'none';
+  }
+}
+
 export function liftTarget(el) {
   if (!el) return el;
   const svg = el.closest('svg');
@@ -81,6 +132,7 @@ export function selectElement(el) {
   const noteBtn = state.elemToolbar.querySelector('[data-op="note"]');
   if (noteBtn) noteBtn.classList.toggle('fbw-has-note', !!getElementNote(el));
 
+  updateBreadcrumb(el);
   state.elemToolbar.classList.add('fbw-toolbar-open');
   positionToolbar(el);
   showResizeHandles(el);
