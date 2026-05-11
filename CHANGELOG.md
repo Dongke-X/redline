@@ -6,6 +6,13 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.2 — 2026-05-11  ·  appMode 兼容公众号排版稿
+
+### Fixed
+- wenyan / wechat-publisher 生成的 HTML（`<body><div id="preview"><section data-provider="WenYan">`）被识别成 `review` 模式，导致双击不能进入文字编辑。`SECTION_SELECTORS` 增加 `section[data-provider]` 匹配，让这类生成器输出进 `doc` 模式
+
+---
+
 ## 0.1.1 — 2026-05-11  ·  PDF 导出修复
 
 ### Fixed
