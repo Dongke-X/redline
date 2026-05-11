@@ -36,6 +36,7 @@ export function buildHelpPopoverHTML() {
           ${row([cmd, 'Shift', 'Z'], t('help.shortcut.redo'))}
           ${row([cmd, 'C'], t('help.shortcut.copyDescriptor'))}
           ${row('A', t('help.shortcut.audit'))}
+          ${row(['Alt', 'hover'], t('help.shortcut.measure'))}
         </div>
       </div>
       <div class="fbw-help-col">

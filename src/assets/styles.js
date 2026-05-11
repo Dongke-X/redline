@@ -67,7 +67,10 @@ export const CSS = `
     .fbw-icon-btn.fbw-danger:hover { color: #ff6b6b; background: rgba(255,107,107,0.10); }
     .fbw-icon-btn svg { width: 13px; height: 13px; }
 
-    .fbw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+    .fbw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    /* chip 贴左、4 个 pill 紧凑贴右：把 chip 之后的第一个 pill 推到右端，
+       后面的 pill 跟着默认 6px gap 紧凑排列 */
+    .fbw-mode-chip + .fbw-pill { margin-left: auto; }
     .fbw-pill {
       display: inline-flex; align-items: center; gap: 5px;
       background: rgba(255,255,255,0.05);
@@ -1385,6 +1388,49 @@ export const CSS = `
     [data-fbw-tag-as="h6"] { font-size: 0.88em !important; font-weight: 700 !important; color: #555 !important; }
     [data-fbw-tag-as="p"] { font-size: 1em !important; font-weight: 400 !important; line-height: 1.6 !important; }
 
+    /* 间距测量：Alt + hover 时显示 selected → target 的 4 边距离（Figma 风格） */
+    .fbw-measure-overlay {
+      position: fixed; inset: 0;
+      z-index: 2147483544;
+      pointer-events: none;
+      display: none;
+    }
+    .fbw-measure-overlay.fbw-on { display: block; }
+    .fbw-measure-line {
+      position: fixed;
+      pointer-events: none;
+    }
+    .fbw-measure-line-h {
+      height: 0;
+      border-top: 1px dashed rgba(220,60,60,0.85);
+    }
+    .fbw-measure-line-v {
+      width: 0;
+      border-left: 1px dashed rgba(220,60,60,0.85);
+    }
+    .fbw-measure-label {
+      position: fixed;
+      background: #dc3c3c;
+      color: #fff;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .fbw-measure-target {
+      position: fixed;
+      border: 1px dashed rgba(220,60,60,0.55);
+      background: rgba(220,60,60,0.05);
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+    /* 测量模式下隐藏鼠标 hover 的虚线（避免跟测量虚线打架） */
+    body.fbw-measuring [data-fbw-edit-id]:hover { outline: none !important; }
+
     /* 拖动 scale / rotate 时的实时读数（跟随光标） */
     .fbw-drag-readout {
       position: fixed; z-index: 2147483646;
@@ -1419,7 +1465,8 @@ export const CSS = `
     body.fbw-printing .fbw-anno-actions,
     body.fbw-printing .fbw-marquee-drawing,
     body.fbw-printing .fbw-resize-handles,
-    body.fbw-printing .fbw-drag-readout {
+    body.fbw-printing .fbw-drag-readout,
+    body.fbw-printing .fbw-measure-overlay {
       display: none !important;
     }
     /* 截屏 / 打印时把 audit 红框也藏掉，避免拍进 PDF */

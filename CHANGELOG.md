@@ -6,6 +6,19 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.13 — 2026-05-12  ·  间距测量（design feedback）
+
+### Added
+- **间距测量**：选中元素 + 按住 Alt + 鼠标 hover 任意目标元素 → 实时显示 selected → target 的 4 边距离（top / right / bottom / left）。Figma 风格的虚线 + 红色 monospace 像素徽章。释放 Alt 自动收起
+- 不加 mode，作为跨 doc / review 都生效的工具型功能。打印 / 截屏时自动隐藏
+
+### 用法
+1. 进编辑模式（E），点中一个元素
+2. 按住 ⌥ Alt，鼠标移到要量距的另一个元素上
+3. 弹出 4 条虚线 + 4 个像素读数；负值表示 selected 在 target 外侧
+
+---
+
 ## 0.1.12 — 2026-05-12  ·  布局与排版微调
 
 ### Changed

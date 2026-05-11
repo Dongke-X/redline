@@ -19,6 +19,7 @@ import { createTagPopoverNode, attachTagPopoverEvents } from './edit/tag-switch.
 import { undo, redo } from './core/undo.js';
 import { copySelectedDescriptor } from './edit/clipboard.js';
 import { toggleAudit, refreshAuditIfOn } from './edit/audit.js';
+import { showMeasurement, hideMeasurement } from './edit/measure.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -232,8 +233,38 @@ function attachKeyboardShortcuts() {
 
   document.addEventListener('keyup', (e) => {
     if (e.key === ' ') spaceHeld = false;
+    if (e.key === 'Alt') {
+      document.body.classList.remove('fbw-measuring');
+      hideMeasurement();
+    }
   });
-  window.addEventListener('blur', () => { spaceHeld = false; });
+  window.addEventListener('blur', () => {
+    spaceHeld = false;
+    document.body.classList.remove('fbw-measuring');
+    hideMeasurement();
+  });
+
+  // 间距测量：选中元素 + 按住 Alt + hover 目标 → 显示 4 边距离（Figma 风格）
+  document.addEventListener('mousemove', (e) => {
+    if (!e.altKey || !state.selectedEl) {
+      if (document.body.classList.contains('fbw-measuring')) {
+        document.body.classList.remove('fbw-measuring');
+        hideMeasurement();
+      }
+      return;
+    }
+    document.body.classList.add('fbw-measuring');
+    let target = e.target;
+    if (!target || target.closest('.fbw-panel, .fbw-fab, .fbw-fab-bar, .fbw-elem-toolbar, .fbw-confirm, .fbw-toast, .fbw-tooltip, .fbw-anno, .fbw-resize-handles, .fbw-measure-overlay, .fbw-help-popover, .fbw-note-popover, .fbw-marker-popover, .fbw-font-picker, .fbw-tag-popover')) {
+      hideMeasurement();
+      return;
+    }
+    if (target === state.selectedEl || state.selectedEl.contains(target)) {
+      hideMeasurement();
+      return;
+    }
+    showMeasurement(target);
+  }, true);
 }
 
 function attachFabClicks() {
