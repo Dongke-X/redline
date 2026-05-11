@@ -1,0 +1,206 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "claude-code",
+  "elements": [
+
+    {"type":"rectangle","id":"zone-1","x":50,"y":70,"width":1600,"height":620,
+      "backgroundColor":"#dbe4ff","fillStyle":"solid",
+      "strokeColor":"#4a9eed","strokeWidth":1,"opacity":25,"roundness":{"type":3}},
+    {"type":"text","id":"zone-1-title","x":70,"y":85,"text":"1. 浏览器（用户交互）","fontSize":22,"strokeColor":"#1d4ed8"},
+
+    {"type":"rectangle","id":"inj1","x":180,"y":130,"width":280,"height":70,
+      "backgroundColor":"#a5d8ff","fillStyle":"solid","strokeColor":"#4a9eed","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-inj1","x":195,"y":146,"text":"内联 <script>","fontSize":16,"strokeColor":"#1d4ed8"},
+    {"type":"text","id":"t-inj1b","x":195,"y":170,"text":"加到任意 HTML 头部","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"inj2","x":560,"y":130,"width":280,"height":70,
+      "backgroundColor":"#a5d8ff","fillStyle":"solid","strokeColor":"#4a9eed","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-inj2","x":580,"y":146,"text":"Chrome MV3 扩展","fontSize":16,"strokeColor":"#1d4ed8"},
+    {"type":"text","id":"t-inj2b","x":580,"y":170,"text":"任意网页点 R 图标注入","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"inj3","x":940,"y":130,"width":280,"height":70,
+      "backgroundColor":"#a5d8ff","fillStyle":"solid","strokeColor":"#4a9eed","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-inj3","x":960,"y":146,"text":"file:// 本地接入","fontSize":16,"strokeColor":"#1d4ed8"},
+    {"type":"text","id":"t-inj3b","x":960,"y":170,"text":"开发者打开 .html 直接用","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"arrow","id":"a-inj1","x":320,"y":205,"points":[[0,0],[200,30]],
+      "strokeColor":"#1d4ed8","strokeWidth":2,"endArrowhead":"arrow"},
+    {"type":"arrow","id":"a-inj2","x":700,"y":205,"points":[[0,0],[140,30]],
+      "strokeColor":"#1d4ed8","strokeWidth":2,"endArrowhead":"arrow"},
+    {"type":"arrow","id":"a-inj3","x":1080,"y":205,"points":[[0,0],[-240,30]],
+      "strokeColor":"#1d4ed8","strokeWidth":2,"endArrowhead":"arrow"},
+
+    {"type":"rectangle","id":"iife","x":560,"y":245,"width":560,"height":60,
+      "backgroundColor":"#74c0fc","fillStyle":"solid","strokeColor":"#1d4ed8","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-iife","x":600,"y":262,"text":"redline.js IIFE 加载执行","fontSize":18,"strokeColor":"#0f172a"},
+
+    {"type":"arrow","id":"a-iife-mode","x":840,"y":310,"points":[[0,0],[0,30]],
+      "strokeColor":"#1d4ed8","strokeWidth":2,"endArrowhead":"arrow"},
+
+    {"type":"rectangle","id":"mode-detect","x":560,"y":345,"width":560,"height":60,
+      "backgroundColor":"#a5d8ff","fillStyle":"solid","strokeColor":"#4a9eed","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-mode-detect","x":600,"y":362,"text":"appMode 自动探测（init.js）","fontSize":17,"strokeColor":"#1d4ed8"},
+
+    {"type":"arrow","id":"a-md-1","x":700,"y":410,"points":[[0,0],[-380,30]],
+      "strokeColor":"#1d4ed8","strokeWidth":2,"endArrowhead":"arrow"},
+    {"type":"arrow","id":"a-md-2","x":840,"y":410,"points":[[0,0],[0,30]],
+      "strokeColor":"#1d4ed8","strokeWidth":2,"endArrowhead":"arrow"},
+    {"type":"arrow","id":"a-md-3","x":980,"y":410,"points":[[0,0],[380,30]],
+      "strokeColor":"#1d4ed8","strokeWidth":2,"endArrowhead":"arrow"},
+
+    {"type":"rectangle","id":"mode-deck","x":180,"y":445,"width":400,"height":60,
+      "backgroundColor":"#c3fae8","fillStyle":"solid","strokeColor":"#06b6d4","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-mode-deck","x":210,"y":456,"text":"deck（有 deck-stage）","fontSize":15,"strokeColor":"#0891b2"},
+    {"type":"text","id":"t-mode-deck-2","x":210,"y":478,"text":"幻灯片：注入 deck overlay","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"mode-doc","x":640,"y":445,"width":400,"height":60,
+      "backgroundColor":"#c3fae8","fillStyle":"solid","strokeColor":"#06b6d4","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-mode-doc","x":670,"y":456,"text":"doc（匹配 SECTION_SELECTORS）","fontSize":15,"strokeColor":"#0891b2"},
+    {"type":"text","id":"t-mode-doc-2","x":670,"y":478,"text":"HTML 文档：右下 FAB pill","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"mode-review","x":1100,"y":445,"width":400,"height":60,
+      "backgroundColor":"#ffc9c9","fillStyle":"solid","strokeColor":"#ef4444","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-mode-review","x":1130,"y":456,"text":"review（任意 webapp）","fontSize":15,"strokeColor":"#991b1b"},
+    {"type":"text","id":"t-mode-review-2","x":1130,"y":478,"text":"线上预览：edits 标 proposed","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"op1","x":180,"y":540,"width":400,"height":120,
+      "backgroundColor":"#fff3bf","fillStyle":"solid","strokeColor":"#f59e0b","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-op1","x":205,"y":556,"text":"元素编辑（按 E 进入）","fontSize":16,"strokeColor":"#78350f"},
+    {"type":"text","id":"t-op1-2","x":205,"y":582,"text":"选中 → 工具栏 8 操作：","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-op1-3","x":205,"y":604,"text":"move / scale / rotate / font","fontSize":12,"strokeColor":"#475569"},
+    {"type":"text","id":"t-op1-4","x":205,"y":625,"text":"text / highlight / hide / delete","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"op2","x":640,"y":540,"width":400,"height":120,
+      "backgroundColor":"#fff3bf","fillStyle":"solid","strokeColor":"#f59e0b","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-op2","x":665,"y":556,"text":"框选标注（marquee）","fontSize":16,"strokeColor":"#78350f"},
+    {"type":"text","id":"t-op2-2","x":665,"y":582,"text":"双轨：","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-op2-3","x":665,"y":604,"text":"· 拖矩形 region + 加图 + 写文字","fontSize":12,"strokeColor":"#475569"},
+    {"type":"text","id":"t-op2-4","x":665,"y":625,"text":"· 双击空白 floating 文字","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"op3","x":1100,"y":540,"width":400,"height":120,
+      "backgroundColor":"#fff3bf","fillStyle":"solid","strokeColor":"#f59e0b","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-op3","x":1125,"y":556,"text":"反馈面板（按 F 切换）","fontSize":16,"strokeColor":"#78350f"},
+    {"type":"text","id":"t-op3-2","x":1125,"y":582,"text":"当前页留言（IntersectionObserver）","fontSize":12,"strokeColor":"#475569"},
+    {"type":"text","id":"t-op3-3","x":1125,"y":604,"text":"全局留言（叙事性反馈）","fontSize":12,"strokeColor":"#475569"},
+    {"type":"text","id":"t-op3-4","x":1125,"y":625,"text":"截图附件 📷（html2canvas）","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"arrow","id":"a-l1-l2","x":850,"y":695,"points":[[0,0],[0,40]],
+      "strokeColor":"#0f172a","strokeWidth":3,"endArrowhead":"arrow"},
+
+    {"type":"rectangle","id":"zone-2","x":50,"y":740,"width":1600,"height":180,
+      "backgroundColor":"#fff3bf","fillStyle":"solid",
+      "strokeColor":"#f59e0b","strokeWidth":1,"opacity":25,"roundness":{"type":3}},
+    {"type":"text","id":"zone-2-title","x":70,"y":755,"text":"2. 本地持久化分层（按写入频率分级）","fontSize":22,"strokeColor":"#78350f"},
+
+    {"type":"rectangle","id":"st1","x":100,"y":800,"width":350,"height":90,
+      "backgroundColor":"#ffd8a8","fillStyle":"solid","strokeColor":"#f59e0b","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-st1","x":120,"y":815,"text":"in-memory state","fontSize":15,"strokeColor":"#92400e"},
+    {"type":"text","id":"t-st1-2","x":120,"y":840,"text":"singleton（src/core/state.js）","fontSize":12,"strokeColor":"#475569"},
+    {"type":"text","id":"t-st1-3","x":120,"y":860,"text":"selectedEl / appMode / annotations","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"st2","x":490,"y":800,"width":350,"height":90,
+      "backgroundColor":"#ffd8a8","fillStyle":"solid","strokeColor":"#f59e0b","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-st2","x":510,"y":815,"text":"localStorage（metadata 小数据）","fontSize":15,"strokeColor":"#92400e"},
+    {"type":"text","id":"t-st2-2","x":510,"y":840,"text":"按 URL pathname 隔离","fontSize":12,"strokeColor":"#475569"},
+    {"type":"text","id":"t-st2-3","x":510,"y":860,"text":"scheduleSave 400ms 防抖 + quota 降级","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"st3","x":880,"y":800,"width":350,"height":90,
+      "backgroundColor":"#ffd8a8","fillStyle":"solid","strokeColor":"#f59e0b","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-st3","x":900,"y":815,"text":"IndexedDB（attachment blobs）","fontSize":15,"strokeColor":"#92400e"},
+    {"type":"text","id":"t-st3-2","x":900,"y":840,"text":"截图 / 上传图：原 blob 不 base64","fontSize":12,"strokeColor":"#475569"},
+    {"type":"text","id":"t-st3-3","x":900,"y":860,"text":"启动 rehydrateAttachments 异步拉回","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"rectangle","id":"st4","x":1270,"y":800,"width":350,"height":90,
+      "backgroundColor":"#b2f2bb","fillStyle":"solid","strokeColor":"#22c55e","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-st4","x":1290,"y":815,"text":"FS Access API → ~/.redline/sessions/","fontSize":13,"strokeColor":"#15803d"},
+    {"type":"text","id":"t-st4-2","x":1290,"y":840,"text":"<stem>.json + .md + 标注图片","fontSize":12,"strokeColor":"#475569"},
+    {"type":"text","id":"t-st4-3","x":1290,"y":860,"text":"用户首次选目录，IDB 存 dirHandle","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"arrow","id":"a-st1-2","x":450,"y":845,"points":[[0,0],[40,0]],
+      "strokeColor":"#92400e","strokeWidth":2,"endArrowhead":"arrow","strokeStyle":"dashed"},
+    {"type":"arrow","id":"a-st1-3","x":450,"y":870,"points":[[0,0],[430,0]],
+      "strokeColor":"#92400e","strokeWidth":2,"endArrowhead":"arrow","strokeStyle":"dashed"},
+    {"type":"arrow","id":"a-st-fs","x":840,"y":845,"points":[[0,0],[430,0]],
+      "strokeColor":"#22c55e","strokeWidth":3,"endArrowhead":"arrow"},
+
+    {"type":"arrow","id":"a-l2-l3","x":850,"y":925,"points":[[0,0],[0,30]],
+      "strokeColor":"#0f172a","strokeWidth":3,"endArrowhead":"arrow"},
+
+    {"type":"rectangle","id":"zone-3","x":50,"y":960,"width":1600,"height":620,
+      "backgroundColor":"#e5dbff","fillStyle":"solid",
+      "strokeColor":"#8b5cf6","strokeWidth":1,"opacity":25,"roundness":{"type":3}},
+    {"type":"text","id":"zone-3-title","x":70,"y":975,"text":"3. Claude Code（agent 应用）","fontSize":22,"strokeColor":"#4c1d95"},
+
+    {"type":"rectangle","id":"trigger","x":640,"y":1010,"width":420,"height":50,
+      "backgroundColor":"#d0bfff","fillStyle":"solid","strokeColor":"#8b5cf6","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-trigger","x":670,"y":1023,"text":"用户：「应用反馈」/「读 sessions」","fontSize":15,"strokeColor":"#4c1d95"},
+
+    {"type":"arrow","id":"a-trig","x":850,"y":1065,"points":[[0,0],[0,25]],
+      "strokeColor":"#4c1d95","strokeWidth":2,"endArrowhead":"arrow"},
+
+    {"type":"rectangle","id":"skill","x":560,"y":1095,"width":580,"height":60,
+      "backgroundColor":"#d0bfff","fillStyle":"solid","strokeColor":"#8b5cf6","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-skill","x":585,"y":1106,"text":"redline skill 触发","fontSize":16,"strokeColor":"#4c1d95"},
+    {"type":"text","id":"t-skill-2","x":585,"y":1130,"text":"读 SKILL.md frontmatter（触发词匹配）→ 加载工作流","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"arrow","id":"a-skill","x":850,"y":1160,"points":[[0,0],[0,25]],
+      "strokeColor":"#4c1d95","strokeWidth":2,"endArrowhead":"arrow"},
+
+    {"type":"rectangle","id":"read","x":560,"y":1190,"width":580,"height":60,
+      "backgroundColor":"#d0bfff","fillStyle":"solid","strokeColor":"#8b5cf6","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-read","x":585,"y":1201,"text":"读 session.json + 看 appMode + 定位源 HTML","fontSize":15,"strokeColor":"#4c1d95"},
+    {"type":"text","id":"t-read-2","x":585,"y":1225,"text":"page.pathname / source.hint / contentHash 三层 fallback","fontSize":12,"strokeColor":"#475569"},
+
+    {"type":"arrow","id":"a-r1","x":700,"y":1255,"points":[[0,0],[-380,40]],
+      "strokeColor":"#4c1d95","strokeWidth":2,"endArrowhead":"arrow"},
+    {"type":"arrow","id":"a-r2","x":850,"y":1255,"points":[[0,0],[0,40]],
+      "strokeColor":"#4c1d95","strokeWidth":2,"endArrowhead":"arrow"},
+    {"type":"arrow","id":"a-r3","x":1000,"y":1255,"points":[[0,0],[380,40]],
+      "strokeColor":"#4c1d95","strokeWidth":2,"endArrowhead":"arrow"},
+
+    {"type":"rectangle","id":"flow1","x":80,"y":1300,"width":480,"height":190,
+      "backgroundColor":"#ffc9c9","fillStyle":"solid","strokeColor":"#ef4444","strokeWidth":3,"roundness":{"type":3}},
+    {"type":"text","id":"t-flow1","x":110,"y":1316,"text":"① edits[] · 自动 patch","fontSize":17,"strokeColor":"#991b1b"},
+    {"type":"text","id":"t-flow1-2","x":110,"y":1346,"text":"text / move / scale / rotate /","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow1-3","x":110,"y":1366,"text":"hide / delete / font","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow1-4","x":110,"y":1392,"text":"→ apply.mjs（jsdom）解析 + 改 DOM","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow1-5","x":110,"y":1414,"text":"→ 写回源 HTML","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow1-6","x":110,"y":1444,"text":"⚠ review 模式 proposed:true 自动 skip","fontSize":12,"strokeColor":"#991b1b"},
+
+    {"type":"rectangle","id":"flow2","x":620,"y":1300,"width":480,"height":190,
+      "backgroundColor":"#fff3bf","fillStyle":"solid","strokeColor":"#f59e0b","strokeWidth":3,"roundness":{"type":3}},
+    {"type":"text","id":"t-flow2","x":650,"y":1316,"text":"② annotations[] · 人工对齐","fontSize":17,"strokeColor":"#78350f"},
+    {"type":"text","id":"t-flow2-2","x":650,"y":1346,"text":"区域标注 + 浮动文字 + 参考图","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow2-3","x":650,"y":1372,"text":"→ Claude 列出每条给用户看","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow2-4","x":650,"y":1394,"text":"→ 跟用户对齐：要不要 / 怎么改","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow2-5","x":650,"y":1416,"text":"→ 生成 HTML 片段插入到 section","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow2-6","x":650,"y":1444,"text":"⚠ 不自动 patch（语义模糊）","fontSize":12,"strokeColor":"#991b1b"},
+
+    {"type":"rectangle","id":"flow3","x":1160,"y":1300,"width":480,"height":190,
+      "backgroundColor":"#d0bfff","fillStyle":"solid","strokeColor":"#8b5cf6","strokeWidth":3,"roundness":{"type":3}},
+    {"type":"text","id":"t-flow3","x":1190,"y":1316,"text":"③ feedback narrative · review","fontSize":17,"strokeColor":"#4c1d95"},
+    {"type":"text","id":"t-flow3-2","x":1190,"y":1346,"text":"feedback.global / perSection","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow3-3","x":1190,"y":1372,"text":"叙事性反馈（"P3 偏重，建议..."）","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow3-4","x":1190,"y":1394,"text":"→ Claude 总结给用户","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow3-5","x":1190,"y":1416,"text":"→ 用户决定要不要落实","fontSize":13,"strokeColor":"#475569"},
+    {"type":"text","id":"t-flow3-6","x":1190,"y":1444,"text":"⚠ 不自动 patch（人决策）","fontSize":12,"strokeColor":"#991b1b"},
+
+    {"type":"arrow","id":"a-f1-end","x":320,"y":1490,"points":[[0,0],[530,40]],
+      "strokeColor":"#4c1d95","strokeWidth":2,"endArrowhead":"arrow"},
+    {"type":"arrow","id":"a-f2-end","x":860,"y":1490,"points":[[0,0],[0,40]],
+      "strokeColor":"#4c1d95","strokeWidth":2,"endArrowhead":"arrow"},
+    {"type":"arrow","id":"a-f3-end","x":1400,"y":1490,"points":[[0,0],[-540,40]],
+      "strokeColor":"#4c1d95","strokeWidth":2,"endArrowhead":"arrow"},
+
+    {"type":"rectangle","id":"backup","x":580,"y":1535,"width":540,"height":48,
+      "backgroundColor":"#b2f2bb","fillStyle":"solid","strokeColor":"#22c55e","strokeWidth":2,"roundness":{"type":3}},
+    {"type":"text","id":"t-backup","x":605,"y":1547,"text":"备份 .bak.<timestamp> + 写源 HTML + 报告","fontSize":15,"strokeColor":"#15803d"}
+
+  ],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#fafafa"
+  },
+  "files": {}
+}

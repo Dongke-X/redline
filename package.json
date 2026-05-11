@@ -1,0 +1,58 @@
+{
+  "name": "redline",
+  "version": "0.1.0",
+  "description": "Browser-injected widget + Claude Code skill for end-to-end design feedback. Capture UI edits / annotations / screenshots in browser, agent patches source HTML directly.",
+  "main": "dist/redline.js",
+  "files": [
+    "dist/redline.js",
+    "src",
+    "schema",
+    "skill",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "homepage": "https://github.com/Dongke-X/redline#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dongke-X/redline.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Dongke-X/redline/issues"
+  },
+  "scripts": {
+    "prebuild": "node scripts/sync-version.mjs",
+    "build": "node scripts/sync-version.mjs && esbuild src/index.js --bundle --format=iife --outfile=dist/redline.js --target=chrome120,safari17 --legal-comments=none --minify",
+    "build:dev": "node scripts/sync-version.mjs && esbuild src/index.js --bundle --format=iife --outfile=dist/redline.js --target=chrome120,safari17 --legal-comments=none --sourcemap=inline",
+    "watch": "esbuild src/index.js --bundle --format=iife --outfile=dist/redline.js --target=chrome120,safari17 --legal-comments=none --sourcemap=inline --watch",
+    "build:ext": "npm run build && cp dist/redline.js extension/redline.js && cp dist/redline.js skill/redline.js",
+    "install:skill": "node scripts/install-skill.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "demo": "open examples/standalone.html"
+  },
+  "keywords": [
+    "feedback",
+    "annotation",
+    "design-review",
+    "redline",
+    "claude",
+    "claude-code",
+    "agent",
+    "skill",
+    "editor",
+    "html-patch",
+    "deck",
+    "pdf-export",
+    "html2canvas",
+    "browser-extension",
+    "chrome-extension"
+  ],
+  "author": "dk",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "happy-dom": "^20.9.0",
+    "vitest": "^4.1.5"
+  }
+}

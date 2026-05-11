@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Redline · 给任何网页做视觉反馈</title>
+<meta name="description" content="标注、改写、截图任何网页，一键打包结构化反馈给 AI agent。Chrome 扩展。MIT 开源。">
+<style>
+  :root {
+    --red: #c8242c;
+    --red-deep: #8e1a20;
+    --cream: #faf6f1;
+    --cream-2: #f3ece1;
+    --ink: #1a1815;
+    --ink-soft: #4a463f;
+    --rule: #d8cdba;
+    --shadow: 0 1px 2px rgba(26,24,21,.04), 0 8px 24px rgba(26,24,21,.06);
+
+    --serif: "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", "PingFang SC", "Charter", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: var(--red); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .15s; }
+  a:hover { border-bottom-color: var(--red); }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+
+  /* ─── NAV ───────────────────────────────── */
+  nav.top {
+    padding: 24px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1080px; margin: 0 auto;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 19px; font-weight: 600; letter-spacing: 0; }
+  .brand-mark { width: 22px; height: 22px; }
+  nav.top .links { display: flex; gap: 28px; font-size: 14px; }
+  nav.top .links a { color: var(--ink-soft); border-bottom: none; }
+  nav.top .links a:hover { color: var(--red); }
+
+  /* ─── HERO ──────────────────────────────── */
+  .hero { padding: 80px 0 100px; text-align: center; }
+  .eyebrow {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 0.14em;
+    color: var(--red); font-weight: 600;
+    border: 1px solid var(--red); border-radius: 999px;
+    padding: 4px 12px; margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .hero h1 em { font-style: normal; color: var(--red); }
+  .hero .lede {
+    font-family: var(--serif);
+    font-size: 19px; line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 660px; margin: 0 auto 40px;
+  }
+  .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px; border-radius: 8px; font-size: 15px; font-weight: 500;
+    border: 1px solid var(--ink); transition: all .15s;
+    cursor: pointer; text-decoration: none; border-bottom: 1px solid var(--ink);
+  }
+  .btn-primary { background: var(--ink); color: var(--cream); }
+  .btn-primary:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn-ghost { background: transparent; color: var(--ink); }
+  .btn-ghost:hover { background: var(--ink); color: var(--cream); }
+
+  .hero-sub-en {
+    margin-top: 44px;
+    font-size: 13px; color: var(--ink-soft);
+    font-family: var(--serif); font-style: italic; letter-spacing: 0.02em;
+  }
+
+  /* ─── HERO MOCKUP ───────────────────────── */
+  .hero-mockup {
+    margin: 60px auto 0; max-width: 880px;
+    background: #fff; border-radius: 12px;
+    border: 1px solid var(--rule);
+    box-shadow: 0 2px 12px rgba(26,24,21,.035);
+    overflow: hidden;
+  }
+  .browser-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; background: var(--cream-2);
+    border-bottom: 1px solid var(--rule);
+  }
+  .browser-bar .dot { width: 11px; height: 11px; border-radius: 50%; background: #d6cdb8; }
+  .browser-bar .url {
+    flex: 1; margin: 0 12px; padding: 4px 12px;
+    background: #fff; border-radius: 5px;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-soft);
+  }
+  .browser-bar .ext-icon {
+    width: 22px; height: 22px; flex: 0 0 22px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .browser-bar .ext-icon svg { width: 22px; height: 22px; display: block; }
+  /* SVG 依靠自带 viewBox 算高度（width:100% + height:auto），不依赖父 aspect-ratio
+     —— 打印/PDF 模式下 aspect-ratio 在某些浏览器会失效，导致 SVG 高度坍缩成 0 */
+  .mockup-body { position: relative; background: #fff; line-height: 0; }
+  .mockup-body svg { width: 100%; height: auto; display: block; }
+
+  /* ─── SECTIONS ──────────────────────────── */
+  section { padding: 90px 0; }
+  section + section,
+  header + section { border-top: 1px solid var(--rule); }
+  .section-eyebrow {
+    font-family: var(--serif); font-style: italic;
+    color: var(--red); font-size: 14px; letter-spacing: 0.04em;
+    margin-bottom: 12px;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(26px, 4vw, 36px); font-weight: 500;
+    letter-spacing: 0; line-height: 1.25;
+    margin: 0 0 18px;
+  }
+  .section-lede {
+    font-family: var(--serif);
+    font-size: 17px; color: var(--ink-soft);
+    max-width: 640px; line-height: 1.75;
+  }
+
+  /* ─── PROBLEM ───────────────────────────── */
+  .problem-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 28px; margin-top: 48px;
+  }
+  .problem-card {
+    background: #fff; border: 1px solid var(--rule);
+    border-radius: 10px; padding: 28px;
+  }
+  .problem-card .strike {
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--red-deep); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .problem-card .strike::before {
+    content: ""; width: 18px; height: 1px; background: var(--red-deep);
+  }
+  .problem-card h3 {
+    font-family: var(--serif); font-size: 19px; font-weight: 500;
+    margin: 0 0 10px; line-height: 1.4;
+  }
+  .problem-card p {
+    font-size: 14px; color: var(--ink-soft); margin: 0; line-height: 1.7;
+  }
+
+  /* ─── HOW IT WORKS ──────────────────────── */
+  .how {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; margin-top: 56px;
+  }
+  .step {
+    background: var(--cream-2);
+    border-radius: 12px; padding: 32px 28px;
+  }
+  .step-num {
+    font-family: var(--serif); font-style: italic;
+    font-size: 13px; color: var(--red); margin-bottom: 16px;
+  }
+  .step-illu {
+    width: 100%;
+    background: #fff; border-radius: 8px;
+    margin-bottom: 20px; padding: 18px 0;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--rule);
+  }
+  .step-illu svg { width: 80%; height: auto; }
+  .step h3 {
+    font-family: var(--serif); font-size: 19px; font-weight: 500;
+    margin: 0 0 8px;
+  }
+  .step p { font-size: 14px; color: var(--ink-soft); margin: 0; line-height: 1.7; }
+  .step code { font-family: var(--mono); font-size: 13px; }
+
+  /* ─── CORE SCENARIOS ────────────────────── */
+  .scenarios {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; margin-top: 56px;
+  }
+  .scenario {
+    background: #fff; border: 1px solid var(--rule);
+    border-radius: 12px; padding: 28px; display: flex; flex-direction: column;
+  }
+  .scenario-tag {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--red); letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .scenario h3 {
+    font-family: var(--serif); font-size: 22px; font-weight: 500;
+    margin: 0 0 10px; line-height: 1.35;
+  }
+  .scenario p {
+    font-size: 14px; color: var(--ink-soft); margin: 0 0 20px; line-height: 1.7;
+  }
+  .scenario-mock {
+    background: var(--cream); border-radius: 8px; padding: 16px;
+    margin-top: auto;
+  }
+  .scenario-mock svg { width: 100%; height: auto; display: block; }
+  .scenario-out {
+    margin-top: 12px;
+    font-family: var(--mono); font-size: 11px;
+    line-height: 1.55;
+    background: var(--ink); color: var(--cream-2);
+    padding: 10px 12px; border-radius: 5px;
+    white-space: pre; overflow-x: auto;
+  }
+  .scenario-out .kk { color: #ffb4b8; }
+  .scenario-out .ss { color: #f3ece1; }
+
+  /* ─── 随改随预览 + PDF 导出 ──────────── */
+  .preview-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; margin-top: 56px;
+  }
+  .preview-card {
+    background: #fff; border: 1px solid var(--rule);
+    border-radius: 12px; padding: 28px; display: flex; flex-direction: column;
+  }
+  .preview-card-mock {
+    background: var(--cream); border-radius: 8px;
+    padding: 16px; margin-bottom: 18px;
+  }
+  .preview-card-mock svg { width: 100%; height: auto; display: block; }
+  .preview-hotkey {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    background: var(--ink); color: var(--cream);
+    padding: 4px 10px; border-radius: 999px;
+    margin-bottom: 10px; align-self: flex-start;
+  }
+  .preview-hotkey kbd {
+    font-family: inherit; padding: 0 2px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 3px; font-size: 10px;
+  }
+  .preview-card h3 {
+    font-family: var(--serif); font-size: 19px; font-weight: 500;
+    margin: 0 0 8px;
+  }
+  .preview-card p {
+    font-size: 14px; color: var(--ink-soft); margin: 0; line-height: 1.75;
+  }
+
+  /* ─── FEATURES ──────────────────────────── */
+  .features {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; margin-top: 48px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 12px; overflow: hidden;
+  }
+  .feature {
+    background: var(--cream); padding: 32px 28px;
+  }
+  .feature-icon {
+    width: 36px; height: 36px;
+    color: var(--red); margin-bottom: 18px;
+  }
+  .feature h3 {
+    font-family: var(--serif); font-size: 19px; font-weight: 500;
+    margin: 0 0 8px;
+  }
+  .feature p { font-size: 14px; color: var(--ink-soft); margin: 0; line-height: 1.7; }
+
+  /* ─── USE CASES ─────────────────────────── */
+  .cases {
+    margin-top: 52px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .case {
+    border: 1px solid var(--rule); border-radius: 10px;
+    padding: 28px; background: #fff;
+    display: flex; gap: 20px; align-items: flex-start;
+  }
+  .case-avatar {
+    flex: 0 0 48px; width: 48px; height: 48px;
+    background: var(--red); color: #fff;
+    font-family: var(--serif); font-size: 22px; font-weight: 600;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .case-body h3 {
+    font-family: var(--serif); font-size: 18px; font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .case-body .role {
+    font-family: var(--serif); font-style: italic; font-size: 13px;
+    color: var(--ink-soft); margin-bottom: 10px;
+  }
+  .case-body p { font-size: 14px; color: var(--ink-soft); margin: 0; line-height: 1.7; }
+
+  /* ─── SCHEMA ────────────────────────────── */
+  .schema-block {
+    margin-top: 40px;
+    background: var(--ink); color: var(--cream);
+    border-radius: 12px; overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .schema-tab {
+    background: rgba(255,255,255,0.05);
+    padding: 10px 18px;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--cream-2);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .schema-tab .red-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--red); margin-right: 8px; vertical-align: 2px;
+  }
+  pre.schema {
+    margin: 0; padding: 24px 28px;
+    font-family: var(--mono); font-size: 13px; line-height: 1.65;
+    overflow-x: auto;
+  }
+  .k { color: #ffb4b8; }
+  .s { color: #f3ece1; }
+  .n { color: #ffd58c; }
+  .c { color: #6b6660; font-style: italic; }
+
+  /* ─── CALLOUT ───────────────────────────── */
+  .callout {
+    margin-top: 40px;
+    background: var(--cream-2); border-left: 3px solid var(--red);
+    padding: 22px 26px; border-radius: 4px;
+    font-family: var(--serif); font-size: 17px; color: var(--ink); line-height: 1.7;
+  }
+  .callout small { display: block; margin-top: 8px; font-family: var(--sans); font-size: 12px; color: var(--ink-soft); }
+
+  /* ─── FOOTER ────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 50px 32px 60px;
+    background: var(--cream-2);
+  }
+  footer .wrap {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 32px;
+  }
+  footer .brand-block { max-width: 280px; }
+  footer .brand-block p { font-size: 13px; color: var(--ink-soft); margin: 12px 0 0; line-height: 1.7; }
+  footer .col h4 {
+    font-family: var(--serif); font-style: italic; font-size: 13px;
+    color: var(--ink-soft); margin: 0 0 14px;
+  }
+  footer .col ul { list-style: none; padding: 0; margin: 0; }
+  footer .col li { margin-bottom: 8px; }
+  footer .col a { color: var(--ink); border-bottom: none; font-size: 14px; }
+  footer .col a:hover { color: var(--red); }
+  footer .legal {
+    margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--rule);
+    font-size: 12px; color: var(--ink-soft);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+
+  /* ─── RESPONSIVE ────────────────────────── */
+  @media (max-width: 880px) {
+    .problem-grid, .how, .scenarios, .features, .cases { grid-template-columns: 1fr; }
+    .features { border-radius: 12px; }
+    nav.top .links { display: none; }
+    .hero { padding: 50px 0 60px; }
+    section { padding: 60px 0; }
+  }
+
+  /* ─── 打印 / PDF ────────────────────────── */
+  @media print {
+    body { background: #fff; }
+    /* 强制保留品牌色 / 深色块 */
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    /* 不在卡片中间断页 */
+    .problem-card, .step, .scenario, .case, .feature, .schema-block, .hero-mockup {
+      break-inside: avoid;
+    }
+    nav.top .links { display: none; }
+    .cta-row { display: none; }   /* PDF 里按钮无意义 */
+  }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+      <rect width="128" height="128" rx="28" fill="#f5f4ed"/>
+      <text x="64" y="116" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="148" font-weight="700" fill="#141413">R</text>
+      <rect x="6" y="64" width="116" height="20" rx="10" fill="#dc3c3c"/>
+    </svg>
+    Redline
+  </div>
+  <div class="links">
+    <a href="#scenarios">三个场景</a>
+    <a href="#preview">使用说明</a>
+    <a href="#skill">Skill</a>
+    <a href="https://github.com/Dongke-X/redline">GitHub</a>
+    <a href="./" style="font-family:var(--serif);font-style:italic">EN</a>
+  </div>
+</nav>
+
+<!-- ──────────── HERO ──────────── -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Chrome 扩展 · MIT · v0.1.0</span>
+    <h1>把<em>任何网页</em><br>变成可标注的画布。</h1>
+    <p class="lede">在浏览器里改文字、画标注、贴截图，一键打包结构化反馈，丢给 AI agent 直接处理。不用 Slack 截图、不用录 Loom、不用解释"那个第三排的按钮"。</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/Dongke-X/redline#install" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M21.17 8H12M3.95 6.06l4.5 7.79M10.88 21.94l4.5-7.79"/></svg>
+        安装开发版 <span style="opacity:.55; font-size:11px; margin-left:4px;">· 应用商店很快上架</span>
+      </a>
+      <a class="btn btn-ghost" href="https://github.com/Dongke-X/redline" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.95.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39.98 0 1.97.13 2.89.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.67.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+        GitHub
+      </a>
+    </div>
+    <div class="hero-sub-en">Visual feedback as structured data — ready for agents to process directly.</div>
+  </div>
+
+  <div class="hero-mockup">
+    <div class="browser-bar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <div class="url">file:///~/agent-out/getting-started.html</div>
+      <div class="ext-icon">
+        <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+          <rect width="128" height="128" rx="28" fill="#f5f4ed"/>
+          <text x="64" y="116" text-anchor="middle" font-family="Georgia, serif" font-size="148" font-weight="700" fill="#141413">R</text>
+          <rect x="6" y="64" width="116" height="20" rx="10" fill="#dc3c3c"/>
+        </svg>
+      </div>
+    </div>
+    <div class="mockup-body">
+      <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+        <rect width="800" height="450" fill="#fff"/>
+        <rect x="0" y="0" width="800" height="44" fill="#f7f5f0"/>
+        <rect x="32" y="16" width="80" height="12" rx="2" fill="#d8cdba"/>
+        <rect x="660" y="16" width="40" height="12" rx="2" fill="#d8cdba"/>
+        <rect x="710" y="16" width="40" height="12" rx="2" fill="#d8cdba"/>
+
+        <!-- 标题（已被改写后） -->
+        <text x="60" y="118" font-family="Songti SC, Georgia, serif" font-size="32" font-weight="500" fill="#1a1815">从这里开始 · 3 分钟</text>
+        <text x="60" y="148" font-family="PingFang SC, system-ui" font-size="13" fill="#999">你刚装好的系统的快速上手指南。</text>
+
+        <!-- 内联编辑提示药丸 -->
+        <g transform="translate(420, 95)">
+          <rect width="160" height="26" rx="13" fill="#1a1815"/>
+          <circle cx="14" cy="13" r="3.5" fill="#c8242c"/>
+          <text x="26" y="17" font-family="PingFang SC, system-ui" font-size="11" fill="#cfc7b8">已编辑</text>
+          <text x="58" y="17" font-family="PingFang SC, system-ui" font-size="11" fill="#faf6f1" text-decoration="line-through" opacity="0.7">入门指南</text>
+        </g>
+
+        <!-- 区域标注（圈住正文段落） -->
+        <rect x="60" y="200" width="280" height="170" fill="rgba(200,36,44,0.05)" stroke="#c8242c" stroke-width="1.5"/>
+        <circle cx="60" cy="200" r="4" fill="#fff" stroke="#c8242c" stroke-width="1.5"/>
+        <circle cx="340" cy="200" r="4" fill="#fff" stroke="#c8242c" stroke-width="1.5"/>
+        <circle cx="60" cy="370" r="4" fill="#fff" stroke="#c8242c" stroke-width="1.5"/>
+        <circle cx="340" cy="370" r="4" fill="#fff" stroke="#c8242c" stroke-width="1.5"/>
+        <g transform="translate(60, 180)">
+          <rect width="78" height="20" rx="3" fill="#c8242c"/>
+          <g transform="translate(10, 5)" stroke="#fff" stroke-width="1.5" fill="none">
+            <path d="M0 4 a4 4 0 0 1 4 -4 h6 a4 4 0 0 1 4 4 v3 a4 4 0 0 1 -4 4 h-3 l-3 3 v-3 h-1 a3 3 0 0 1 -3 -3 z"/>
+          </g>
+          <g transform="translate(34, 5)" stroke="#fff" stroke-width="1.5" fill="none">
+            <rect x="0" y="2" width="14" height="9" rx="1.5"/>
+            <path d="M5 2 l1 -1 h2 l1 1"/>
+            <circle cx="7" cy="6.5" r="2"/>
+          </g>
+          <g transform="translate(58, 5)" stroke="#fff" stroke-width="1.5" fill="none">
+            <path d="M0 0 l10 10 M10 0 l-10 10"/>
+          </g>
+        </g>
+        <!-- 区域内 mock 段落 -->
+        <rect x="80" y="220" width="240" height="6" rx="1" fill="#e8dcc4"/>
+        <rect x="80" y="232" width="220" height="6" rx="1" fill="#e8dcc4"/>
+        <rect x="80" y="244" width="180" height="6" rx="1" fill="#e8dcc4"/>
+        <rect x="80" y="266" width="240" height="6" rx="1" fill="#e8dcc4"/>
+        <rect x="80" y="278" width="200" height="6" rx="1" fill="#e8dcc4"/>
+        <rect x="80" y="290" width="220" height="6" rx="1" fill="#e8dcc4"/>
+        <rect x="80" y="302" width="160" height="6" rx="1" fill="#e8dcc4"/>
+        <rect x="80" y="324" width="240" height="6" rx="1" fill="#e8dcc4"/>
+        <rect x="80" y="336" width="100" height="6" rx="1" fill="#e8dcc4"/>
+
+        <!-- 引线 + 侧边备注卡 -->
+        <line x1="340" y1="285" x2="380" y2="285" stroke="#c8242c" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <g transform="translate(380, 230)">
+          <rect width="220" height="120" rx="8" fill="#fff" stroke="#c8242c" stroke-width="1"/>
+          <line x1="0" y1="0" x2="0" y2="120" stroke="#c8242c" stroke-width="3"/>
+          <text x="14" y="28" font-family="Songti SC, Georgia, serif" font-size="13" font-weight="500" fill="#1a1815">这段把重点埋</text>
+          <text x="14" y="46" font-family="Songti SC, Georgia, serif" font-size="13" font-weight="500" fill="#1a1815">在最后了。</text>
+          <text x="14" y="74" font-family="PingFang SC, system-ui" font-size="11" fill="#666">把第三句挪到段首，</text>
+          <text x="14" y="90" font-family="PingFang SC, system-ui" font-size="11" fill="#666">那个比喻删了。</text>
+          <rect x="14" y="100" width="60" height="12" rx="6" fill="#faf6f1"/>
+          <text x="22" y="109" font-family="PingFang SC, system-ui" font-size="9" fill="#c8242c" font-weight="600">优先级 ↑</text>
+        </g>
+
+        <!-- 反馈面板 -->
+        <g transform="translate(620, 240)">
+          <rect width="160" height="180" rx="12" fill="#1a1815"/>
+          <text x="16" y="28" font-family="Songti SC, Georgia, serif" font-size="13" fill="#faf6f1">反馈</text>
+          <text x="148" y="28" font-family="system-ui" font-size="14" fill="#faf6f1" opacity="0.4" text-anchor="end">×</text>
+          <rect x="14" y="44" width="132" height="74" rx="5" fill="#2a2722"/>
+          <text x="24" y="64" font-family="PingFang SC, system-ui" font-size="10" fill="#bbb">标题改写 + 2 处</text>
+          <text x="24" y="80" font-family="PingFang SC, system-ui" font-size="10" fill="#bbb">段落调整</text>
+          <text x="24" y="100" font-family="PingFang SC, system-ui" font-size="10" fill="#777">附件：1 张截图</text>
+          <rect x="14" y="132" width="132" height="34" rx="6" fill="#c8242c"/>
+          <text x="80" y="153" font-family="PingFang SC, system-ui" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">保存</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<!-- ──────────── 三个核心场景 ──────────── -->
+<section id="scenarios">
+  <div class="wrap">
+    <div class="section-eyebrow">— 三个核心场景</div>
+    <h2>三种 HTML，一种 review 方式。</h2>
+    <p class="section-lede">幻灯片、文档、网页——Redline 三种都能注入。<strong>随改随预览、改完导 PDF。</strong>同一套工作流、同一份导出 schema。</p>
+
+    <div class="scenarios">
+      <!-- 场景 1: HTML 幻灯片 -->
+      <div class="scenario">
+        <div class="scenario-tag">01 · 幻灯片</div>
+        <h3>HTML 幻灯片</h3>
+        <p>Reveal.js、deck-stage、纯 HTML slides——Redline 自动识别每页，按页编辑、按元素改写。导出时每个改动都标注归属第几页。</p>
+        <div class="scenario-mock">
+          <svg viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="14" width="180" height="76" rx="6" fill="#fff" stroke="#d8cdba"/>
+            <text x="22" y="34" font-family="Songti SC, Georgia, serif" font-size="13" font-weight="500" fill="#1a1815">Q3 数据指标</text>
+            <rect x="22" y="44" width="100" height="6" rx="1" fill="#f3ece1"/>
+            <rect x="22" y="56" width="140" height="6" rx="1" fill="#f3ece1"/>
+            <rect x="22" y="68" width="80" height="6" rx="1" fill="#f3ece1"/>
+            <rect x="18" y="22" width="84" height="18" fill="none" stroke="#c8242c" stroke-width="1.2" stroke-dasharray="3 2"/>
+            <g transform="translate(22, 80)">
+              <circle cx="0" cy="0" r="2" fill="#d8cdba"/>
+              <circle cx="6" cy="0" r="2" fill="#d8cdba"/>
+              <circle cx="12" cy="0" r="2" fill="#c8242c"/>
+              <circle cx="18" cy="0" r="2" fill="#d8cdba"/>
+              <circle cx="24" cy="0" r="2" fill="#d8cdba"/>
+              <text x="32" y="3" font-family="PingFang SC, system-ui" font-size="7" fill="#888">3 / 7</text>
+            </g>
+            <line x1="190" y1="32" x2="210" y2="32" stroke="#c8242c" stroke-width="1.3" stroke-dasharray="2 2"/>
+            <rect x="210" y="14" width="100" height="76" rx="5" fill="#fff" stroke="#c8242c" stroke-width="1"/>
+            <line x1="210" y1="14" x2="210" y2="90" stroke="#c8242c" stroke-width="2.5"/>
+            <text x="218" y="30" font-family="PingFang SC, system-ui" font-size="8" fill="#888">第 3 页</text>
+            <text x="218" y="46" font-family="Songti SC, Georgia, serif" font-size="10" font-weight="500" fill="#1a1815">"Q3 数据指标" →</text>
+            <text x="218" y="60" font-family="Songti SC, Georgia, serif" font-size="10" font-weight="500" fill="#1a1815">"Q3 业务结果"</text>
+            <text x="218" y="78" font-family="PingFang SC, system-ui" font-size="8" fill="#c8242c" font-style="italic">本页还有 2 处改动</text>
+          </svg>
+        </div>
+        <div class="scenario-out"><span class="kk">"section"</span>: <span class="ss">"slide-3"</span>,
+<span class="kk">"op"</span>: <span class="ss">"text"</span>,
+<span class="kk">"before"</span>: <span class="ss">"Q3 数据指标"</span>,
+<span class="kk">"after"</span>:  <span class="ss">"Q3 业务结果"</span></div>
+      </div>
+
+      <!-- 场景 2: HTML 文档 -->
+      <div class="scenario">
+        <div class="scenario-tag">02 · 文档</div>
+        <h3>HTML 报告 / 文档</h3>
+        <p>agent 写的长文档——RFC、白皮书、设计 brief。按章节标注、按段落批注、标出前后矛盾。agent 端拿到的是按章节归类的反馈。</p>
+        <div class="scenario-mock">
+          <svg viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="10" width="200" height="84" rx="3" fill="#fff" stroke="#d8cdba"/>
+            <text x="32" y="26" font-family="Songti SC, Georgia, serif" font-size="11" font-weight="500" fill="#1a1815">3.2 系统架构</text>
+            <rect x="32" y="32" width="170" height="3" fill="#e8dcc4"/>
+            <rect x="32" y="40" width="160" height="3" fill="#e8dcc4"/>
+            <rect x="32" y="48" width="100" height="3" fill="#e8dcc4"/>
+            <rect x="32" y="60" width="170" height="3" fill="#e8dcc4"/>
+            <rect x="32" y="68" width="120" height="3" fill="#e8dcc4"/>
+            <rect x="32" y="80" width="80" height="3" fill="#e8dcc4"/>
+            <circle cx="216" cy="42" r="6" fill="#c8242c"/>
+            <text x="216" y="45" font-family="system-ui" font-size="8" font-weight="600" fill="#fff" text-anchor="middle">1</text>
+            <circle cx="216" cy="64" r="6" fill="#c8242c"/>
+            <text x="216" y="67" font-family="system-ui" font-size="8" font-weight="600" fill="#fff" text-anchor="middle">2</text>
+            <g transform="translate(232, 14)">
+              <rect width="78" height="38" rx="4" fill="#fff" stroke="#c8242c" stroke-width="1"/>
+              <line x1="0" y1="0" x2="0" y2="38" stroke="#c8242c" stroke-width="2"/>
+              <text x="6" y="14" font-family="PingFang SC, system-ui" font-size="7" fill="#666">§3.2</text>
+              <text x="6" y="26" font-family="Songti SC, Georgia, serif" font-size="9" fill="#1a1815">补一个</text>
+              <text x="6" y="34" font-family="Songti SC, Georgia, serif" font-size="9" fill="#1a1815">引用来源</text>
+            </g>
+            <g transform="translate(232, 56)">
+              <rect width="78" height="38" rx="4" fill="#fff" stroke="#c8242c" stroke-width="1"/>
+              <line x1="0" y1="0" x2="0" y2="38" stroke="#c8242c" stroke-width="2"/>
+              <text x="6" y="14" font-family="PingFang SC, system-ui" font-size="7" fill="#666">§3.2</text>
+              <text x="6" y="26" font-family="Songti SC, Georgia, serif" font-size="9" fill="#1a1815">术语太多</text>
+              <text x="6" y="34" font-family="Songti SC, Georgia, serif" font-size="9" fill="#1a1815">说人话</text>
+            </g>
+          </svg>
+        </div>
+        <div class="scenario-out"><span class="kk">"section"</span>: <span class="ss">"3.2"</span>,
+<span class="kk">"perSection"</span>: [
+  { note: <span class="ss">"补引用来源"</span> },
+  { note: <span class="ss">"术语太多，说人话"</span> }
+]</div>
+      </div>
+
+      <!-- 场景 3: HTML 网页 -->
+      <div class="scenario">
+        <div class="scenario-tag">03 · 网页</div>
+        <h3>HTML 网页 / Landing / UI</h3>
+        <p>最丰富的场景：agent 写的 landing、dashboard、原型。改文案、拖元素、画区域、贴参考截图——所有动作打包成一个 ZIP 给 agent。</p>
+        <div class="scenario-mock">
+          <svg viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="300" height="84" rx="6" fill="#fff" stroke="#d8cdba"/>
+            <rect x="10" y="10" width="300" height="14" rx="6" fill="#f3ece1"/>
+            <circle cx="20" cy="17" r="2" fill="#d6cdb8"/>
+            <circle cx="28" cy="17" r="2" fill="#d6cdb8"/>
+            <circle cx="36" cy="17" r="2" fill="#d6cdb8"/>
+            <text x="22" y="40" font-family="Songti SC, Georgia, serif" font-size="12" font-weight="500" fill="#1a1815">从这里开始 · 3 分钟</text>
+            <rect x="18" y="30" width="120" height="14" fill="none" stroke="#c8242c" stroke-width="1.2" stroke-dasharray="3 2"/>
+            <rect x="22" y="48" width="60" height="6" rx="1" fill="#e8dcc4"/>
+            <rect x="22" y="62" width="100" height="24" fill="rgba(200,36,44,0.05)" stroke="#c8242c" stroke-width="1.2"/>
+            <circle cx="22" cy="62" r="2.5" fill="#fff" stroke="#c8242c" stroke-width="1.2"/>
+            <circle cx="122" cy="86" r="2.5" fill="#fff" stroke="#c8242c" stroke-width="1.2"/>
+            <g transform="translate(140, 32)">
+              <rect width="60" height="56" rx="3" fill="#3a3530"/>
+              <g transform="translate(20, 18)" stroke="#c8242c" stroke-width="1.5" fill="none">
+                <rect x="0" y="2" width="16" height="10" rx="1.5"/>
+                <path d="M5 2 l1 -1 h2 l1 1"/>
+                <circle cx="8" cy="7.5" r="2"/>
+              </g>
+              <text x="30" y="44" font-family="PingFang SC, system-ui" font-size="6" fill="#c8242c" text-anchor="middle">截图附件</text>
+            </g>
+            <g transform="translate(212, 32)">
+              <rect width="86" height="56" rx="5" fill="#1a1815"/>
+              <text x="8" y="14" font-family="Songti SC, Georgia, serif" font-size="8" fill="#faf6f1">反馈</text>
+              <line x1="8" y1="20" x2="78" y2="20" stroke="#3a3530"/>
+              <text x="8" y="32" font-family="PingFang SC, system-ui" font-size="7" fill="#999">3 处改写</text>
+              <text x="8" y="42" font-family="PingFang SC, system-ui" font-size="7" fill="#999">2 处标注</text>
+              <text x="8" y="52" font-family="PingFang SC, system-ui" font-size="7" fill="#999">1 张截图</text>
+            </g>
+          </svg>
+        </div>
+        <div class="scenario-out"><span class="kk">"edits"</span>: [ … 3 ],
+<span class="kk">"annotations"</span>: [ … 2 ],
+<span class="kk">"attachments"</span>: [ … 1 ]</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── 随改随预览 + PDF 导出 ──────────── -->
+<section id="preview">
+  <div class="wrap">
+    <div class="section-eyebrow">— 不只是标注</div>
+    <h2>随改随预览。一键导出 PDF。</h2>
+    <p class="section-lede">Redline 改的是真实 DOM，每改一下立刻看到。</p>
+
+    <div class="preview-grid">
+      <div class="preview-card">
+        <div class="preview-card-mock">
+          <svg viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="14" y="34" width="128" height="32" rx="5" fill="#fff" stroke="#d8cdba"/>
+            <text x="22" y="55" font-family="PingFang SC, system-ui" font-size="11" fill="#1a1815">直接打字改</text>
+            <line x1="124" y1="44" x2="124" y2="58" stroke="#c8242c" stroke-width="1.6"/>
+            <path d="M152 50 L186 50" stroke="#c8242c" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <path d="M180 45 L186 50 L180 55" stroke="#c8242c" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <g transform="translate(196, 24)">
+              <text x="0" y="32" font-family="Songti SC, Georgia, serif" font-size="22" font-weight="500" fill="#1a1815">新标题</text>
+              <line x1="0" y1="42" x2="60" y2="42" stroke="#c8242c" stroke-width="1.5"/>
+            </g>
+            <g transform="translate(124, 76)">
+              <rect width="64" height="16" rx="8" fill="#c8242c"/>
+              <text x="32" y="11" font-family="PingFang SC, system-ui" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">即时</text>
+            </g>
+          </svg>
+        </div>
+        <h3>所见即所得</h3>
+        <p>不用等"重新生成"。打字 → 立刻看到。拖元素 → 实时跟手。Save → 跟你看到的一模一样。同一份 DOM，同一份渲染。</p>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-card-mock">
+          <svg viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="92" y="8" width="136" height="84" rx="3" fill="#fff" stroke="#d8cdba"/>
+            <text x="104" y="26" font-family="Songti SC, Georgia, serif" font-size="11" font-weight="500" fill="#1a1815">Q3 业务结果</text>
+            <rect x="104" y="34" width="116" height="3" fill="#e8dcc4"/>
+            <rect x="104" y="42" width="98" height="3" fill="#e8dcc4"/>
+            <rect x="104" y="50" width="116" height="3" fill="#e8dcc4"/>
+            <rect x="104" y="58" width="80" height="3" fill="#e8dcc4"/>
+            <rect x="104" y="66" width="116" height="3" fill="#e8dcc4"/>
+            <rect x="104" y="74" width="50" height="3" fill="#e8dcc4"/>
+            <rect x="104" y="48" width="50" height="8" fill="rgba(0, 100, 200, 0.28)"/>
+            <text x="100" y="58" font-family="system-ui" font-size="14" font-weight="600" fill="#0064c8">|</text>
+            <g transform="translate(20, 36)">
+              <rect width="56" height="32" rx="6" fill="#1a1815"/>
+              <text x="28" y="14" font-family="PingFang SC, system-ui" font-size="7" fill="#cfc7b8" text-anchor="middle">矢量</text>
+              <text x="28" y="26" font-family="Georgia, serif" font-size="13" font-weight="700" fill="#faf6f1" text-anchor="middle">PDF</text>
+            </g>
+            <g transform="translate(244, 28)">
+              <rect width="48" height="14" rx="3" fill="#c8242c"/>
+              <text x="24" y="10" font-family="PingFang SC, system-ui" font-size="8" font-weight="600" fill="#fff" text-anchor="middle">可选中</text>
+            </g>
+          </svg>
+        </div>
+        <div class="preview-hotkey"><kbd>Space</kbd> + <kbd>P</kbd></div>
+        <h3>矢量 PDF</h3>
+        <p>文字可选中复制，任意缩放都清晰，链接保留可点。给客户、打印、邮件附件都能用——不是一张死截图。</p>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-card-mock">
+          <svg viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="124" y="4" width="64" height="92" rx="2" fill="#fff" stroke="#d8cdba"/>
+            <text x="130" y="14" font-family="Songti SC, Georgia, serif" font-size="6" font-weight="600" fill="#1a1815">Hero</text>
+            <rect x="130" y="17" width="52" height="2" fill="#e8dcc4"/>
+            <rect x="130" y="21" width="40" height="2" fill="#e8dcc4"/>
+            <text x="130" y="32" font-family="Songti SC, Georgia, serif" font-size="6" font-weight="600" fill="#1a1815">第 1 章</text>
+            <rect x="130" y="35" width="52" height="2" fill="#e8dcc4"/>
+            <rect x="130" y="39" width="46" height="2" fill="#e8dcc4"/>
+            <text x="130" y="50" font-family="Songti SC, Georgia, serif" font-size="6" font-weight="600" fill="#1a1815">第 2 章</text>
+            <rect x="130" y="53" width="52" height="2" fill="#e8dcc4"/>
+            <rect x="130" y="57" width="36" height="2" fill="#e8dcc4"/>
+            <text x="130" y="68" font-family="Songti SC, Georgia, serif" font-size="6" font-weight="600" fill="#1a1815">第 3 章</text>
+            <rect x="130" y="71" width="52" height="2" fill="#e8dcc4"/>
+            <rect x="130" y="75" width="42" height="2" fill="#e8dcc4"/>
+            <rect x="130" y="79" width="46" height="2" fill="#e8dcc4"/>
+            <text x="130" y="90" font-family="Songti SC, Georgia, serif" font-size="6" font-style="italic" fill="#888">— Footer</text>
+            <text x="200" y="52" font-family="Songti SC, Georgia, serif" font-style="italic" font-size="9" fill="#999">vs.</text>
+            <g transform="translate(220, 16)">
+              <rect width="40" height="22" rx="2" fill="#fff" stroke="#d8cdba"/>
+              <rect y="28" width="40" height="22" rx="2" fill="#fff" stroke="#d8cdba"/>
+              <rect y="56" width="40" height="22" rx="2" fill="#fff" stroke="#d8cdba"/>
+              <text x="20" y="14" font-family="PingFang SC, system-ui" font-size="6" fill="#aaa" text-anchor="middle">第 1 页</text>
+              <text x="20" y="42" font-family="PingFang SC, system-ui" font-size="6" fill="#aaa" text-anchor="middle">第 2 页</text>
+              <text x="20" y="70" font-family="PingFang SC, system-ui" font-size="6" fill="#aaa" text-anchor="middle">第 3 页</text>
+            </g>
+            <text x="155" y="100" font-family="Songti SC, Georgia, serif" font-style="italic" font-size="7" fill="#c8242c" text-anchor="middle">一张长图</text>
+          </svg>
+        </div>
+        <div class="preview-hotkey"><kbd>Shift</kbd> + <kbd>P</kbd></div>
+        <h3>长截图 PDF</h3>
+        <p>整个页面装一张超长图里。不分页、不在尴尬的地方断开。最适合展示完整 landing 或者一个 deck 从头到尾的全貌。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── PROBLEM ──────────── -->
+<section id="problem">
+  <div class="wrap">
+    <div class="section-eyebrow">— 问题</div>
+    <h2>Agent 写完 HTML，<br>你怎么<em>告诉它哪里不对</em>？</h2>
+    <p class="section-lede">跟 Claude / Codex / Gemini 协作生成 HTML 幻灯片、文档、网页都很爽——直到你想反馈"第 4 页那句要改、第 3 张卡片颜色不对、那段 padding 多了 4px"。</p>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="strike">发截图</div>
+        <h3>Agent 看的是像素，不是 DOM</h3>
+        <p>你贴张 PNG 说"这个标题改一下"，agent 盯着图看不出 selector，只能 grep 猜在哪个文件、哪段 HTML。猜对就猜对，猜错就重来。</p>
+      </div>
+      <div class="problem-card">
+        <div class="strike">复制 outerHTML</div>
+        <h3>你成了人肉 <code>querySelector</code></h3>
+        <p>打开 DevTools 找元素、拷 <code>outerHTML</code>、粘到对话窗、再描述要改成什么。一处这样、七处也这样。一页有 12 个改动？打字打到天亮。</p>
+      </div>
+      <div class="problem-card">
+        <div class="strike">打字描述</div>
+        <h3>"第 3 页 bullet 2、第 5 页 hero 文案……"</h3>
+        <p>写 50 行 prompt 把所有改动罗列一遍。agent 漏一个、改错一个，下一轮你又写 50 行清单去修。每一轮都是新负担。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── HOW IT WORKS ──────────── -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-eyebrow">— 工作原理</div>
+    <h2>三步走，不用注册。</h2>
+    <p class="section-lede">点工具栏图标，标注 / 改写，下载 ZIP。Agent 读 JSON，把改动应用到源码里。</p>
+
+    <div class="how">
+      <div class="step">
+        <div class="step-num">第 01 步</div>
+        <div class="step-illu">
+          <svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
+            <!-- 路径 A：skill -->
+            <g transform="translate(8, 8)">
+              <rect width="92" height="44" rx="6" fill="#1a1815"/>
+              <text x="46" y="16" font-family="PingFang SC, system-ui" font-size="8" fill="#cfc7b8" text-anchor="middle">在 Claude Code</text>
+              <text x="46" y="32" font-family="ui-monospace, monospace" font-size="8" fill="#ffb4b8" text-anchor="middle">"prep this html"</text>
+            </g>
+            <text x="54" y="64" font-family="PingFang SC, system-ui" font-size="8" fill="#888" text-anchor="middle">SKILL · 自动注入</text>
+
+            <!-- 路径 B：扩展 -->
+            <g transform="translate(120, 8)">
+              <rect width="92" height="44" rx="6" fill="#fff" stroke="#d8cdba"/>
+              <rect x="6" y="6" width="80" height="10" rx="2" fill="#f3ece1"/>
+              <rect x="74" y="8" width="8" height="6" rx="1" fill="#c8242c"/>
+              <circle cx="46" cy="32" r="6" fill="#c8242c"/>
+              <path d="M46 28 v8 M42 32 h8" stroke="#fff" stroke-width="1.5"/>
+            </g>
+            <text x="166" y="64" font-family="PingFang SC, system-ui" font-size="8" fill="#888" text-anchor="middle">扩展 · 点工具栏</text>
+
+            <!-- 汇合箭头 -->
+            <path d="M54 70 L54 86 L100 102" stroke="#c8242c" stroke-width="1.3" fill="none" stroke-dasharray="2 2"/>
+            <path d="M166 70 L166 86 L120 102" stroke="#c8242c" stroke-width="1.3" fill="none" stroke-dasharray="2 2"/>
+
+            <!-- 结果：编辑器在页面上 -->
+            <rect x="48" y="100" width="124" height="40" rx="6" fill="#fff" stroke="#c8242c" stroke-width="1.5"/>
+            <text x="110" y="118" font-family="Songti SC, Georgia, serif" font-size="11" font-weight="500" fill="#1a1815" text-anchor="middle">编辑器装上页面</text>
+            <text x="110" y="132" font-family="PingFang SC, system-ui" font-size="8" fill="#888" text-anchor="middle">F · 反馈面板   ·   E · 编辑模式</text>
+          </svg>
+        </div>
+        <h3>让编辑器进到页面</h3>
+        <p>两条路径都可以：对 Claude 说 <code style="font-family:var(--mono);font-size:12px">"prep this html"</code> 让 skill 自动注入；或者装了 Chrome 扩展的话，直接点工具栏图标。</p>
+      </div>
+
+      <div class="step">
+        <div class="step-num">第 02 步</div>
+        <div class="step-illu">
+          <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="30" width="160" height="80" rx="6" fill="#fff" stroke="#d8cdba"/>
+            <rect x="32" y="42" width="80" height="10" rx="2" fill="#1a1815"/>
+            <rect x="32" y="58" width="120" height="6" rx="2" fill="#d8cdba"/>
+            <rect x="32" y="70" width="100" height="6" rx="2" fill="#d8cdba"/>
+            <rect x="28" y="38" width="88" height="18" fill="none" stroke="#c8242c" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <circle cx="120" cy="86" r="9" fill="#c8242c"/>
+            <text x="120" y="90" font-family="system-ui" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">A</text>
+            <rect x="40" y="120" width="120" height="20" rx="4" fill="#f3ece1"/>
+            <text x="100" y="134" font-family="Songti SC, Georgia, serif" font-style="italic" font-size="10" fill="#1a1815" text-anchor="middle">改字、画框、贴图</text>
+          </svg>
+        </div>
+        <h3>标注一遍</h3>
+        <p>改文字、画框、贴截图——三种用法下一区分别详解。</p>
+      </div>
+
+      <div class="step">
+        <div class="step-num">第 03 步</div>
+        <div class="step-illu">
+          <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+            <rect x="40" y="20" width="120" height="90" rx="6" fill="#1a1815"/>
+            <text x="100" y="48" font-family="Songti SC, Georgia, serif" font-size="12" fill="#faf6f1" text-anchor="middle">session.zip</text>
+            <rect x="56" y="58" width="88" height="6" rx="1" fill="#c8242c"/>
+            <rect x="56" y="68" width="60" height="4" rx="1" fill="#888"/>
+            <rect x="56" y="76" width="74" height="4" rx="1" fill="#888"/>
+            <rect x="56" y="84" width="50" height="4" rx="1" fill="#888"/>
+            <path d="M100 112 v18" stroke="#c8242c" stroke-width="2" stroke-linecap="round"/>
+            <path d="M92 124 l8 8 l8 -8" stroke="#c8242c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="100" y="146" font-family="PingFang SC, system-ui" font-size="10" fill="#1a1815" text-anchor="middle">JSON · MD · 图片</text>
+          </svg>
+        </div>
+        <h3>下载 ZIP</h3>
+        <p>一个文件搞定：<code>session.json</code> + Markdown 摘要 + 所有截图。丢给 Claude / Codex 让它改。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ──────────── FEATURES ──────────── -->
+<section id="features">
+  <div class="wrap">
+    <div class="section-eyebrow">— 功能</div>
+    <h2>为 AI 协作时代而设计。</h2>
+    <p class="section-lede">每个改动都带稳定的 CSS selector。Agent 不用瞎猜改动该落在哪。</p>
+
+    <div class="features">
+      <div class="feature">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M11 4H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <h3>原地改写文字</h3>
+        <p>点任何标题、按钮、段落，直接打字。改前 / 改后 都打包给 agent。</p>
+      </div>
+      <div class="feature">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 2"/><circle cx="17" cy="7" r="2.5" fill="currentColor"/></svg>
+        <h3>区域标注</h3>
+        <p>拖个框圈住任何东西，加备注。自动编号、按顺序、可导出。</p>
+      </div>
+      <div class="feature">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M23 19V8a2 2 0 0 0-2-2h-3.17l-1.84-2H9.01L7.17 6H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h17a2 2 0 0 0 2-2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <h3>截图捕获</h3>
+        <p>直接粘贴截图到反馈面板。导出 ZIP 时变成单独的图片文件。</p>
+      </div>
+      <div class="feature">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <h3>CSS Selector 映射</h3>
+        <p>每个改动都带稳定 selector。Agent 直接改源码，不用当侦探。</p>
+      </div>
+      <div class="feature">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>
+        <h3>源码感知导出</h3>
+        <p>JSON + Markdown + 图片文件。schema 文档化、稳定。Claude Code Skill 已对接。</p>
+      </div>
+      <div class="feature">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <h3>本地优先 · 隐私</h3>
+        <p>没有服务器、没有埋点、没有第三方 SDK。所有数据都留在你浏览器里。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── USE CASES ─────────── -->
+<section id="cases">
+  <div class="wrap">
+    <div class="section-eyebrow">— 适合谁</div>
+    <h2>给在线产品提反馈的所有人。</h2>
+
+    <div class="cases">
+      <div class="case">
+        <div class="case-avatar">创</div>
+        <div class="case-body">
+          <h3>vibe-coding 的创始人</h3>
+          <div class="role">— 迭代 agent 给你写的 landing</div>
+          <p>你不会写代码，但你看得出哪里别扭。在浏览器里标一遍，agent 重写一轮。三轮就能上线。</p>
+        </div>
+      </div>
+      <div class="case">
+        <div class="case-avatar">演</div>
+        <div class="case-body">
+          <h3>用 AI 出 deck 的人</h3>
+          <div class="role">— 修改 agent 生成的 HTML 幻灯片</div>
+          <p>Claude 给你写了 12 页 pitch deck。第 4 页有 typo、第 7 页排版乱。走一遍标完，把 ZIP 丢回去，搞定。</p>
+        </div>
+      </div>
+      <div class="case">
+        <div class="case-avatar">写</div>
+        <div class="case-body">
+          <h3>长文档作者</h3>
+          <div class="role">— 审 AI 写的报告 / RFC / 白皮书</div>
+          <p>批注直接在 HTML 渲染版上，不用导出到 Google Doc 然后忘了同步回来。按章节归类的反馈，agent 能直接执行。</p>
+        </div>
+      </div>
+      <div class="case">
+        <div class="case-avatar">研</div>
+        <div class="case-body">
+          <h3>用 AI 做原型的工程师</h3>
+          <div class="role">— 合并 agent 输出前自审</div>
+          <p>让 Codex 写了个 dashboard。合并前自己走一遍，抓 code review 看不出的问题——文案、间距、那些只有渲染出来才发现的东西。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── 配套 SKILL ──────────── -->
+<section id="skill">
+  <div class="wrap">
+    <div class="section-eyebrow">— 配套 skill</div>
+    <h2>装 skill 就够。<br><em>不用 Chrome 扩展也能在浏览器里编辑。</em></h2>
+    <p class="section-lede">v0.1.0 自带 <code style="font-family:var(--mono);font-size:14px;background:var(--cream-2);padding:2px 6px;border-radius:3px;">prepare.mjs</code>：跟 Claude 说"prep 这个 HTML"，skill 自动把编辑器注入到你的文件里。浏览器打开 → review → save → skill 把改动 patch 回源 HTML。闭环，不依赖扩展（扩展仍可用于 review 远程 URL）。</p>
+
+    <div style="display:grid; grid-template-columns: 1.1fr 1fr; gap:32px; margin-top:48px;">
+      <div style="background:var(--cream-2); border-radius:12px; padding:28px;">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--red); letter-spacing:0.08em; margin-bottom:8px;">01 · 注入</div>
+        <h3 style="font-family:var(--serif); font-size:19px; font-weight:500; margin:0 0 16px;"><code style="font-family:var(--mono); font-size:16px;">prepare.mjs</code> — 给 HTML 预埋编辑器</h3>
+        <p style="font-size:14px; color:var(--ink-soft); line-height:1.75; margin:0 0 14px;">在你的 HTML 里加 <code style="font-family:var(--mono); font-size:13px;">&lt;script src="redline.js"&gt;</code>，浏览器打开自动加载。<code style="font-family:var(--mono); font-size:13px;">--inline</code> 把 bundle 嵌进去，<code style="font-family:var(--mono); font-size:13px;">--remove</code> 一键还原。idempotent + 自动备份。</p>
+
+        <div style="font-family:var(--mono); font-size:11px; color:var(--red); letter-spacing:0.08em; margin:24px 0 8px;">02 · 应用</div>
+        <h3 style="font-family:var(--serif); font-size:19px; font-weight:500; margin:0 0 16px;"><code style="font-family:var(--mono); font-size:16px;">apply.mjs</code> — 把反馈 patch 回源</h3>
+        <p style="font-size:14px; color:var(--ink-soft); line-height:1.75; margin:0 0 6px;">读 ZIP，按多策略（id / cssPath / contentHash）解析 selector，批量执行 <code style="font-family:var(--mono); font-size:13px;">text / move / scale / hide / delete</code>。区域标注 + 叙事性反馈则跟你逐条对齐。</p>
+      </div>
+
+      <div style="background:var(--ink); color:var(--cream); border-radius:12px; padding:28px; display:flex; flex-direction:column;">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--cream-2); opacity:0.6; letter-spacing:0.1em; margin-bottom:14px;">安装 · 一行命令</div>
+<pre style="margin:0 0 22px; font-family:var(--mono); font-size:13px; line-height:1.7; color:var(--cream); background:rgba(255,255,255,0.04); padding:16px 18px; border-radius:6px; overflow-x:auto;"><span style="color:#888;"># 在 redline 仓库目录下</span>
+npm run install:skill
+
+<span style="color:#888;"># 或者手动拷贝</span>
+cp -r skill/ ~/.claude/skills/redline/</pre>
+
+        <div style="font-family:var(--mono); font-size:11px; color:var(--cream-2); opacity:0.6; letter-spacing:0.1em; margin-bottom:14px;">使用 · 在 Claude Code 里</div>
+<pre style="margin:0; font-family:var(--mono); font-size:12px; line-height:1.7; color:var(--cream); background:rgba(255,255,255,0.04); padding:16px 18px; border-radius:6px; overflow-x:auto;">你: <span style="color:#ffb4b8;">"给 report.html 加 redline"</span>
+claude: <span style="color:#f3ece1;">跑 prepare.mjs report.html</span>
+claude: <span style="color:#f3ece1;">"浏览器打开它，按 F 反馈"</span>
+
+<span style="color:#888;"># 浏览器里 Save 之后：</span>
+你: <span style="color:#ffb4b8;">"应用 redline 的反馈"</span>
+claude: <span style="color:#f3ece1;">读 ~/.redline/sessions/…</span>
+claude: <span style="color:#f3ece1;">7 处改动写回 report.html</span>
+claude: <span style="color:#f3ece1;">"还有 2 条标注需要你判断 ——"</span></pre>
+      </div>
+    </div>
+
+    <!-- Agent 兼容性 -->
+    <div style="margin-top:48px; padding-top:36px; border-top:1px dashed var(--rule);">
+      <div style="text-align:center; font-family:var(--serif); font-size:17px; color:var(--ink); margin-bottom:28px;">
+        Claude Code 原生适配。<em style="color:var(--red);">ZIP 通用，各类 agent 都能用。</em>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1.4fr; gap:20px;">
+        <div style="background:var(--cream); border:1px solid var(--rule); border-radius:8px; padding:22px;">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:0.1em; color:var(--red); margin-bottom:10px;">原生 SKILL</div>
+          <div style="font-family:var(--serif); font-size:18px; font-weight:500; margin-bottom:10px;">Claude Code</div>
+          <div style="font-size:13px; color:var(--ink-soft); line-height:1.75; margin-bottom:14px;">
+            一行命令安装。触发词自动路由。<br>
+            <code style="font-family:var(--mono);font-size:12px;">prepare.mjs</code> + <code style="font-family:var(--mono);font-size:12px;">apply.mjs</code> 开箱即用。
+          </div>
+          <div style="font-family:var(--mono); font-size:11px; color:var(--ink-soft); background:#fff; border:1px solid var(--rule); padding:8px 10px; border-radius:4px;">
+            $ npm run install:skill
+          </div>
+        </div>
+
+        <div style="background:var(--cream); border:1px solid var(--rule); border-radius:8px; padding:22px;">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:0.1em; color:var(--red); margin-bottom:10px;">通用接入</div>
+          <div style="font-family:var(--serif); font-size:18px; font-weight:500; margin-bottom:10px;">Codex · OpenClaw · Hermes · 任何能读文件的 agent</div>
+          <div style="font-size:13px; color:var(--ink-soft); line-height:1.75; margin-bottom:14px;">
+            把解压后的 session 文件夹丢进项目，对 agent 发这一句指令——schema 自描述，不用装插件：
+          </div>
+          <div style="font-family:var(--mono); font-size:11px; color:var(--ink); background:#fff; border:1px solid var(--rule); padding:10px 12px; border-radius:4px; line-height:1.55;">
+            <span style="color:var(--red);">读</span> session.json。<span style="color:var(--red);">对</span> edits[] 每条，按 <code>selector.cssPath</code> 找元素（兜底 <code>contentHash</code>），把 <code>before</code> 替换成 <code>after</code>。annotations[] 跟我逐条对齐。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:36px; text-align:center; font-family:var(--serif); font-style:italic; font-size:15px; color:var(--ink-soft);">
+      浏览器收集 → ZIP 导出 → 各类 agent 应用。<span style="color:var(--red);">闭环。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── SCHEMA ──────────── -->
+<section id="schema">
+  <div class="wrap">
+    <div class="section-eyebrow">— 输出格式</div>
+    <h2>一套 schema，一个文件，长期稳定。</h2>
+    <p class="section-lede"><code style="font-family:var(--mono);font-size:14px;background:var(--cream-2);padding:2px 6px;border-radius:3px;">session.json</code> 大概长这样。版本化、有文档、对 agent 友好。</p>
+
+    <div class="schema-block">
+      <div class="schema-tab"><span class="red-dot"></span>session.json</div>
+<pre class="schema"><span class="c">// 已精简便于阅读 — 完整 schema 见仓库 schema/ 目录</span>
+{
+  <span class="k">"schemaVersion"</span>: <span class="s">"1.0"</span>,
+  <span class="k">"appMode"</span>: <span class="s">"deck"</span>,
+  <span class="k">"capturedAt"</span>: <span class="s">"2026-05-10T14:23:11Z"</span>,
+  <span class="k">"page"</span>: { <span class="k">"url"</span>: <span class="s">"file:///~/agent-out/q3-deck.html"</span>, <span class="k">"title"</span>: <span class="s">"Q3 业务回顾"</span> },
+
+  <span class="k">"edits"</span>: [
+    {
+      <span class="k">"op"</span>: <span class="s">"text"</span>,
+      <span class="k">"section"</span>: <span class="s">"slide-3"</span>,
+      <span class="k">"selector"</span>: {
+        <span class="k">"cssPath"</span>: <span class="s">"section.slide:nth-of-type(3) &gt; h1"</span>,
+        <span class="k">"contentHash"</span>: { <span class="k">"sample"</span>: <span class="s">"Q3 数据指标"</span>, <span class="k">"tag"</span>: <span class="s">"h1"</span> }
+        <span class="c">// + id / fbId / tag — cssPath 变了还能靠 contentHash 兜底</span>
+      },
+      <span class="k">"before"</span>: <span class="s">"Q3 数据指标"</span>,
+      <span class="k">"after"</span>:  <span class="s">"Q3 业务结果 — 哪些做对了"</span>
+    }
+  ],
+
+  <span class="k">"annotations"</span>: [
+    {
+      <span class="k">"id"</span>: <span class="s">"anno-7f3a"</span>,
+      <span class="k">"type"</span>: <span class="s">"region"</span>,
+      <span class="k">"secId"</span>: <span class="s">"slide-5"</span>,
+      <span class="k">"rectPct"</span>: { <span class="k">"x"</span>: <span class="n">12</span>, <span class="k">"y"</span>: <span class="n">48</span>, <span class="k">"w"</span>: <span class="n">35</span>, <span class="k">"h"</span>: <span class="n">22</span> },
+      <span class="k">"note"</span>: <span class="s">"这页图表太密 — 换成柱状图"</span>,
+      <span class="k">"image"</span>: { <span class="k">"filename"</span>: <span class="s">"session-anno-7f3a.png"</span> }
+    }
+  ],
+
+  <span class="k">"feedback"</span>: { <span class="k">"global"</span>: <span class="s">"整体节奏：开场收紧，第 5 页换图"</span> }
+}</pre>
+    </div>
+
+    <div class="callout">
+      "Agent 不用猜你想表达什么。它读 selector，找到元素，把改动写回去。"
+      <small>— 为什么"源码感知"比"像素级截图"更重要。</small>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── FOOTER ──────────── -->
+<footer>
+  <div class="wrap">
+    <div class="brand-block">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+          <rect width="128" height="128" rx="28" fill="#f5f4ed"/>
+          <text x="64" y="116" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="148" font-weight="700" fill="#141413">R</text>
+          <rect x="6" y="64" width="116" height="20" rx="10" fill="#dc3c3c"/>
+        </svg>
+        Redline
+      </div>
+      <p>给任何网页做视觉反馈。开源 · 本地优先。</p>
+    </div>
+    <div class="col">
+      <h4>产品</h4>
+      <ul>
+        <li><a href="#how">工作原理</a></li>
+        <li><a href="#features">功能</a></li>
+        <li><a href="#schema">输出格式</a></li>
+        <li><a href="https://github.com/Dongke-X/redline#install" target="_blank">安装 · 开发版</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>项目</h4>
+      <ul>
+        <li><a href="https://github.com/Dongke-X/redline" target="_blank">GitHub</a></li>
+        <li><a href="https://github.com/Dongke-X/redline/issues" target="_blank">Issues</a></li>
+        <li><a href="https://github.com/Dongke-X/redline/blob/main/CHANGELOG.md" target="_blank">Changelog</a></li>
+        <li><a href="https://github.com/Dongke-X/redline/blob/main/CONTRIBUTING.md" target="_blank">贡献指南</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>法律</h4>
+      <ul>
+        <li><a href="https://dongke-x.github.io/redline/PRIVACY.html" target="_blank">隐私政策</a></li>
+        <li><a href="https://github.com/Dongke-X/redline/blob/main/LICENSE" target="_blank">MIT 许可证</a></li>
+        <li><a href="https://github.com/Dongke-X/redline/security" target="_blank">安全</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap legal">
+    <span>© 2026 Redline · 由 dk 出品 · <a href="https://www.xiaohongshu.com/user/profile/5a8e8eb8db2e600ca3d43349" target="_blank" style="color:inherit; border-bottom:1px dotted currentColor;">小红书 @东可 Talk</a></span>
+    <span>v0.1.0 · MIT</span>
+  </div>
+</footer>
+
+</body>
+</html>

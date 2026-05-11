@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/dongke/redline/schema/session.v1.json",
+  "title": "redline Session v1",
+  "description": "redline 输出的反馈会话文件。skill 通过扫描 ~/.redline/sessions/ 拾取最新文件并应用到源 HTML。",
+  "type": "object",
+  "required": ["schemaVersion", "sessionId", "capturedAt", "page", "feedback", "edits", "attachments"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "widgetVersion": { "type": "string", "description": "生成此 session 的 widget 版本" },
+    "sessionId": { "type": "string", "description": "本次保存的唯一 ID。同一页面多次保存会产生多个 sessionId" },
+    "capturedAt": { "type": "string", "format": "date-time" },
+    "page": {
+      "type": "object",
+      "required": ["url"],
+      "properties": {
+        "url": { "type": "string", "description": "完整 URL（含 file:// 协议）" },
+        "title": { "type": ["string", "null"] },
+        "pathname": { "type": "string" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "description": "源文件回写提示。skill 据此找到要 patch 的 HTML 源文件。",
+      "properties": {
+        "hint": { "type": "string", "description": "建议的源文件名或路径片段" },
+        "matchBy": { "enum": ["pathname", "title", "explicit"] },
+        "explicitPath": { "type": "string", "description": "如果 widget 通过 ?source= 参数得知确切路径，写在这里" }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "properties": {
+        "global": { "type": ["string", "null"], "description": "全局反馈" },
+        "perSection": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["secId", "secLabel", "note"],
+            "properties": {
+              "secId": { "type": "string" },
+              "secLabel": { "type": "string", "description": "页面/section 的人类可读标签" },
+              "note": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "edits": {
+      "type": "array",
+      "description": "元素改动列表。每项要么是文字编辑 (op: text)，要么是视觉操作 (op: move|scale|font|hide|delete|replace-img)",
+      "items": {
+        "type": "object",
+        "required": ["op", "selector"],
+        "properties": {
+          "op": { "enum": ["text", "move", "scale", "font", "hide", "delete", "replace-img", "restore"] },
+          "selector": { "$ref": "#/definitions/selector" },
+          "section": { "type": "string", "description": "所属 section 标签" },
+          "descriptor": { "type": "string", "description": "[secLabel] · tag.cls · 文本片段，给人看的" },
+          "before": { "type": "string", "description": "op=text 时使用" },
+          "after": { "type": "string", "description": "op=text 时使用" },
+          "args": {
+            "type": "object",
+            "description": "非 text op 的参数（move 的 x/y、scale 的 scale、font 的 family、replace-img 的 name）"
+          }
+        }
+      }
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "type"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "type": { "type": "string", "description": "MIME 类型，如 image/png" },
+          "dataURL": { "type": "string", "description": "base64 dataURL（仅在退化下载场景出现）" },
+          "filename": { "type": "string", "description": "默认情况：与 session.json 同目录的单独图片文件名" }
+        }
+      }
+    },
+    "annotations": {
+      "type": "array",
+      "description": "框选标注：用户在画面上画的反馈区域，每个含位置/文字/图片",
+      "items": {
+        "type": "object",
+        "required": ["id", "rectPct"],
+        "properties": {
+          "id": { "type": "string" },
+          "secId": { "type": ["string", "null"] },
+          "secLabel": { "type": ["string", "null"], "description": "所属页 / section 的标签" },
+          "rectPct": {
+            "type": "object",
+            "description": "相对于 section 的百分比矩形，0-1 之间。x/y 是左上角，w/h 是宽高",
+            "required": ["x", "y", "w", "h"],
+            "properties": {
+              "x": { "type": "number" },
+              "y": { "type": "number" },
+              "w": { "type": "number" },
+              "h": { "type": "number" }
+            }
+          },
+          "text": { "type": "string", "description": "用户写的文字反馈" },
+          "image": {
+            "type": ["object", "null"],
+            "properties": {
+              "name": { "type": "string", "description": "用户上传时的原文件名" },
+              "type": { "type": "string", "description": "MIME 类型" },
+              "filename": { "type": "string", "description": "落盘后在同目录的文件名（skill 解析路径用这个）" },
+              "dataURL": { "type": "string", "description": "仅退化下载场景出现" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "selector": {
+      "type": "object",
+      "description": "三层 fallback：id (作者主动加的稳定 ID) → cssPath (从 section 根算的) + contentHash (内容指纹) → fbId (会话级，跨刷新会变)",
+      "properties": {
+        "id": { "type": ["string", "null"], "description": "元素自身的 id 或 data-fb-id 属性" },
+        "cssPath": { "type": "string", "description": "从最近的 [data-fbw-sec-id] 出发的 CSS 路径" },
+        "contentHash": {
+          "type": "object",
+          "properties": {
+            "sample": { "type": "string", "description": "前 40 字内容样本（normalize 空白）" },
+            "hash": { "type": "string", "description": "8 位 hex 哈希" }
+          }
+        },
+        "fbId": { "type": ["string", "null"], "description": "会话级 ID，仅当源文件没改动时可用作直接定位" },
+        "tag": { "type": "string" }
+      }
+    }
+  }
+}

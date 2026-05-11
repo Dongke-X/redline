@@ -1,0 +1,29 @@
+{
+  "extName": {
+    "message": "Redline 反馈助手",
+    "description": "扩展名"
+  },
+  "extDesc": {
+    "message": "把 Redline 反馈插件注入任意网页——编辑文字、标注、截图，一键打包反馈给 AI agent。",
+    "description": "扩展简介 (≤132 字符)"
+  },
+  "actionTitle": {
+    "message": "打开 Redline（注入当前页面）",
+    "description": "工具栏图标 tooltip"
+  },
+  "popup_status_idle": { "message": "当前标签页未注入" },
+  "popup_status_injected": { "message": "已在当前页激活" },
+  "popup_status_blocked": { "message": "此页面协议不允许注入" },
+  "popup_btn_inject": { "message": "注入 Redline" },
+  "popup_btn_toggle": { "message": "切换反馈面板" },
+  "popup_btn_options": { "message": "设置" },
+  "popup_footer_repo": { "message": "源码 · 问题反馈" },
+  "options_title": { "message": "Redline 设置" },
+  "options_save_mode_label": { "message": "默认保存方式" },
+  "options_save_mode_zip": { "message": "下载 ZIP（推荐）" },
+  "options_save_mode_fs": { "message": "写入本地目录（FS Access）" },
+  "options_autoinject_label": { "message": "自动注入域名（每行一个）" },
+  "options_autoinject_placeholder": { "message": "example.com\nstaging.myapp.io" },
+  "options_save_btn": { "message": "保存设置" },
+  "options_saved_toast": { "message": "已保存" }
+}

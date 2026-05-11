@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Redline · Privacy Policy</title>
+<meta name="description" content="Redline is a fully local browser extension. We collect nothing. Here is exactly what the extension touches and why.">
+<style>
+  :root {
+    --red: #c8242c;
+    --cream: #faf6f1;
+    --cream-2: #f3ece1;
+    --ink: #1a1815;
+    --ink-soft: #4a463f;
+    --rule: #d8cdba;
+    --serif: "Charter", "Iowan Old Style", "Source Serif Pro", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--cream); color: var(--ink);
+    font-family: var(--serif); font-size: 17px; line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 60px 32px 80px; }
+
+  header.brand-row {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--sans); font-size: 18px; font-weight: 600;
+    margin-bottom: 48px;
+  }
+  header.brand-row svg { width: 24px; height: 24px; }
+  header.brand-row a { color: var(--ink); text-decoration: none; }
+  header.brand-row .meta { margin-left: auto; font-size: 12px; color: var(--ink-soft); font-weight: 400; }
+
+  h1 {
+    font-family: var(--serif); font-size: 42px; font-weight: 500;
+    letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 8px;
+  }
+  .updated {
+    font-family: var(--sans); font-size: 13px; color: var(--ink-soft);
+    margin: 0 0 36px;
+  }
+  .lede {
+    font-size: 19px; color: var(--ink-soft); font-style: italic;
+    border-left: 3px solid var(--red); padding-left: 18px; margin: 0 0 40px;
+  }
+
+  h2 {
+    font-family: var(--serif); font-size: 24px; font-weight: 500;
+    letter-spacing: -0.01em; margin: 56px 0 14px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--rule);
+  }
+  h3 { font-family: var(--serif); font-size: 18px; margin: 28px 0 8px; }
+
+  p { margin: 0 0 18px; }
+  ul { padding-left: 22px; margin: 0 0 18px; }
+  li { margin-bottom: 8px; }
+
+  code {
+    font-family: var(--mono); font-size: 0.88em;
+    background: var(--cream-2); padding: 2px 6px; border-radius: 3px;
+  }
+
+  .none-banner {
+    background: #fff; border: 1px solid var(--rule);
+    border-left: 4px solid var(--red);
+    padding: 22px 26px; margin: 0 0 32px; border-radius: 4px;
+  }
+  .none-banner strong {
+    font-family: var(--sans); font-size: 13px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--red); display: block; margin-bottom: 6px;
+  }
+  .none-banner span {
+    font-family: var(--serif); font-size: 22px; font-weight: 500;
+  }
+
+  table.perms {
+    width: 100%; border-collapse: collapse; margin: 18px 0;
+    font-family: var(--sans); font-size: 14px;
+  }
+  table.perms th, table.perms td {
+    text-align: left; padding: 12px 14px;
+    border-bottom: 1px solid var(--rule); vertical-align: top;
+  }
+  table.perms th {
+    background: var(--cream-2); font-weight: 600;
+    text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+  table.perms td code { white-space: nowrap; }
+
+  footer.foot {
+    margin-top: 64px; padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--sans); font-size: 13px; color: var(--ink-soft);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  }
+  footer.foot a { color: var(--red); text-decoration: none; }
+  footer.foot a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="brand-row">
+    <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+      <rect width="128" height="128" rx="28" fill="#f5f4ed"/>
+      <text x="64" y="116" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="148" font-weight="700" fill="#141413">R</text>
+      <rect x="6" y="64" width="116" height="20" rx="10" fill="#dc3c3c"/>
+    </svg>
+    <a href="https://github.com/Dongke-X/redline">Redline</a>
+    <span class="meta">Privacy Policy</span>
+  </header>
+
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: 2026-05-10</p>
+
+  <p class="lede">Redline is a browser extension that lets you annotate, edit, and screenshot any web page, then download the captured feedback as a ZIP file. It is designed to be fully local — no data ever leaves your device through Redline itself.</p>
+
+  <h2>Data we collect</h2>
+  <div class="none-banner">
+    <strong>Zero · None · Nothing</strong>
+    <span>We collect no data, period.</span>
+  </div>
+  <p>Redline has no servers, no analytics, no telemetry, and no third-party SDKs. We do not see, transmit, or store any of your activity.</p>
+
+  <h2>Data the extension processes locally</h2>
+  <p>When you use Redline on a page, the extension processes the following data <strong>inside your browser only</strong>:</p>
+  <ul>
+    <li>The DOM of the page you injected Redline into (so you can edit text and select elements).</li>
+    <li>Any annotations, edits, screenshots, and notes you create.</li>
+    <li>Page metadata (URL, title, viewport size, locale, timezone, user agent string) included in the exported <code>session.json</code>. This is captured so the AI agent that consumes the file can match feedback to the right source. It is never sent anywhere by Redline.</li>
+  </ul>
+
+  <h3>Where it lives</h3>
+  <ul>
+    <li><code>chrome.storage.sync</code> — your save-mode preference and auto-inject domain list (synced across your Chrome profile by Chrome itself).</li>
+    <li><code>IndexedDB</code> — temporary storage for in-progress attachments and the local folder handle you grant if you use FS Access mode.</li>
+    <li>The downloaded ZIP file or the folder you pick — whichever output mode you choose.</li>
+  </ul>
+  <p>You can clear all of it at any time by uninstalling the extension or clearing site / extension data in Chrome.</p>
+
+  <h2>Permissions explained</h2>
+  <table class="perms">
+    <thead>
+      <tr><th style="width:30%">Permission</th><th>Why we need it</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>activeTab</code></td>
+        <td>Required to inject Redline into the page you are currently viewing when you click the toolbar icon.</td>
+      </tr>
+      <tr>
+        <td><code>scripting</code></td>
+        <td>Required to inject the Redline bundle into the page's main world so it can edit and annotate the DOM.</td>
+      </tr>
+      <tr>
+        <td><code>storage</code></td>
+        <td>Stores your save-mode preference and auto-inject domain list. Uses <code>chrome.storage.sync</code>.</td>
+      </tr>
+      <tr>
+        <td><code>&lt;all_urls&gt;</code><br>host permission</td>
+        <td>Redline is only useful if you can use it on any web page you visit. The bundle is <strong>only</strong> injected when you explicitly click the toolbar icon (or the page matches a domain you added to auto-inject in Settings); we do not run code on pages in the background.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Data sharing</h2>
+  <p>We do not share any data, because we do not collect any data.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy ever changes, the new version will be committed to this same file in the public repo, with a new "Last updated" date. There is no email list. The <a href="https://github.com/Dongke-X/redline/commits/main/PRIVACY.md" target="_blank">git history of this file</a> is your changelog.</p>
+
+  <h2>Contact</h2>
+  <p>Source code, issues, and questions: <a href="https://github.com/Dongke-X/redline" target="_blank">github.com/Dongke-X/redline</a></p>
+
+  <footer class="foot">
+    <span>© 2026 Redline · MIT License</span>
+    <a href="https://github.com/Dongke-X/redline">github.com/Dongke-X/redline</a>
+  </footer>
+
+</div>
+</body>
+</html>

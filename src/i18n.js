@@ -1,0 +1,335 @@
+// 国际化中枢。自动按 navigator.language 切换；window.__fbwLocale 可手动覆盖。
+// 中文 (zh) + 英文 (en)。其它语言 fallback 到 en。
+const DICT = {
+  zh: {
+    // 模式
+    'edit.on': '编辑模式开启 · 单击选中 · 双击改字 · Esc 取消',
+    'edit.off': '编辑模式已关闭',
+    'edit.off.pending': '编辑模式已关闭 · {count} 处改动暂存中',
+    'marquee.on': '框选模式开启 · 拖动画框 · Esc 退出',
+    'marquee.off': '框选模式已关闭',
+    // 元素操作
+    'op.delete': '已标记删除',
+    'op.hide': '已标记隐藏',
+    'op.restore': '已还原',
+    'op.replaceImg': '已替换图片',
+    'op.font': '字体: {name}',
+    'op.link.prompt': '改链接 (href)：',
+    'op.link.done': '链接已改',
+    'op.link.cleared': '链接已清空',
+    // 字体选择
+    'font.systemDefault': '系统默认（清除）',
+    'font.group.generic': '通用',
+    'font.group.document': '页面字体',
+    'font.group.local': '本地字体',
+    'font.loading': '加载字体中…',
+    'font.localUnsupported': '读不到本地字体 · 仅 Chrome 103+ / Edge 支持，且需 https:// 或 file:// 协议',
+    'font.localDenied': '读不到本地字体 · 浏览器拒了或被 Permissions-Policy 屏蔽 · console 看具体原因',
+    // 反馈面板
+    'panel.title': '反馈给 Agent / 设计师',
+    'panel.copy': '反馈已复制到剪贴板',
+    'panel.copy.fallback': '反馈已复制（兼容模式）',
+    'panel.attachment.added': '已添加截图（共 {count} 张）',
+    'panel.cleared': '已清空所有反馈',
+    'panel.current': '当前页',
+    'panel.saved': '已存',
+    'panel.pill.edit': '编辑',
+    'panel.pill.section': '页面',
+    'panel.pill.element': '元素',
+    'panel.placeholder.current': '对当前这一页的反馈（删 / 缩 / 加内容 / 换元素…）',
+    'panel.placeholder.global': '全局反馈（整体感受 / 想加想删的页面…）',
+    'panel.btn.save': '保存反馈',
+    'panel.btn.copy': '复制反馈',
+    'panel.btn.save.title': '打包反馈 + 截图到本地（给 agent 完整上下文）',
+    'panel.btn.copy.title': '只复制反馈文字到剪贴板（不含截图）',
+    'panel.btn.shot.title': '截当前视口为附件（评审线上页面常用）',
+    'shot.loading': '正在截屏…',
+    'shot.loadFailed': '截屏库加载失败 · 需联网',
+    'shot.failed': '截屏失败',
+    // 恢复上次反馈
+    'restore.hint': '已恢复上次反馈：{pieces}',
+    'restore.piece.anno': '{count} 条标注',
+    'restore.piece.sec': '{count} 条页面反馈',
+    'restore.piece.att': '{count} 张截图',
+    'restore.piece.global': '全局反馈',
+    'persist.quota': '本地存储已满，截图未保存到本地缓存（点保存反馈写到磁盘）',
+    'panel.btn.clearAll': '清空所有反馈',
+    'panel.btn.close': '关闭面板（内容保留，刷新也在）',
+    'panel.btn.locale.title': '切换到 {lang}（点击会刷新页面）',
+    'panel.localeName.zh': '中文',
+    'panel.localeName.en': '英文',
+    // 保存反馈
+    'save.first': '已选目录并保存: {dir}{suffix}',
+    'save.again': '已保存: {dir}{suffix}',
+    'save.cancelled': '已取消',
+    'save.failed': '保存到目录失败 ({reason})，已下载 .json',
+    'save.unsupported': '已下载 {stem}.json · 浏览器不支持 FS Access',
+    'save.dirCleared': '已清除目录记忆，下次保存会重新选',
+    // 写回源 HTML（保存编辑）
+    'patch.unsupported': '浏览器不支持 FS Access，无法直接改源',
+    'patch.notFile': '非 file:// 协议，请走 skill 流程',
+    'patch.fileNotFound': '找不到源文件',
+    'patch.cancelled': '已取消',
+    'patch.noChanges': '没有改动可应用',
+    'patch.partialFail': '0 应用 / {failed} 失败',
+    'patch.success': '已改 {file} · {applied} 应用{failedSuffix}{backupSuffix}',
+    'patch.failed': '改源失败: {reason}',
+    'patch.dirCleared': '已清除源目录记忆，下次保存会重新选',
+    'patch.backupFail.title': '备份失败',
+    'patch.backupFail.desc': '{reason}\n\n继续写入？没备份，git 兜底。',
+    // 复杂场景警告
+    'warn.complex.title': '检测到复杂场景',
+    'warn.complex.desc': '· {flags}\n\n直接改源可能丢格式或破坏构建产物，建议走 skill 流程。',
+    'warn.complex.continue': '强行继续',
+    // 清空所有
+    'clearAll.title': '清空所有反馈？',
+    'clearAll.desc': '编辑改动、各页反馈、全局反馈、所有截图都会被清掉。本地缓存也一并清除。此操作不可撤销。',
+    'clearAll.confirm': '确认清空',
+    // 通用
+    'common.cancel': '取消',
+    // PDF 导出
+    'pdf.vector.hint': '矢量 PDF · 打印对话框选「另存为 PDF」(Shift+P = 长图)',
+    'pdf.loading': '正在加载图片库...',
+    'pdf.loadFailed': '图片库加载失败 · 需要联网',
+    'pdf.noSlides': '没找到 slide',
+    'pdf.progress': '截图中 {i} / {total}',
+    'pdf.saved': '已保存 {file}',
+    'pdf.failed': '导出失败: {reason}',
+    // 框选标注
+    'anno.action.note': '反馈备注（给 agent 看的）',
+    'anno.action.image': '加图片',
+    'anno.action.delete': '删除标注',
+    'anno.placeholder.content': '插入页面的文字…',
+    'anno.placeholder.note': '给 agent 的备注…',
+    // 元素反馈 popover
+    'note.title': '元素反馈',
+    'note.placeholder': '对这个元素的反馈（删 / 改 / 重画 / 给 agent 看的备注…）',
+    // 工具栏 tooltip
+    'tip.font': '字体（双击元素直接编辑文字）',
+    'tip.highlight': '高亮（马克笔）',
+    'highlight.clear': '清除高亮',
+    'op.highlight': '已高亮',
+    'tip.replaceImg': '换图片',
+    'tip.moveUp': '上移 4px (按住 Shift = 16px)',
+    'tip.moveDown': '下移 4px (按住 Shift = 16px)',
+    'tip.moveLeft': '左移 4px (按住 Shift = 16px)',
+    'tip.moveRight': '右移 4px (按住 Shift = 16px)',
+    'tip.zoomIn': '放大 10%',
+    'tip.zoomOut': '缩小 10%',
+    'tip.note': '对该元素写反馈（不改源）',
+    'tip.link': '改超链接 (href)',
+    'tip.hide': '隐藏（占位）',
+    'tip.delete': '删除（不占位）',
+    'tip.restore': '还原所有变换',
+    'tip.close': '取消选中',
+    'tip.rotate': '拖动旋转 · 按住 Shift 吸附 15°',
+    'tip.scale': '拖动缩放',
+    // overlay 按钮
+    'overlay.edit': '编辑模式 (E)',
+    'overlay.feedback': '反馈面板 (F)',
+    'overlay.export': '导出 PDF · Shift+点击 = 长图',
+    'overlay.save': '保存编辑：把所有改动写回源 HTML（自动备份）· 右键重选目录',
+    'overlay.marquee': '框选标注：拖一个框 → 写文字 / 加图片',
+    'overlay.help': '快捷键 / 帮助',
+    'overlay.fold': '折叠工具条（点编辑可重新展开 + 进入编辑）',
+    // 帮助弹窗
+    'help.title': '快捷键',
+    'help.group.modes': '模式',
+    'help.group.actions': '操作',
+    'help.group.export': '导出',
+    'help.group.misc': '其他',
+    'help.shortcut.edit': '编辑模式',
+    'help.shortcut.feedback': '反馈面板',
+    'help.shortcut.marquee': '框选标注',
+    'help.shortcut.cancel': '取消选中',
+    'help.shortcut.delete': '删除选中元素',
+    'help.shortcut.save': '保存反馈',
+    'help.shortcut.copy': '复制反馈',
+    'help.shortcut.pdfVector': '矢量 PDF',
+    'help.shortcut.pdfImage': '长图 PDF',
+    'help.shortcut.help': '显示 / 隐藏帮助',
+  },
+  en: {
+    'edit.on': 'Edit mode on · Click to select · Double-click to edit text · Esc to cancel',
+    'edit.off': 'Edit mode off',
+    'edit.off.pending': 'Edit mode off · {count} pending changes saved',
+    'marquee.on': 'Marquee mode on · Drag to draw · Esc to exit',
+    'marquee.off': 'Marquee mode off',
+    'op.delete': 'Marked for deletion',
+    'op.hide': 'Marked as hidden',
+    'op.restore': 'Restored',
+    'op.replaceImg': 'Image replaced',
+    'op.link.prompt': 'Edit link (href):',
+    'op.link.done': 'Link updated',
+    'op.link.cleared': 'Link cleared',
+    'op.font': 'Font: {name}',
+    // Font picker
+    'font.systemDefault': 'System default (clear)',
+    'font.group.generic': 'Generic',
+    'font.group.document': 'Page fonts',
+    'font.group.local': 'Local fonts',
+    'font.loading': 'Loading fonts...',
+    'font.localUnsupported': 'Local fonts unavailable · Chrome 103+ / Edge required; may need https:// or file:// origin',
+    'font.localDenied': 'Local fonts unavailable · denied by browser or Permissions-Policy · check console for the reason',
+    'panel.title': 'Feedback to Agent / Designer',
+    'panel.copy': 'Feedback copied to clipboard',
+    'panel.copy.fallback': 'Copied (legacy mode)',
+    'panel.attachment.added': 'Screenshot added ({count} total)',
+    'panel.cleared': 'All feedback cleared',
+    'panel.current': 'Current page',
+    'panel.saved': 'Saved',
+    'panel.pill.edit': 'Edits',
+    'panel.pill.section': 'Pages',
+    'panel.pill.element': 'Elements',
+    'panel.placeholder.current': 'Feedback for this page (delete / shrink / add content / swap element...)',
+    'panel.placeholder.global': 'Global feedback (overall feel / pages to add or remove...)',
+    'panel.btn.save': 'Save feedback',
+    'panel.btn.copy': 'Copy feedback',
+    'panel.btn.save.title': 'Bundle feedback + screenshots locally (full context for agents)',
+    'panel.btn.copy.title': 'Copy feedback text only (no screenshots)',
+    'panel.btn.shot.title': 'Capture current viewport as attachment (handy in review mode)',
+    'shot.loading': 'Capturing…',
+    'shot.loadFailed': 'Screenshot library failed to load · Check your network',
+    'shot.failed': 'Screenshot failed',
+    'restore.hint': 'Restored prior feedback: {pieces}',
+    'restore.piece.anno': '{count} annotations',
+    'restore.piece.sec': '{count} page notes',
+    'restore.piece.att': '{count} screenshots',
+    'restore.piece.global': 'global feedback',
+    'persist.quota': 'Local storage full — screenshots not cached (use Save to write to disk)',
+    'panel.btn.clearAll': 'Clear all feedback',
+    'panel.btn.close': 'Close panel (content preserved across reload)',
+    'panel.btn.locale.title': 'Switch to {lang} (page will reload)',
+    'panel.localeName.zh': 'Chinese',
+    'panel.localeName.en': 'English',
+    'save.first': 'Directory selected and saved: {dir}{suffix}',
+    'save.again': 'Saved: {dir}{suffix}',
+    'save.cancelled': 'Cancelled',
+    'save.failed': 'Failed to save to directory ({reason}), downloaded .json instead',
+    'save.unsupported': 'Downloaded {stem}.json · Browser does not support FS Access',
+    'save.dirCleared': 'Directory cache cleared. Next save will pick again.',
+    'patch.unsupported': 'Browser does not support FS Access; cannot patch source directly',
+    'patch.notFile': 'Not a file:// URL; use the skill workflow instead',
+    'patch.fileNotFound': 'Source file not found',
+    'patch.cancelled': 'Cancelled',
+    'patch.noChanges': 'No changes to apply',
+    'patch.partialFail': '0 applied / {failed} failed',
+    'patch.success': 'Patched {file} · {applied} applied{failedSuffix}{backupSuffix}',
+    'patch.failed': 'Patch failed: {reason}',
+    'patch.dirCleared': 'Source directory cache cleared. Next patch will pick again.',
+    'patch.backupFail.title': 'Backup failed',
+    'patch.backupFail.desc': '{reason}\n\nContinue writing without backup? (Git is your safety net.)',
+    'warn.complex.title': 'Complex scenario detected',
+    'warn.complex.desc': '· {flags}\n\nDirect source patching may break formatting or build artifacts. The skill workflow is recommended.',
+    'warn.complex.continue': 'Continue anyway',
+    'clearAll.title': 'Clear all feedback?',
+    'clearAll.desc': 'All edits, per-page notes, global feedback, and screenshots will be removed. Local cache will also be cleared. This cannot be undone.',
+    'clearAll.confirm': 'Clear all',
+    'common.cancel': 'Cancel',
+    'pdf.vector.hint': 'Vector PDF · Choose "Save as PDF" in the print dialog (Shift+P = long-image)',
+    'pdf.loading': 'Loading image library...',
+    'pdf.loadFailed': 'Image library failed to load · Check your network',
+    'pdf.noSlides': 'No slide elements found',
+    'pdf.progress': 'Capturing {i} / {total}',
+    'pdf.saved': 'Saved {file}',
+    'pdf.failed': 'Export failed: {reason}',
+    'anno.action.note': 'Feedback note (for agent only)',
+    'anno.action.image': 'Add image',
+    'anno.action.delete': 'Remove annotation',
+    'anno.placeholder.content': 'Text to insert…',
+    'anno.placeholder.note': 'Note for agent…',
+    'note.title': 'Element feedback',
+    'note.placeholder': 'Feedback for this element (delete / change / redraw / note for agent...)',
+    'tip.font': 'Font (double-click element to edit text directly)',
+    'tip.highlight': 'Highlight (marker)',
+    'highlight.clear': 'Clear highlight',
+    'op.highlight': 'Highlighted',
+    'tip.replaceImg': 'Replace image',
+    'tip.moveUp': 'Move up 4px (Shift = 16px)',
+    'tip.moveDown': 'Move down 4px (Shift = 16px)',
+    'tip.moveLeft': 'Move left 4px (Shift = 16px)',
+    'tip.moveRight': 'Move right 4px (Shift = 16px)',
+    'tip.zoomIn': 'Zoom in 10%',
+    'tip.zoomOut': 'Zoom out 10%',
+    'tip.note': 'Write feedback for this element (no source change)',
+    'tip.link': 'Edit hyperlink (href)',
+    'tip.hide': 'Hide (placeholder kept)',
+    'tip.delete': 'Delete (no placeholder)',
+    'tip.restore': 'Restore all transforms',
+    'tip.close': 'Deselect',
+    'tip.rotate': 'Drag to rotate · Hold Shift to snap 15°',
+    'tip.scale': 'Drag to scale',
+    'overlay.edit': 'Edit mode (E)',
+    'overlay.feedback': 'Feedback panel (F)',
+    'overlay.export': 'Export PDF · Shift+click = long-image',
+    'overlay.save': 'Patch source HTML with all edits (auto-backup) · Right-click to reselect dir',
+    'overlay.marquee': 'Marquee annotate: drag a box → text / image',
+    'overlay.help': 'Shortcuts / Help',
+    'overlay.fold': 'Collapse toolbar (click edit to expand + enter edit)',
+    'help.title': 'Shortcuts',
+    'help.group.modes': 'Modes',
+    'help.group.actions': 'Actions',
+    'help.group.export': 'Export',
+    'help.group.misc': 'More',
+    'help.shortcut.edit': 'Edit mode',
+    'help.shortcut.feedback': 'Feedback panel',
+    'help.shortcut.marquee': 'Marquee annotate',
+    'help.shortcut.cancel': 'Cancel selection',
+    'help.shortcut.delete': 'Delete selected element',
+    'help.shortcut.save': 'Save feedback',
+    'help.shortcut.copy': 'Copy feedback',
+    'help.shortcut.pdfVector': 'Vector PDF',
+    'help.shortcut.pdfImage': 'Long-image PDF',
+    'help.shortcut.help': 'Toggle help',
+  },
+};
+
+const LOCALE_STORAGE_KEY = 'fbw-locale';
+let currentLocale = null;
+
+function readStoredLocale() {
+  try {
+    const v = localStorage.getItem(LOCALE_STORAGE_KEY);
+    return v && DICT[v] ? v : null;
+  } catch (_) { return null; }
+}
+
+function detectLocale() {
+  if (typeof window !== 'undefined' && window.__fbwLocale && DICT[window.__fbwLocale]) {
+    return window.__fbwLocale;
+  }
+  const stored = readStoredLocale();
+  if (stored) return stored;
+  const lang = (typeof navigator !== 'undefined' && navigator.language || 'en').toLowerCase();
+  return lang.startsWith('zh') ? 'zh' : 'en';
+}
+
+export function setLocale(loc) {
+  if (DICT[loc]) currentLocale = loc;
+}
+
+export function getLocale() {
+  if (!currentLocale) currentLocale = detectLocale();
+  return currentLocale;
+}
+
+// 切换语言并重载页面（最简单的"全局重渲染"策略）
+export function toggleLocale() {
+  const cur = getLocale();
+  const next = cur === 'zh' ? 'en' : 'zh';
+  try { localStorage.setItem(LOCALE_STORAGE_KEY, next); } catch (_) {}
+  if (typeof location !== 'undefined') location.reload();
+}
+
+export function t(key, args) {
+  const loc = getLocale();
+  const dict = DICT[loc] || DICT.en;
+  let s = dict[key];
+  if (s === undefined) s = (DICT.en && DICT.en[key]) || key;
+  if (args) {
+    Object.keys(args).forEach(k => {
+      s = s.replace(new RegExp('\\{' + k + '\\}', 'g'), args[k]);
+    });
+  }
+  return s;
+}

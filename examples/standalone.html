@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>feedback-widget · 长页面演示</title>
+<style>
+  :root {
+    --bg: #f6f5f0;
+    --ink: #1a1a1a;
+    --muted: #555;
+    --accent: #2c5d4f;
+    --paper: #fff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+  header.site {
+    padding: 64px 32px 48px;
+    background: linear-gradient(180deg, #2c5d4f 0%, #1d4a3e 100%);
+    color: #f6f5f0;
+    text-align: center;
+  }
+  header.site h1 { font-size: 40px; margin: 0 0 12px; letter-spacing: -0.01em; }
+  header.site .subtitle { font-size: 16px; color: rgba(246,245,240,0.78); }
+  header.site .meta { font-size: 12px; color: rgba(246,245,240,0.55); margin-top: 24px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  main { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  section {
+    padding: 80px 0 40px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    min-height: 80vh;
+  }
+  section:last-child { border-bottom: 0; }
+
+  .label {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  h2 { font-size: 32px; margin: 0 0 16px; line-height: 1.25; letter-spacing: -0.005em; }
+  h3 { font-size: 19px; margin: 24px 0 8px; color: var(--ink); }
+  p { margin: 0 0 14px; color: var(--muted); font-size: 15.5px; }
+  p strong { color: var(--ink); font-weight: 600; }
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 16px;
+    margin: 20px 0;
+    font-style: italic;
+    color: var(--ink);
+  }
+  ul { padding-left: 20px; color: var(--muted); }
+  li { margin-bottom: 6px; }
+
+  .card {
+    background: var(--paper);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 24px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .card .card-title { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+  .card .card-meta { font-size: 12px; color: #999; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .grid-2 .stat {
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .grid-2 .stat .num { font-size: 32px; font-weight: 700; color: var(--accent); }
+  .grid-2 .stat h3 { font-size: 13px; margin: 4px 0 0; color: var(--muted); font-weight: 500; }
+
+  .image-placeholder {
+    background: linear-gradient(135deg, #d9d4c0 0%, #c8c1a8 100%);
+    border-radius: 10px;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0,0,0,0.35);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    margin: 24px 0;
+  }
+
+  footer.site {
+    padding: 64px 32px;
+    background: #1a1a1a;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    font-size: 13px;
+  }
+
+  /* demo 自己的 hint 已删除——快捷键提示集成到 widget 浮窗里（点 ⌨ FAB 查看） */
+</style>
+</head>
+<body>
+
+<header class="site" data-screen-label="开篇">
+  <h1>feedback-widget</h1>
+  <div class="subtitle">长页面 / 滚动场景 适配演示</div>
+  <div class="meta">v1.0 · 2026-05-09</div>
+</header>
+
+<main>
+
+  <section data-screen-label="开篇">
+    <div class="label">01 · INTRO</div>
+    <h2>长内容里的反馈，应该和短内容一样自然</h2>
+    <p>这是一个非 deck 风格的长滚动页面。widget 应当能够：</p>
+    <ul>
+      <li>跟随滚动，工具栏与选中元素的相对位置稳定</li>
+      <li>当前页（section）通过 IntersectionObserver 自动切换，反馈面板里"当前页"标签随之更新</li>
+      <li>框选标注在页面任意区域都能精准记录其相对 section 的百分比位置</li>
+      <li>面板（F）与 deck-stage overlay 的浮动位置不被滚动打乱</li>
+    </ul>
+    <blockquote>
+      简单页面是基本功，长页面才暴露功能边界。本页有 7 个 section，每个 section 至少占一屏高度。
+    </blockquote>
+  </section>
+
+  <section data-screen-label="数据观察">
+    <div class="label">02 · DATA</div>
+    <h2>数字本身不会说话</h2>
+    <p>但放在一起就会。</p>
+    <div class="grid-2">
+      <div class="stat"><div class="num">280%</div><h3>反馈采集效率提升</h3></div>
+      <div class="stat"><div class="num">12</div><h3>核心 UI 模块迭代轮次</h3></div>
+      <div class="stat"><div class="num">7</div><h3>section 长度阈值</h3></div>
+      <div class="stat"><div class="num">100%</div><h3>跨 deck / 长页面一致体验</h3></div>
+    </div>
+    <p>选中其中任意一个数字框，<strong>试试在 4 角的对角外旋转，或拖角缩放</strong>。看看长页面里 handles 是否能跟随元素。</p>
+  </section>
+
+  <section data-screen-label="编辑能力">
+    <div class="label">03 · EDIT</div>
+    <h2>元素级编辑：移动 / 缩放 / 旋转 / 字体 / 隐藏 / 删除</h2>
+    <p>按 <kbd>E</kbd> 进入编辑模式，单击元素选中，双击直接修改文字。这一段可以双击改写——把"<strong>这一段可以双击改写</strong>"改成你想要的版本。</p>
+    <div class="card">
+      <div class="card-title">演示卡片 A</div>
+      <div class="card-meta">用于测试卡片整体的 transform 操作</div>
+      <p>选中这张卡片，拖角试试缩放，拖角外（对角线方向）旋转。试试 Aa 字体按钮看是否可以切换字体。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">演示卡片 B</div>
+      <div class="card-meta">用于测试相邻卡片之间的影响</div>
+      <p>编辑模式下隐藏 / 删除某一张卡片，看其他卡片的 layout 反应。</p>
+    </div>
+  </section>
+
+  <section data-screen-label="反馈采集">
+    <div class="label">04 · FEEDBACK</div>
+    <h2>三种反馈形态：全局 / 每页 / 每个元素</h2>
+    <h3>全局反馈</h3>
+    <p>对整体感受的留言。按 <kbd>F</kbd> 打开面板，最下面那条 textarea。</p>
+    <h3>每页反馈</h3>
+    <p>面板的"当前页"区会随滚动自动切换 section。这条段落归属于"04 · FEEDBACK"。</p>
+    <h3>每个元素反馈</h3>
+    <p>选中元素后，工具栏里有 💬 按钮。点开能写针对该元素的备注，给 agent 看。</p>
+  </section>
+
+  <section data-screen-label="框选标注">
+    <div class="label">05 · MARQUEE</div>
+    <h2>任意位置框选 + 上传图片 / 写文字</h2>
+    <p>点击 deck 底部 overlay 里的框选按钮（FAB 模式下不显示——见 issue），然后在画面任意区域拖动画一个矩形框。</p>
+    <p>松开后小绿色 pill 工具条出现：</p>
+    <ul>
+      <li>✎ 写文字反馈</li>
+      <li>📷 上传参考图片</li>
+      <li>✕ 删除该标注</li>
+    </ul>
+    <p><strong>关键测试</strong>：在不同 section 各画一个框，刷新页面，看是否都还在原位（rectPct 是否随 section 缩放正确）。</p>
+    <div class="image-placeholder">这里是一个虚拟图片占位区</div>
+  </section>
+
+  <section data-screen-label="语言切换">
+    <div class="label">06 · I18N</div>
+    <h2>中文 ⇄ 英文 一键切换</h2>
+    <p>面板顶部有 🌐 图标按钮，点击在 zh / en 间切换。当前 locale 会持久化到 localStorage，刷新仍然是上次的设置。</p>
+    <p>默认按 <code>navigator.language</code> 自动检测——浏览器语言以 <code>zh</code> 开头默认中文，否则英文。</p>
+    <div class="card">
+      <div class="card-title">所有 toast / 模态 / 占位符 / 按钮 tooltip</div>
+      <div class="card-meta">80+ keys 双语</div>
+      <p>切换后所有文字立刻变为目标语言。</p>
+    </div>
+  </section>
+
+  <section data-screen-label="完整测试">
+    <div class="label">07 · CHECK</div>
+    <h2>滚动测试 checklist</h2>
+    <ul>
+      <li>滚动到任意位置，按 F 打开面板，看面板浮动位置不变（fixed）</li>
+      <li>反馈面板"当前页"标签随滚动切换（IntersectionObserver）</li>
+      <li>选中元素后滚动，工具栏 + 4 角 handles 跟随元素位置</li>
+      <li>编辑模式下做 5+ 处改动，关闭编辑模式（按 E）→ 看到 toast "编辑模式已关闭 · N 处改动暂存中"</li>
+      <li>不同 section 各画 1 个框选标注，刷新页面，看标注是否回到原位</li>
+      <li>切换中英文，所有文字应同步切换</li>
+      <li>保存反馈 → ~/.feedback-widget/sessions/ 应有 .json + .md + 图片附件</li>
+    </ul>
+    <p>跑完上面 checklist 没问题，就说明长页面适配到位。</p>
+  </section>
+
+</main>
+
+<footer class="site">
+  长页面演示 · 反馈插件兼容性测试基线
+</footer>
+
+<!-- 快捷键提示已集成到 widget 浮窗（点右下角 pill 里的 ⌨ 图标查看） -->
+
+<script src="../dist/redline.js?v=2.1.0"></script>
+</body>
+</html>

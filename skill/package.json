@@ -1,0 +1,13 @@
+{
+  "name": "redline-skill",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Skill helper to apply redline sessions to source HTML",
+  "bin": {
+    "redline-apply": "./apply.mjs"
+  },
+  "dependencies": {
+    "jsdom": "^25.0.1"
+  }
+}

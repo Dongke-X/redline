@@ -1,0 +1,81 @@
+name: 🐛 Bug
+description: 报 redline widget / extension / skill 的 bug
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: redline 版本
+      description: 见 `package.json` 或 widget 控制台输出第一行
+      placeholder: e.g. 2.6.2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: 哪一面出问题
+      multiple: true
+      options:
+        - widget (浏览器内插件)
+        - chrome 扩展 (extension/)
+        - skill / apply.mjs (Claude Code 端)
+        - session.json 协议
+        - 文档
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: 应用模式
+      options:
+        - deck (有 deck-stage)
+        - doc (HTML 文档)
+        - review (任意 webapp)
+        - 不确定 / 不适用
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: 浏览器 + OS
+      placeholder: Chrome 130 / macOS 14
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开 X 页面
+        2. 按 E 进编辑模式
+        3. 选中 .foo
+        4. 期望：toolbar 出现
+        5. 实际：toolbar 不出
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: 控制台输出
+      description: 浏览器先跑 `window.__fbwDebug = true` 再复现，把 console 输出贴上来
+      render: shell
+
+  - type: textarea
+    id: session
+    attributes:
+      label: session.json（如果是 apply 出问题）
+      description: |
+        路径通常是 `~/.redline/sessions/<stem>.json`。
+        session.json 包含 widgetVersion / appMode / env metadata，是结构化复现包。
+      render: json
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: 其他信息
+      description: 截图、录屏、相关 PR / 引用 issue

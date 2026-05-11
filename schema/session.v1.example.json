@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "widgetVersion": "0.3.0-dev",
+  "sessionId": "fbw-sess-1715234567890-abc123",
+  "capturedAt": "2026-05-09T10:30:00.000Z",
+  "page": {
+    "url": "file:///path/to/your/project/proposal.html",
+    "title": "Your Page Title",
+    "pathname": "/path/to/your/project/proposal.html"
+  },
+  "source": {
+    "hint": "proposal.html",
+    "matchBy": "pathname"
+  },
+  "feedback": {
+    "global": "整体节奏 OK，但中段 4 页可以合成 2 页，第 7 页的 KPI 数字需要 sourcing。",
+    "perSection": [
+      {
+        "secId": "fbw-sec-2",
+        "secLabel": "现状",
+        "note": "这一页的左侧大字偏重，建议把 quote 缩小一档。"
+      }
+    ]
+  },
+  "edits": [
+    {
+      "op": "text",
+      "selector": {
+        "id": null,
+        "cssPath": "[data-fbw-sec-id=\"fbw-sec-0\"] > div > h1",
+        "contentHash": { "sample": "农乐园 × 关键食刻", "hash": "a3f29b04" },
+        "fbId": "fbw-e-3",
+        "tag": "h1"
+      },
+      "section": "封面",
+      "before": "农乐园 × 关键食刻",
+      "after": "农乐园 × 关键食刻 — Brand Skill 提案"
+    },
+    {
+      "op": "move",
+      "selector": {
+        "id": null,
+        "cssPath": "[data-fbw-sec-id=\"fbw-sec-1\"] > .lockup",
+        "contentHash": { "sample": "数据基线", "hash": "1c8e9d2f" },
+        "fbId": "fbw-e-12",
+        "tag": "div"
+      },
+      "descriptor": "[现状] · div.lockup · \"数据基线\"",
+      "args": { "x": 12, "y": -8 }
+    },
+    {
+      "op": "delete",
+      "selector": {
+        "id": null,
+        "cssPath": "[data-fbw-sec-id=\"fbw-sec-3\"] > section.scribble:nth-of-type(2)",
+        "contentHash": { "sample": "TBD：客户证言", "hash": "ff2a91c0" },
+        "fbId": "fbw-e-22",
+        "tag": "section"
+      },
+      "descriptor": "[第 4 页] · section.scribble · \"TBD：客户证言\""
+    }
+  ],
+  "attachments": [
+    {
+      "id": "fbw-att-1715234100000-xz9",
+      "name": "对比稿截图.png",
+      "type": "image/png",
+      "dataURL": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA..."
+    }
+  ]
+}

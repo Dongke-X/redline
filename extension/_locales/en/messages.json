@@ -1,0 +1,29 @@
+{
+  "extName": {
+    "message": "Redline",
+    "description": "Extension name"
+  },
+  "extDesc": {
+    "message": "Inject the Redline feedback widget into any web page — edit text, annotate, screenshot, and ship a feedback bundle to your agent.",
+    "description": "Extension short description (≤132 chars)"
+  },
+  "actionTitle": {
+    "message": "Open Redline (inject into current page)",
+    "description": "Toolbar icon tooltip"
+  },
+  "popup_status_idle": { "message": "Not injected on this tab" },
+  "popup_status_injected": { "message": "Active on this tab" },
+  "popup_status_blocked": { "message": "Cannot inject on this URL scheme" },
+  "popup_btn_inject": { "message": "Inject Redline" },
+  "popup_btn_toggle": { "message": "Toggle panel" },
+  "popup_btn_options": { "message": "Settings" },
+  "popup_footer_repo": { "message": "Source · Issues" },
+  "options_title": { "message": "Redline Settings" },
+  "options_save_mode_label": { "message": "Default save mode" },
+  "options_save_mode_zip": { "message": "Download ZIP (recommended)" },
+  "options_save_mode_fs": { "message": "Write to local folder (FS Access)" },
+  "options_autoinject_label": { "message": "Auto-inject on these domains (one per line)" },
+  "options_autoinject_placeholder": { "message": "example.com\nstaging.myapp.io" },
+  "options_save_btn": { "message": "Save settings" },
+  "options_saved_toast": { "message": "Saved." }
+}

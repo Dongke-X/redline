@@ -1,0 +1,242 @@
+// 元素工具栏 click 处理 + 拖拽逻辑。
+import { state } from '../core/state.js';
+import { onMousemove, onMouseup } from '../utils/events.js';
+import {
+  recordOp, clearOpsOn, getElTransform, setElTransform,
+  recordNote, getElementNote,
+} from '../core/elements.js';
+import { deselectElement, positionToolbar, followToolbar, liftTarget } from './selection.js';
+import { openFontPicker, closeFontPicker } from './fonts.js';
+import { openMarkerPopover, closeMarkerPopover } from './marker.js';
+import { renderAttachments } from '../feedback/attachments.js';
+import { showToast } from '../utils.js';
+import { t } from '../i18n.js';
+
+function refreshNoteButtonIndicator(el) {
+  const btn = state.elemToolbar?.querySelector('[data-op="note"]');
+  if (!btn) return;
+  btn.classList.toggle('fbw-has-note', !!getElementNote(el));
+}
+
+function positionNotePopover() {
+  if (!state.notePopover) return;
+  const btn = state.elemToolbar.querySelector('[data-op="note"]');
+  if (!btn) return;
+  const r = btn.getBoundingClientRect();
+  const popover = state.notePopover;
+  let top = r.bottom + 6;
+  let left = r.left;
+  if (left + 300 > window.innerWidth - 8) left = window.innerWidth - 308;
+  if (left < 8) left = 8;
+  if (top + 180 > window.innerHeight - 8) top = Math.max(8, r.top - 186);
+  popover.style.top = top + 'px';
+  popover.style.left = left + 'px';
+}
+
+export function openNotePopover(el) {
+  const popover = state.notePopover;
+  if (!popover) return;
+  const ta = popover.querySelector('[data-fbw-note-text]');
+  ta.value = getElementNote(el);
+  popover.classList.add('fbw-on');
+  positionNotePopover();
+  setTimeout(() => ta.focus(), 0);
+}
+
+export function closeNotePopover() {
+  if (state.notePopover) state.notePopover.classList.remove('fbw-on');
+}
+
+export function attachNotePopoverEvents() {
+  const popover = state.notePopover;
+  if (!popover) return;
+  const ta = popover.querySelector('[data-fbw-note-text]');
+
+  // 阻止键盘事件冒泡到全局快捷键 / 编辑模式监听
+  ['keydown', 'keyup', 'keypress'].forEach(ev =>
+    ta.addEventListener(ev, e => e.stopPropagation()));
+
+  ta.addEventListener('input', () => {
+    if (!state.selectedEl) return;
+    recordNote(state.selectedEl, ta.value);
+    refreshNoteButtonIndicator(state.selectedEl);
+  });
+
+  popover.querySelector('[data-fbw-note-close]').addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeNotePopover();
+  });
+
+  // 点 popover 外面关闭
+  document.addEventListener('mousedown', (e) => {
+    if (!popover.classList.contains('fbw-on')) return;
+    if (e.target.closest('.fbw-note-popover, .fbw-elem-toolbar')) return;
+    closeNotePopover();
+  }, true);
+}
+
+export function attachToolbarEvents() {
+  state.elemToolbar.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-op]');
+    if (!btn || !state.selectedEl) return;
+    e.stopPropagation();
+    const op = btn.dataset.op;
+    const el = state.selectedEl;
+
+    if (op === 'close') { deselectElement(); return; }
+    if (op === 'delete') { recordOp(el, 'delete'); el.dataset.fbwOpDeleted = '1'; showToast(t('op.delete')); return; }
+    if (op === 'hide')   { recordOp(el, 'hide');   el.dataset.fbwOpHidden  = '1'; showToast(t('op.hide')); return; }
+    if (op === 'link') {
+      // a[href] 才能改链接。selection.js 已经按元素类型显隐，这里再兜底防御。
+      if (el.tagName !== 'A') return;
+      const before = el.getAttribute('href') || '';
+      // MVP：用 prompt 输入。复杂 popover 后续再做。
+      const after = prompt(t('op.link.prompt') || '改链接 (href)：', before);
+      if (after == null) return;          // 用户取消
+      const trimmed = after.trim();
+      if (trimmed === before) return;     // 没变
+      el.setAttribute('href', trimmed);
+      recordOp(el, 'href', { before, after: trimmed });
+      showToast(t('op.link.done') || `链接已改：${trimmed.slice(0, 40)}${trimmed.length > 40 ? '…' : ''}`);
+      return;
+    }
+    if (op === 'restore') {
+      delete el.dataset.fbwOpDeleted;
+      delete el.dataset.fbwOpHidden;
+      delete el.dataset.fbwTx; delete el.dataset.fbwTy; delete el.dataset.fbwScale; delete el.dataset.fbwRotate;
+      delete el.dataset.fbwHighlight;
+      el.style.transform = ''; el.style.backgroundImage = '';
+      el.style.backgroundColor = '';
+      if (el.tagName === 'IMG' && el.dataset.fbwOriginalSrc) {
+        el.src = el.dataset.fbwOriginalSrc;
+        delete el.dataset.fbwOriginalSrc;
+      }
+      clearOpsOn(el);
+      showToast(t('op.restore'));
+      positionToolbar(el);
+      return;
+    }
+    if (op.startsWith('move-')) {
+      const dir = op.slice(5);
+      const t = getElTransform(el);
+      const step = e.shiftKey ? 16 : 4;
+      if (dir === 'up') t.y -= step;
+      if (dir === 'down') t.y += step;
+      if (dir === 'left') t.x -= step;
+      if (dir === 'right') t.x += step;
+      setElTransform(el, t);
+      recordOp(el, 'move', { x: t.x, y: t.y });
+      positionToolbar(el);
+      return;
+    }
+    if (op === 'zoom-in' || op === 'zoom-out') {
+      const t = getElTransform(el);
+      const factor = op === 'zoom-in' ? 1.1 : (1 / 1.1);
+      t.scale = Math.max(0.2, Math.min(3, t.scale * factor));
+      setElTransform(el, t);
+      recordOp(el, 'scale', { scale: parseFloat(t.scale.toFixed(3)) });
+      positionToolbar(el);
+      return;
+    }
+    if (op === 'font') {
+      window.__fbwSelEl = el;
+      if (state.fontPicker.classList.contains('fbw-fp-open')) closeFontPicker();
+      else { closeMarkerPopover(); closeNotePopover(); openFontPicker(); }
+      return;
+    }
+    if (op === 'highlight') {
+      if (state.markerPopover?.classList.contains('fbw-on')) closeMarkerPopover();
+      else { closeFontPicker(); closeNotePopover(); openMarkerPopover(); }
+      return;
+    }
+    if (op === 'note') {
+      if (state.notePopover?.classList.contains('fbw-on')) closeNotePopover();
+      else { closeFontPicker(); closeMarkerPopover(); openNotePopover(el); }
+      return;
+    }
+    if (op === 'replace-img') {
+      const input = document.createElement('input');
+      input.type = 'file'; input.accept = 'image/*';
+      input.onchange = (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (el.tagName === 'IMG') {
+            if (!el.dataset.fbwOriginalSrc) el.dataset.fbwOriginalSrc = el.src;
+            el.src = reader.result;
+          } else {
+            el.style.backgroundImage = `url(${reader.result})`;
+          }
+          recordOp(el, 'replace-img', { name: file.name });
+          state.attachments.push({
+            id: 'fbw-att-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+            name: file.name || ('替换图-' + Date.now() + '.png'),
+            dataURL: reader.result, type: file.type,
+          });
+          renderAttachments();
+          showToast(t('op.replaceImg'));
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    }
+  });
+}
+
+// 拖拽：mousedown 只记录"潜在"拖拽意图；只有 mousemove 越过阈值才真正进入拖拽。
+// 这样避免点击元素时因为微小手指抖动被误判为拖动。
+const DRAG_THRESHOLD = 10; // 像素，超过才算拖
+
+let pendingDrag = null;
+
+export function attachDragEvents() {
+  document.addEventListener('mousedown', (e) => {
+    if (!state.editMode || !state.selectedEl) return;
+    if (e.button !== 0) return;
+    if (e.target.closest('.fbw-elem-toolbar, .fbw-panel, .fbw-fab, .fbw-resize-handle')) return;
+    const t = e.target;
+    const lifted = liftTarget(t);
+    const sameAsSelected = (t === state.selectedEl) || (lifted === state.selectedEl) || state.selectedEl.contains(t);
+    if (!sameAsSelected) return;
+    if (state.selectedEl.dataset.fbwEditing === '1') return;
+    // ⚠️ 不在这里 preventDefault，让浏览器默认 click/blur 行为正常跑
+    const tr = getElTransform(state.selectedEl);
+    pendingDrag = {
+      el: state.selectedEl,
+      startX: e.clientX, startY: e.clientY,
+      baseX: tr.x, baseY: tr.y, baseScale: tr.scale,
+    };
+  }, true);
+
+  onMousemove((e) => {
+    // 还没确认拖拽 → 检查是否越阈值
+    if (pendingDrag && !state.dragState) {
+      const dx = e.clientX - pendingDrag.startX;
+      const dy = e.clientY - pendingDrag.startY;
+      if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+      // 越阈值，正式进入拖拽
+      state.dragState = { ...pendingDrag, moved: true };
+      pendingDrag = null;
+      document.body.style.cursor = 'move';
+      e.preventDefault();
+    }
+    if (!state.dragState) return;
+    const dx = e.clientX - state.dragState.startX;
+    const dy = e.clientY - state.dragState.startY;
+    const t = { x: state.dragState.baseX + dx, y: state.dragState.baseY + dy, scale: state.dragState.baseScale };
+    setElTransform(state.dragState.el, t);
+    followToolbar();
+  });
+
+  onMouseup(() => {
+    pendingDrag = null;
+    if (!state.dragState) return;
+    const el = state.dragState.el;
+    if (state.dragState.moved) {
+      const tr = getElTransform(el);
+      recordOp(el, 'move', { x: Math.round(tr.x), y: Math.round(tr.y) });
+    }
+    state.dragState = null;
+    document.body.style.cursor = '';
+  });
+}

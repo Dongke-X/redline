@@ -1,0 +1,37 @@
+name: 💡 Feature / Improvement
+description: 提建议或新功能
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你想解决什么问题
+      description: 用例 + 现在哪里卡 / 不顺。不要直接说"加个 X 按钮"，先说为什么需要。
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 你想到的方案
+      description: 可选；如果有 mockup / 流程图就贴
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 涉及哪一面
+      multiple: true
+      options:
+        - widget (浏览器内插件)
+        - chrome 扩展
+        - skill / apply.mjs
+        - session.json 协议
+        - 文档
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 你考虑过的替代方案
+      description: 可选
