@@ -2,7 +2,7 @@
 import { state } from './core/state.js';
 import { DBG, SECTION_SELECTORS } from './config.js';
 import { CSS } from './assets/styles.js';
-import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_MARQUEE, ICON_KEYBOARD, ICON_FOLD, ICON_EYEDROPPER } from './assets/icons.js';
+import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_MARQUEE, ICON_KEYBOARD, ICON_FOLD, ICON_EYEDROPPER, ICON_UNDO, ICON_REDO } from './assets/icons.js';
 import { t } from './i18n.js';
 import { toggleMarqueeMode } from './edit/marquee.js';
 import { attachTooltipDelegation } from './tooltip.js';
@@ -16,7 +16,7 @@ import { attachFontPickerEvents } from './edit/fonts.js';
 import { attachMarkerEvents } from './edit/marker.js';
 import { createResizeHandlesNode, attachResizeEvents } from './edit/resize.js';
 import { createTagPopoverNode, attachTagPopoverEvents } from './edit/tag-switch.js';
-import { undo, redo } from './core/undo.js';
+import { undo, redo, canUndo, canRedo } from './core/undo.js';
 import { copySelectedDescriptor } from './edit/clipboard.js';
 import { toggleAudit, refreshAuditIfOn } from './edit/audit.js';
 import { showMeasurement, hideMeasurement } from './edit/measure.js';
@@ -78,6 +78,22 @@ function createDom() {
   pickFab.setAttribute('aria-label', t('overlay.pick'));
   state.pickFab = pickFab;
 
+  const undoFab = document.createElement('button');
+  undoFab.className = 'fbw-fab fbw-undo-fab';
+  undoFab.innerHTML = ICON_UNDO;
+  undoFab.dataset.tooltip = t('overlay.undo');
+  undoFab.setAttribute('aria-label', t('overlay.undo'));
+  undoFab.style.display = 'none';
+  state.undoFab = undoFab;
+
+  const redoFab = document.createElement('button');
+  redoFab.className = 'fbw-fab fbw-redo-fab';
+  redoFab.innerHTML = ICON_REDO;
+  redoFab.dataset.tooltip = t('overlay.redo');
+  redoFab.setAttribute('aria-label', t('overlay.redo'));
+  redoFab.style.display = 'none';
+  state.redoFab = redoFab;
+
   const exportFab = document.createElement('button');
   exportFab.className = 'fbw-fab fbw-export-fab';
   exportFab.innerHTML = ICON_SHARE;
@@ -135,6 +151,9 @@ function createDom() {
   fabBar.appendChild(marqueeFab);
   fabBar.appendChild(pickFab);
   fabBar.appendChild(exportFab);
+  // undo / redo 默认隐藏；栈非空才显示，避免空状态占视觉
+  fabBar.appendChild(undoFab);
+  fabBar.appendChild(redoFab);
   const fabDivider = document.createElement('span');
   fabDivider.className = 'fbw-fab-divider';
   fabBar.appendChild(fabDivider);
@@ -276,6 +295,12 @@ function attachKeyboardShortcuts() {
   }, true);
 }
 
+// 撤销 / 重做 FAB 可见性：跟着栈非空状态走。挂到 onChangeHook 上每次 op 后刷新
+function refreshUndoFabs() {
+  if (state.undoFab) state.undoFab.style.display = canUndo() ? 'inline-flex' : 'none';
+  if (state.redoFab) state.redoFab.style.display = canRedo() ? 'inline-flex' : 'none';
+}
+
 function attachFabClicks() {
   // 编辑 FAB：折叠态时先展开 + 进编辑；展开态走原 toggleEdit 逻辑
   state.editFab.addEventListener('click', () => {
@@ -289,6 +314,8 @@ function attachFabClicks() {
   state.exportFab.addEventListener('click', (e) => exportPDF({ image: e.shiftKey }, deselectElement));
   state.marqueeFab.addEventListener('click', toggleMarqueeMode);
   state.pickFab.addEventListener('click', (e) => { e.stopPropagation(); pickColor(); });
+  state.undoFab.addEventListener('click', (e) => { e.stopPropagation(); undo(); refreshUndoFabs(); });
+  state.redoFab.addEventListener('click', (e) => { e.stopPropagation(); redo(); refreshUndoFabs(); });
   state.helpFab.addEventListener('click', (e) => { e.stopPropagation(); toggleHelpPopover(); });
   state.foldFab.addEventListener('click', (e) => { e.stopPropagation(); setFabCollapsed(true); });
   // fbFab click 由 panel.js 装载
@@ -463,7 +490,7 @@ export function init() {
   attachSlideTracking(sections);
   attachAttachmentEvents();
   attachKeyboardShortcuts();
-  state.onChangeHook = refreshAuditIfOn;
+  state.onChangeHook = () => { refreshAuditIfOn(); refreshUndoFabs(); };
   attachFabClicks();
   attachFabVisibility();
   attachFabBgDetection();

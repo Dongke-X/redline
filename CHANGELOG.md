@@ -6,6 +6,18 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.17 — 2026-05-12  ·  撤销/重做 FAB + help 自适应
+
+### Added
+- **撤销 / 重做 FAB 按钮**：FAB bar 上 export 之后多了两个弯曲箭头。**条件可见**：栈非空才显示，避免空状态占视觉。点击 = ⌘Z / ⌘⇧Z，跟键盘 + Gmail toast 三条路径并存
+- 折叠状态下隐藏（跟其他非 edit FAB 一致）
+
+### Fixed
+- **帮助 popover 自适应**：内容比视口高时加 `max-height: 100vh - 24px` + `overflow-y: auto`，并 clamp top 避免弹出框超出视口底部
+- FAB 折叠后再展开，旧的可见性状态被新逻辑 refresh，不再错乱
+
+---
+
 ## 0.1.16 — 2026-05-12  ·  取色器迁到工具栏
 
 ### Changed

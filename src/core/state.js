@@ -28,6 +28,8 @@ export const state = {
   /** @type {HTMLElement|null} */ marqueeFab: null,
   /** @type {HTMLElement|null} */ pickFab: null,
   /** @type {HTMLElement|null} */ exportFab: null,
+  /** @type {HTMLElement|null} */ undoFab: null,
+  /** @type {HTMLElement|null} */ redoFab: null,
   /** @type {HTMLElement|null} */ helpFab: null,
   /** @type {HTMLElement|null} */ helpPopover: null,
   /** @type {HTMLElement|null} */ foldFab: null,

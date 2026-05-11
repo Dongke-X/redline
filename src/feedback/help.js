@@ -56,17 +56,25 @@ export function buildHelpPopoverHTML() {
 
 function positionHelpPopover() {
   if (!state.helpPopover) return;
-  // 优先用 deck-overlay 里的帮助按钮，没有再退回到右下角 FAB
   const anchor = state.helpToggleBtn || state.helpFab;
   if (!anchor) return;
   const fabRect = anchor.getBoundingClientRect();
   const popover = state.helpPopover;
+  // 内容超出视口高度时给 popover 加滚动条 + 限高，避免单列把整个屏幕吃掉
+  const vh = window.innerHeight;
+  const maxH = vh - 24;
+  popover.style.maxHeight = maxH + 'px';
+  popover.style.overflowY = 'auto';
   const ttRect = popover.getBoundingClientRect();
   let left = fabRect.left + fabRect.width / 2 - ttRect.width / 2;
   let top = fabRect.top - ttRect.height - 12;
   if (left < 8) left = 8;
   if (left + ttRect.width > window.innerWidth - 8) left = window.innerWidth - ttRect.width - 8;
+  // 顶上放不下 → 改放下面；下面也放不下 → 贴顶部 + 在视口内滚动
   if (top < 8) top = fabRect.bottom + 12;
+  if (top + ttRect.height > vh - 8) {
+    top = Math.max(8, vh - ttRect.height - 8);
+  }
   popover.style.left = left + 'px';
   popover.style.top = top + 'px';
 }
