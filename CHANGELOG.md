@@ -6,6 +6,18 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.9 — 2026-05-12  ·  面板质感 visual pass
+
+### Changed
+- **面板暖深底**：从冷灰 `rgba(20,22,28)` 切到暖深 `rgba(28,25,22)`，跟 redline landing 的米色基调呼应；阴影叠加 inset 顶光，浮起感更强
+- **保存反馈 = 真正的 primary**：品牌红线性渐变填充 + 内阴影 + hover 红光晕。和「复制反馈」(ghost) 主次终于看得出来
+- **Pill 0 自动淡化**：count=0 时 opacity 0.45 + 灰底；有数才变成红底 + 红字加粗。看一眼就知道哪几项有改动
+- **textarea focus 改红环**：从灰边切到品牌红边 + 红色 outer glow（`box-shadow 0 0 0 3px rgba(220,60,60,0.10)`）
+- **FAB 激活态加红底**：原来只换图标色，跟 hover 灰底容易混。现在 active 是红半透底 + 红 inset 描边，跟 hover 拉开距离
+- **mode chip 走 monospace**：小号大写字母 + 字距加宽，看着像 status tag 而不是装饰
+
+---
+
 ## 0.1.8 — 2026-05-12  ·  审计上色 + Tag hover 预览 + 文字编辑入栈
 
 ### Changed

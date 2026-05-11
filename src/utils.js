@@ -37,14 +37,21 @@ export function showToast(msg, opts) {
 
 // 更新面板四个数字 pill + overlay 保存编辑按钮的 badge。
 // getChanges 由 elements.js 提供，从外部传入避免循环依赖。
+function setPillCount(node, n) {
+  if (!node) return;
+  node.textContent = n;
+  const pill = node.closest('.fbw-pill');
+  if (pill) pill.classList.toggle('fbw-has-count', Number(n) > 0);
+}
+
 export function updateCounter(getChangesFn) {
   if (!state.panel) return;
   const editCount = getChangesFn ? getChangesFn().length : 0;
-  state.panel.querySelector('[data-fbw-counter="edit"]').textContent = editCount;
-  state.panel.querySelector('[data-fbw-counter="sec"]').textContent = state.sectionFeedback.size;
-  state.panel.querySelector('[data-fbw-counter="att"]').textContent = state.attachments.length;
+  setPillCount(state.panel.querySelector('[data-fbw-counter="edit"]'), editCount);
+  setPillCount(state.panel.querySelector('[data-fbw-counter="sec"]'), state.sectionFeedback.size);
+  setPillCount(state.panel.querySelector('[data-fbw-counter="att"]'), state.attachments.length);
   const opsPill = state.panel.querySelector('[data-fbw-counter="ops"]');
-  if (opsPill) opsPill.textContent = state.elementOps.size;
+  if (opsPill) setPillCount(opsPill, state.elementOps.size);
 
   // overlay 保存编辑按钮：有改动才显示，badge 显示总数
   if (state.saveEditBtn) {
@@ -57,7 +64,7 @@ export function updateCounter(getChangesFn) {
   // 反馈面板加上 annotations 数（合并到 sec pill 计数中）
   if (state.panel) {
     const secPill = state.panel.querySelector('[data-fbw-counter="sec"]');
-    if (secPill) secPill.textContent = state.sectionFeedback.size + state.annotations.length;
+    if (secPill) setPillCount(secPill, state.sectionFeedback.size + state.annotations.length);
   }
 
   // audit 模式开着的话，每次 counter 变都顺便刷新

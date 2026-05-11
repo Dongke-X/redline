@@ -3,12 +3,16 @@
 export const CSS = `
     .fbw-panel {
       position: fixed; bottom: 78px; right: 16px;
-      background: rgba(20, 22, 28, 0.94);
-      color: #f5f5f7;
-      border: 1px solid rgba(255,255,255,0.08);
+      /* 暖深色（带点棕调），呼应 redline landing 的米色基调，避免冷调跟内容冲突 */
+      background: rgba(28, 25, 22, 0.94);
+      color: #f5f3ef;
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 14px;
       padding: 14px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.48), 0 2px 8px rgba(0,0,0,0.28);
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.52),
+        0 2px 8px rgba(0,0,0,0.30),
+        inset 0 1px 0 rgba(255,255,255,0.05);
       z-index: 2147483600;
       width: 360px;
       max-height: calc(100vh - 110px);
@@ -32,14 +36,14 @@ export const CSS = `
 
     .fbw-head {
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 13px; font-weight: 600;
-      color: #f5f5f7;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 13.5px; font-weight: 600;
+      color: #f5f3ef;
+      padding-bottom: 11px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       letter-spacing: 0.005em;
     }
     .fbw-head-title { display: inline-flex; align-items: center; gap: 8px; }
-    .fbw-head-title svg { width: 15px; height: 15px; opacity: 0.7; }
+    .fbw-head-title svg { width: 15px; height: 15px; opacity: 0.65; }
     .fbw-head-actions { display: inline-flex; align-items: center; gap: 4px; }
     .fbw-icon-btn {
       width: 22px; height: 22px;
@@ -57,37 +61,51 @@ export const CSS = `
 
     .fbw-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
     .fbw-pill {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(255,255,255,0.08);
-      color: rgba(245,245,247,0.78);
-      padding: 3px 8px;
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.05);
+      color: rgba(245,243,239,0.55);
+      padding: 3px 9px;
       border-radius: 4px;
       font-weight: 600;
       font-size: 10.5px;
       font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
       letter-spacing: 0.04em;
       text-transform: uppercase;
+      transition: background 140ms, color 140ms, opacity 140ms;
+      /* 默认（count=0）：淡化掉，避免一堆 0 占视觉权重 */
+      opacity: 0.45;
+    }
+    /* 有数才点亮 —— JS 端在 updateCounter 里给 pill 加 fbw-has-count */
+    .fbw-pill.fbw-has-count {
+      opacity: 1;
+      background: rgba(220,60,60,0.12);
+      color: #ff9d9d;
+    }
+    .fbw-pill.fbw-has-count [data-fbw-counter] {
+      color: #ff8b8b;
+      font-weight: 700;
     }
     .fbw-pill svg { width: 11px; height: 11px; }
 
     .fbw-current {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 8px;
-      padding: 10px 12px;
+      padding: 11px 13px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
     }
     .fbw-current-label {
       font-family: ui-monospace, "SF Mono", monospace;
       font-size: 9.5px;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: rgba(245,245,247,0.5);
+      color: rgba(245,243,239,0.42);
       font-weight: 600;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
     .fbw-current-page {
       font-size: 13px;
-      color: #f5f5f7;
+      color: #f5f3ef;
       font-weight: 600;
       margin-bottom: 8px;
       line-height: 1.4;
@@ -109,10 +127,10 @@ export const CSS = `
 
     .fbw-textarea {
       width: 100%;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(0,0,0,0.32);
-      color: #f5f5f7;
-      padding: 9px 11px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.28);
+      color: #f5f3ef;
+      padding: 10px 12px;
       border-radius: 7px;
       font-family: inherit;
       font-size: 12.5px;
@@ -120,13 +138,18 @@ export const CSS = `
       resize: vertical;
       box-sizing: border-box;
       display: block;
-      transition: border-color 140ms, background 140ms;
+      transition: border-color 140ms, background 140ms, box-shadow 140ms;
     }
     .fbw-textarea::placeholder {
-      color: rgba(245,245,247,0.32);
+      color: rgba(245,243,239,0.30);
       font-size: 11.5px;
     }
-    .fbw-textarea:focus { outline: none; border-color: rgba(255,255,255,0.4); background: rgba(0,0,0,0.45); }
+    .fbw-textarea:focus {
+      outline: none;
+      border-color: rgba(220,60,60,0.45);
+      background: rgba(0,0,0,0.40);
+      box-shadow: 0 0 0 3px rgba(220,60,60,0.10);
+    }
     .fbw-textarea.fbw-current-text { min-height: 48px; max-height: 120px; }
     .fbw-textarea.fbw-global {
       min-height: 80px; max-height: 180px;
@@ -141,11 +164,11 @@ export const CSS = `
     }
 
     .fbw-btn {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: #f5f5f7;
-      padding: 7px 12px;
-      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(245,243,239,0.85);
+      padding: 8px 13px;
+      border-radius: 7px;
       font-family: inherit;
       font-size: 12px;
       cursor: pointer;
@@ -157,11 +180,34 @@ export const CSS = `
       gap: 6px;
       font-weight: 500;
     }
-    .fbw-btn:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.24); }
-    .fbw-btn.fbw-primary { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.28); }
-    .fbw-btn.fbw-primary:hover { background: rgba(255,255,255,0.26); border-color: rgba(255,255,255,0.42); }
-    .fbw-btn.fbw-danger { background: rgba(255,107,107,0.14); border-color: rgba(255,107,107,0.30); color: #ff9b9b; }
-    .fbw-btn.fbw-danger:hover { background: rgba(255,107,107,0.24); border-color: rgba(255,107,107,0.50); color: #ffb5b5; }
+    .fbw-btn:hover {
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.16);
+      color: #f5f3ef;
+    }
+    /* primary：品牌红填充，主操作辨识度直接拉满 */
+    .fbw-btn.fbw-primary {
+      background: linear-gradient(180deg, #dc3c3c 0%, #c8302d 100%);
+      border-color: rgba(220,60,60,0.5);
+      color: #fff;
+      font-weight: 600;
+      box-shadow:
+        0 1px 2px rgba(0,0,0,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .fbw-btn.fbw-primary:hover {
+      background: linear-gradient(180deg, #e54848 0%, #d23533 100%);
+      border-color: rgba(220,60,60,0.7);
+      box-shadow:
+        0 2px 6px rgba(220,60,60,0.30),
+        inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+    .fbw-btn.fbw-primary:active {
+      background: linear-gradient(180deg, #c8302d 0%, #b32825 100%);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);
+    }
+    .fbw-btn.fbw-danger { background: rgba(255,107,107,0.10); border-color: rgba(255,107,107,0.24); color: #ff9b9b; }
+    .fbw-btn.fbw-danger:hover { background: rgba(255,107,107,0.18); border-color: rgba(255,107,107,0.42); color: #ffb5b5; }
 
     /* deck-stage overlay 里的"保存编辑"按钮 + 改动计数 badge */
     .btn[data-fbw-btn="save-edit"] { display: none; align-items: center; gap: 4px; }
@@ -982,14 +1028,15 @@ export const CSS = `
       background: rgba(255, 255, 255, 0.10);
       color: #fff;
     }
-    /* 激活态只改图标线条颜色，不加背景框 */
+    /* 激活态：品牌红半透底 + 红图标，跟 hover 灰底拉开足够对比 */
     .fbw-fab.fbw-active {
-      background: transparent;
-      color: #dc3c3c;
+      background: rgba(220, 60, 60, 0.18);
+      color: #ff8a8a;
+      box-shadow: inset 0 0 0 1px rgba(220,60,60,0.30);
     }
     .fbw-fab.fbw-active:hover {
-      background: rgba(220, 60, 60, 0.10);
-      color: #dc3c3c;
+      background: rgba(220, 60, 60, 0.26);
+      color: #ffb0b0;
     }
     /* 抑制浏览器默认 focus 蓝框 */
     .fbw-fab:focus,
@@ -1155,13 +1202,15 @@ export const CSS = `
     body.fbw-mode-doc .fbw-mode-chip,
     body.fbw-mode-review .fbw-mode-chip {
       display: inline-block;
-      padding: 2px 8px;
+      padding: 1px 7px;
       margin-right: 6px;
-      font-size: 10.5px;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      border-radius: 4px;
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 3px;
       vertical-align: middle;
+      font-family: ui-monospace, "SF Mono", monospace;
     }
     body.fbw-mode-review .fbw-mode-chip {
       background: rgba(220, 60, 60, 0.18);
