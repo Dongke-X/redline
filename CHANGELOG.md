@@ -6,6 +6,13 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.10 — 2026-05-12  ·  queryLocalFonts 不再误报
+
+### Fixed
+- `navigator.queryLocalFonts` 在 Firefox / Safari / http://localhost 等非安全 origin 上根本不存在，原代码统一当成 `denied` 还打 console.warn —— 误导用户以为是权限被拒了。现在分两层处理：API 不存在 = `unsupported`，静默；真正调用失败（SecurityError / NotAllowedError）才标 `denied` 并 warn
+
+---
+
 ## 0.1.9 — 2026-05-12  ·  面板质感 visual pass
 
 ### Changed

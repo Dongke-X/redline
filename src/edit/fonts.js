@@ -12,11 +12,13 @@ let localFontsState = 'unknown'; // unknown | granted | denied | unsupported
 
 async function fetchLocalFonts() {
   if (localFontsState === 'denied' || localFontsState === 'unsupported') return [];
-  // 不再用 `'queryLocalFonts' in navigator`：Chrome 某些配置下这个检查会假阴。直接 try 调用。
+  // API 不存在 = 浏览器/上下文不支持（Firefox/Safari，或 http://localhost 这种非安全 origin）。
+  // 这是预期情况，不报警告。只在 console 里悄悄记一笔，方便排查
+  if (typeof navigator === 'undefined' || typeof navigator.queryLocalFonts !== 'function') {
+    localFontsState = 'unsupported';
+    return [];
+  }
   try {
-    if (typeof navigator === 'undefined' || typeof navigator.queryLocalFonts !== 'function') {
-      throw new Error('queryLocalFonts not a function');
-    }
     const list = await navigator.queryLocalFonts();
     localFontsState = 'granted';
     const seen = new Set();
@@ -30,10 +32,9 @@ async function fetchLocalFonts() {
     out.sort((a, b) => a.name.localeCompare(b.name));
     return out;
   } catch (e) {
-    // SecurityError / NotAllowedError / TypeError 都归到 denied，
-    // 让用户看到一个统一的提示 + console 里有具体原因
+    // SecurityError / NotAllowedError = 用户/Permissions-Policy 真的拒了，这才是 denied
     localFontsState = 'denied';
-    console.warn('[fbw] queryLocalFonts unavailable:', e?.name || '?', '·', e?.message || e);
+    console.warn('[fbw] queryLocalFonts denied:', e?.name || '?', '·', e?.message || e);
     return [];
   }
 }
