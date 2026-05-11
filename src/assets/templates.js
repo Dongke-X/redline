@@ -90,6 +90,21 @@ export function notePopoverHTML() {
       <span class="fbw-note-label">${t('note.title')}</span>
       <button class="fbw-note-close" data-fbw-note-close>${ICON_X}</button>
     </div>
+    ${designTagBar()}
     <textarea class="fbw-note-textarea" data-fbw-note-text placeholder="${t('note.placeholder')}"></textarea>
   `;
+}
+
+// design 分类 chip 行（间距/颜色/字号/排版/文案），prepended 到反馈文本前
+function designTagBar() {
+  // 用动态 import 风格的延迟解析会很麻烦；这里复用 buildTagBarHTML
+  return `<div class="fbw-design-tags" data-fbw-tags>` +
+    [
+      ['spacing', t('design.tag.spacing')],
+      ['color', t('design.tag.color')],
+      ['typography', t('design.tag.typography')],
+      ['layout', t('design.tag.layout')],
+      ['copy', t('design.tag.copy')],
+    ].map(([key, label]) => `<button class="fbw-design-tag" type="button" data-fbw-tag="${key}">${label}</button>`).join('') +
+    `</div>`;
 }

@@ -1388,6 +1388,55 @@ export const CSS = `
     [data-fbw-tag-as="h6"] { font-size: 0.88em !important; font-weight: 700 !important; color: #555 !important; }
     [data-fbw-tag-as="p"] { font-size: 1em !important; font-weight: 400 !important; line-height: 1.6 !important; }
 
+    /* Design 分类 chip 行：用在 note popover、marquee 标注的 note 输入框上方
+       点一下在反馈文本前 toggle [标签]，给 agent 一个明确的语义信号 */
+    .fbw-design-tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    .fbw-design-tag {
+      font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      padding: 2px 9px;
+      background: rgba(255,255,255,0.06);
+      color: rgba(245,243,239,0.55);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 120ms, color 120ms, border-color 120ms;
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+    }
+    .fbw-design-tag:hover {
+      background: rgba(255,255,255,0.12);
+      color: #f5f3ef;
+      border-color: rgba(255,255,255,0.12);
+    }
+    .fbw-design-tag.fbw-on {
+      background: rgba(220,60,60,0.20);
+      color: #ff9d9d;
+      border-color: rgba(220,60,60,0.32);
+    }
+    /* marquee 标注的浅色 box 里，design-tag 走暖白底，跟米色底配 */
+    .fbw-anno .fbw-design-tag {
+      background: rgba(0,0,0,0.05);
+      color: rgba(26,26,26,0.55);
+      border-color: rgba(0,0,0,0.08);
+    }
+    .fbw-anno .fbw-design-tag:hover {
+      background: rgba(0,0,0,0.10);
+      color: #1a1a1a;
+    }
+    .fbw-anno .fbw-design-tag.fbw-on {
+      background: rgba(220,60,60,0.14);
+      color: #c8302d;
+      border-color: rgba(220,60,60,0.40);
+    }
+
     /* 间距测量：Alt + hover 时显示 selected → target 的 4 边距离（Figma 风格） */
     .fbw-measure-overlay {
       position: fixed; inset: 0;

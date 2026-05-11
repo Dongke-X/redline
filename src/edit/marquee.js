@@ -5,6 +5,13 @@ import { SECTION_SELECTORS } from '../config.js';
 import { onResize, onMousemove, onMouseup } from '../utils/events.js';
 import { scheduleSave } from '../core/persist.js';
 import { ICON_PENCIL, ICON_CHAT, ICON_CAMERA, ICON_X } from '../assets/icons.js';
+import { TAGS as DESIGN_TAGS, attachTagBarEvents, paintTagBar } from './design-tags.js';
+
+function annoTagBarHTML() {
+  return `<div class="fbw-design-tags" data-fbw-tags>` +
+    DESIGN_TAGS.map(tag => `<button class="fbw-design-tag" type="button" data-fbw-tag="${tag.key}">${t(tag.i18nKey)}</button>`).join('') +
+    `</div>`;
+}
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
@@ -366,12 +373,23 @@ function renderRegion(anno) {
       : 'fbw-anno-textarea fbw-anno-textarea-note';
     const placeholder = field === 'content' ? t('anno.placeholder.content') : t('anno.placeholder.note');
     const content = box.querySelector('.fbw-anno-content');
-    content.innerHTML = `<textarea class="${cls}" placeholder="${placeholder}">${escapeHtml(anno[field] || '')}</textarea>`;
+    // note 类型加 design 分类 chip 行（间距/颜色/字号/排版/文案）。content 类型纯文字插入，不加
+    const tagBar = field === 'note' ? annoTagBarHTML() : '';
+    content.innerHTML = `${tagBar}<textarea class="${cls}" placeholder="${placeholder}">${escapeHtml(anno[field] || '')}</textarea>`;
     const ta = content.querySelector('textarea');
+    const tagBarEl = content.querySelector('[data-fbw-tags]');
     setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 0);
     ['keydown', 'keyup', 'keypress', 'mousedown'].forEach(ev =>
       ta.addEventListener(ev, e => e.stopPropagation()));
-    ta.addEventListener('input', () => { anno[field] = ta.value; scheduleSave(); });
+    ta.addEventListener('input', () => {
+      anno[field] = ta.value;
+      scheduleSave();
+      if (tagBarEl) paintTagBar(tagBarEl, ta);
+    });
+    if (tagBarEl) {
+      paintTagBar(tagBarEl, ta);
+      attachTagBarEvents(tagBarEl, () => ta);
+    }
 
     box.classList.add('fbw-anno-editing');
 

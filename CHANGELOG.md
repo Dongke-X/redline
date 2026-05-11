@@ -6,6 +6,23 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.15 — 2026-05-12  ·  Design 分类 chip
+
+### Added
+- **元素 note + marquee 标注 note 上方**多了一排 5 个分类 chip：间距 / 颜色 / 字号 / 排版 / 文案
+- 点 chip → 在反馈文本前面 toggle 一个 `[标签]` 前缀。可叠加多个（一条反馈可以同时是"间距 + 颜色"）
+- 已有的 tag 用 active 红边突出，再点一下移除
+- 给 agent 一个明确的语义信号 —— "这条反馈是哪一类的"，能让 agent 不用从文字里推断分类
+
+### Design 三件套全齐
+| 工具 | 触发 | 输出 |
+|---|---|---|
+| 间距测量 | 选中 + Alt + hover | 4 边 px 距离虚线 |
+| 颜色取色器 | header 水滴 icon | hex 到剪贴板 / 反馈框 |
+| 分类 chip | note 输入时 | `[标签]` 前缀打到反馈文本 |
+
+---
+
 ## 0.1.14 — 2026-05-12  ·  颜色取色器
 
 ### Added

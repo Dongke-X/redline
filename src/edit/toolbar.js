@@ -11,6 +11,7 @@ import { openMarkerPopover, closeMarkerPopover } from './marker.js';
 import { openTagPopover, closeTagPopover } from './tag-switch.js';
 import { pushUndo } from '../core/undo.js';
 import { showUndoToast } from '../utils/undo-toast.js';
+import { attachTagBarEvents, paintTagBar } from './design-tags.js';
 import { renderAttachments } from '../feedback/attachments.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
@@ -43,6 +44,7 @@ export function openNotePopover(el) {
   ta.value = getElementNote(el);
   popover.classList.add('fbw-on');
   positionNotePopover();
+  paintTagBar(popover.querySelector('[data-fbw-tags]'), ta);
   setTimeout(() => ta.focus(), 0);
 }
 
@@ -63,7 +65,11 @@ export function attachNotePopoverEvents() {
     if (!state.selectedEl) return;
     recordNote(state.selectedEl, ta.value);
     refreshNoteButtonIndicator(state.selectedEl);
+    paintTagBar(popover.querySelector('[data-fbw-tags]'), ta);
   });
+
+  // design 分类 chip 行：点一下在反馈文本前 toggle [标签]
+  attachTagBarEvents(popover.querySelector('[data-fbw-tags]'), () => ta);
 
   popover.querySelector('[data-fbw-note-close]').addEventListener('click', (e) => {
     e.stopPropagation();
