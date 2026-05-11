@@ -1207,6 +1207,59 @@ export const CSS = `
       color: #fff;
     }
 
+    /* 标签切换 popover：H 按钮点开后显示 P / H1 / H2 / H3 / H4 */
+    .fbw-tag-popover {
+      position: fixed;
+      z-index: 2147483545;
+      display: none;
+      background: rgba(20,22,28,0.97);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 4px;
+      gap: 2px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .fbw-tag-popover.fbw-on { display: inline-flex; }
+    .fbw-tag-popover button {
+      min-width: 36px; height: 28px;
+      padding: 0 10px;
+      border: 0; border-radius: 5px;
+      background: transparent;
+      color: rgba(245,245,247,0.78);
+      cursor: pointer;
+      font-family: -apple-system, "SF Pro Text", system-ui, sans-serif;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .fbw-tag-popover button:hover { background: rgba(255,255,255,0.10); color: #fff; }
+    .fbw-tag-popover button.fbw-active {
+      background: rgba(220,60,60,0.22); color: #ff8a8a;
+    }
+    /* 标签变更的视觉预览：让元素看起来像目标 tag。!important 因为很多页面对 h/p 有自定义样式 */
+    [data-fbw-tag-as="h1"] { font-size: 1.9em !important; font-weight: 700 !important; line-height: 1.25 !important; }
+    [data-fbw-tag-as="h2"] { font-size: 1.5em !important; font-weight: 700 !important; line-height: 1.3 !important; }
+    [data-fbw-tag-as="h3"] { font-size: 1.2em !important; font-weight: 700 !important; line-height: 1.35 !important; }
+    [data-fbw-tag-as="h4"] { font-size: 1.05em !important; font-weight: 700 !important; }
+    [data-fbw-tag-as="p"] { font-size: 1em !important; font-weight: 400 !important; line-height: 1.6 !important; }
+
+    /* 拖动 scale / rotate 时的实时读数（跟随光标） */
+    .fbw-drag-readout {
+      position: fixed; z-index: 2147483646;
+      display: none;
+      padding: 4px 9px;
+      background: rgba(20,22,28,0.94);
+      color: #f5f5f7;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 12px; font-weight: 500;
+      border-radius: 6px;
+      pointer-events: none;
+      user-select: none;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+    .fbw-drag-readout.fbw-on { display: block; }
+
     /* 长截图 / 截屏：html2canvas 不进 print 媒介，要靠 body.fbw-printing 来藏 widget UI */
     body.fbw-printing .fbw-panel,
     body.fbw-printing .fbw-fab,
@@ -1218,12 +1271,14 @@ export const CSS = `
     body.fbw-printing .fbw-font-picker,
     body.fbw-printing .fbw-note-popover,
     body.fbw-printing .fbw-marker-popover,
+    body.fbw-printing .fbw-tag-popover,
     body.fbw-printing .fbw-help-popover,
     body.fbw-printing .fbw-tooltip,
     body.fbw-printing .fbw-anno,
     body.fbw-printing .fbw-anno-actions,
     body.fbw-printing .fbw-marquee-drawing,
-    body.fbw-printing .fbw-resize-handles {
+    body.fbw-printing .fbw-resize-handles,
+    body.fbw-printing .fbw-drag-readout {
       display: none !important;
     }
 
@@ -1231,7 +1286,7 @@ export const CSS = `
       .fbw-panel, .fbw-fab, .fbw-fab-bar, .fbw-fab-divider,
       .fbw-toast, .fbw-confirm,
       .fbw-elem-toolbar, .fbw-font-picker,
-      .fbw-note-popover, .fbw-marker-popover, .fbw-help-popover, .fbw-tooltip,
+      .fbw-note-popover, .fbw-marker-popover, .fbw-tag-popover, .fbw-help-popover, .fbw-tooltip,
       .fbw-anno, .fbw-anno-actions,
       .fbw-marquee-drawing, .fbw-resize-handles {
         display: none !important;

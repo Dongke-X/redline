@@ -9,6 +9,7 @@ import { showResizeHandles, hideResizeHandles, positionResizeHandles } from './r
 import { exitMarqueeMode } from './marquee.js';
 import { closeNotePopover } from './toolbar.js';
 import { closeMarkerPopover } from './marker.js';
+import { closeTagPopover } from './tag-switch.js';
 import { getElementNote } from '../core/elements.js';
 import { showToast, updateCounter, pendingEditCount } from '../utils.js';
 import { t } from '../i18n.js';
@@ -119,9 +120,15 @@ export function selectElement(el) {
   const hlBtn = state.elemToolbar.querySelector('[data-op="highlight"]');
   if (hlBtn) hlBtn.style.display = isTextish ? 'inline-flex' : 'none';
 
-  // 第一个 divider（位于 font/highlight/replace-img 后）：上面三个都隐藏才同时隐藏
-  const firstDivider = state.elemToolbar.querySelector('.fbw-tb-divider');
-  if (firstDivider) firstDivider.style.display = (isImg || isTextish) ? '' : 'none';
+  // 标签切换按钮：仅对 p / h1-h6 显示
+  const isHeadable = /^(p|h[1-6])$/i.test(el.tagName);
+  const tagBtn = state.elemToolbar.querySelector('[data-op="tag"]');
+  if (tagBtn) tagBtn.style.display = isHeadable ? 'inline-flex' : 'none';
+
+  // 第一个 divider：font/tag/highlight/replace-img 都隐藏才同时隐藏
+  // querySelectorAll 返回所有 divider，取第一个（标签 divider 之后）
+  const dividers = state.elemToolbar.querySelectorAll('.fbw-tb-divider:not([data-fbw-path-divider])');
+  if (dividers[0]) dividers[0].style.display = (isImg || isTextish || isHeadable) ? '' : 'none';
 
   // 改链接按钮：仅对 a[href] 元素显示
   const isLink = el.matches('a[href]');
@@ -145,6 +152,7 @@ export function deselectElement() {
   closeFontPicker();
   closeNotePopover();
   closeMarkerPopover();
+  closeTagPopover();
   state.elemToolbar.classList.remove('fbw-toolbar-open');
   hideResizeHandles();
 }
@@ -227,7 +235,7 @@ export function attachSelectionEvents() {
   // 用 [data-fbw-sec-id] 作为 slide guard：能匹配任何被 registerEditableElements 注册过的 section
   // （包括降级模式下的 body），不再硬编码 section 选择器列表
   const SLIDE_GUARD = '[data-fbw-sec-id]';
-  const UI_GUARD = '.fbw-panel, .fbw-fab, .fbw-fab-bar, .fbw-elem-toolbar, .fbw-confirm, .fbw-toast, .fbw-marker-popover, .fbw-font-picker, .fbw-note-popover, .fbw-help-popover, .fbw-tooltip, .fbw-anno, script, style';
+  const UI_GUARD = '.fbw-panel, .fbw-fab, .fbw-fab-bar, .fbw-elem-toolbar, .fbw-confirm, .fbw-toast, .fbw-marker-popover, .fbw-tag-popover, .fbw-font-picker, .fbw-note-popover, .fbw-help-popover, .fbw-tooltip, .fbw-anno, script, style';
 
   document.addEventListener('click', (e) => {
     if (!state.editMode) return;

@@ -15,6 +15,7 @@ import { attachToolbarEvents, attachDragEvents, attachNotePopoverEvents } from '
 import { attachFontPickerEvents } from './edit/fonts.js';
 import { attachMarkerEvents } from './edit/marker.js';
 import { createResizeHandlesNode, attachResizeEvents } from './edit/resize.js';
+import { createTagPopoverNode, attachTagPopoverEvents } from './edit/tag-switch.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -110,6 +111,9 @@ function createDom() {
 
   state.resizeHandles = createResizeHandlesNode();
 
+  const tagPopover = createTagPopoverNode();
+  state.tagPopover = tagPopover;
+
   // FAB 工具条：6 个按钮在浮动 pill 里
   // 顺序：编辑 → 反馈 → 框选 → 导出 ｜ 帮助 ｜ 折叠
   const fabBar = document.createElement('div');
@@ -136,6 +140,7 @@ function createDom() {
   document.body.appendChild(fontPicker);
   document.body.appendChild(notePopover);
   document.body.appendChild(markerPopover);
+  document.body.appendChild(tagPopover);
   document.body.appendChild(state.resizeHandles);
 }
 
@@ -373,6 +378,7 @@ export function init() {
   attachMarqueeEvents();
   attachFontPickerEvents();
   attachMarkerEvents();
+  attachTagPopoverEvents();
   attachNotePopoverEvents();
   attachPanelEvents();
   attachSaveButton();

@@ -6,6 +6,14 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.4 — 2026-05-11  ·  标签切换 + 拖动读数
+
+### Added
+- **标签切换**：选中 `<p>` / `<h1>-<h6>` 时工具栏出现 H 按钮，弹出 P / H1-H4 选项，点了立刻能看到视觉变化。`tag` op 写进 schema，`apply.mjs` 在源 HTML 真把 tag 替换掉（带 drift 检测）。实现策略：live DOM 加 `data-fbw-tag-as` 属性 + CSS 预览，不动真实 tag，保住 selector / element ref 不破
+- **拖动读数**：scale/rotate 拖动时光标旁显示「1.20× / 36°」，常用刻度（0.5/1/1.5/2× · 0/45/90°）显示 ✓ 提示并在松手时自动吸附
+
+---
+
 ## 0.1.3 — 2026-05-11  ·  工具栏面包屑
 
 ### Added

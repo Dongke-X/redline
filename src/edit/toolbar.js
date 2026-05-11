@@ -8,6 +8,7 @@ import {
 import { deselectElement, positionToolbar, followToolbar, liftTarget } from './selection.js';
 import { openFontPicker, closeFontPicker } from './fonts.js';
 import { openMarkerPopover, closeMarkerPopover } from './marker.js';
+import { openTagPopover, closeTagPopover } from './tag-switch.js';
 import { renderAttachments } from '../feedback/attachments.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
@@ -105,6 +106,7 @@ export function attachToolbarEvents() {
       delete el.dataset.fbwOpHidden;
       delete el.dataset.fbwTx; delete el.dataset.fbwTy; delete el.dataset.fbwScale; delete el.dataset.fbwRotate;
       delete el.dataset.fbwHighlight;
+      el.removeAttribute('data-fbw-tag-as');
       el.style.transform = ''; el.style.backgroundImage = '';
       el.style.backgroundColor = '';
       if (el.tagName === 'IMG' && el.dataset.fbwOriginalSrc) {
@@ -141,17 +143,22 @@ export function attachToolbarEvents() {
     if (op === 'font') {
       window.__fbwSelEl = el;
       if (state.fontPicker.classList.contains('fbw-fp-open')) closeFontPicker();
-      else { closeMarkerPopover(); closeNotePopover(); openFontPicker(); }
+      else { closeMarkerPopover(); closeNotePopover(); closeTagPopover(); openFontPicker(); }
       return;
     }
     if (op === 'highlight') {
       if (state.markerPopover?.classList.contains('fbw-on')) closeMarkerPopover();
-      else { closeFontPicker(); closeNotePopover(); openMarkerPopover(); }
+      else { closeFontPicker(); closeNotePopover(); closeTagPopover(); openMarkerPopover(); }
+      return;
+    }
+    if (op === 'tag') {
+      if (state.tagPopover?.classList.contains('fbw-on')) closeTagPopover();
+      else { closeFontPicker(); closeNotePopover(); closeMarkerPopover(); openTagPopover(); }
       return;
     }
     if (op === 'note') {
       if (state.notePopover?.classList.contains('fbw-on')) closeNotePopover();
-      else { closeFontPicker(); closeMarkerPopover(); openNotePopover(el); }
+      else { closeFontPicker(); closeMarkerPopover(); closeTagPopover(); openNotePopover(el); }
       return;
     }
     if (op === 'replace-img') {

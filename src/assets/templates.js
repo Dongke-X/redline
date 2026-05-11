@@ -2,7 +2,7 @@
 // 改成函数形式，运行时调用 t() 取 i18n 字符串。
 import {
   ICON_CHAT, ICON_TRASH, ICON_CAMERA, ICON_COPY, ICON_SAVE, ICON_GLOBE, ICON_LINK,
-  ICON_FONT, ICON_MARKER, ICON_IMAGE,
+  ICON_FONT, ICON_MARKER, ICON_IMAGE, ICON_HEADING,
   ICON_ARROW_UP, ICON_ARROW_DOWN, ICON_ARROW_LEFT, ICON_ARROW_RIGHT,
   ICON_PLUS, ICON_MINUS,
   ICON_EYE_OFF, ICON_RESTORE, ICON_X,
@@ -61,6 +61,7 @@ export function toolbarHTML() {
     <span class="fbw-tb-label" data-fbw-path title=""></span>
     <span class="fbw-tb-divider" data-fbw-path-divider></span>
     <button data-op="font" data-tooltip="${t('tip.font')}">${ICON_FONT}</button>
+    <button data-op="tag" data-tooltip="${t('tip.tag')}" style="display:none;">${ICON_HEADING}</button>
     <button data-op="highlight" data-tooltip="${t('tip.highlight')}">${ICON_MARKER}</button>
     <button data-op="replace-img" data-tooltip="${t('tip.replaceImg')}" style="display:none;">${ICON_IMAGE}</button>
     <span class="fbw-tb-divider"></span>

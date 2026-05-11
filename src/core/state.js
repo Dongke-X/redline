@@ -34,6 +34,7 @@ export const state = {
   /** @type {HTMLElement|null} */ fontPicker: null,
   /** @type {HTMLElement|null} */ notePopover: null,
   /** @type {HTMLElement|null} */ markerPopover: null,
+  /** @type {HTMLElement|null} */ tagPopover: null,
   /** @type {HTMLElement|null} */ resizeHandles: null,
 
   // ════════════════════════ 2. 模式 + 交互态（频繁变） ════════════════════════

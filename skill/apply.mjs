@@ -227,6 +227,25 @@ function applyEdit(edit, stats) {
       const after = edit.args?.after ?? '';
       if (after) el.setAttribute('href', after);
       else el.removeAttribute('href');
+    } else if (op === 'tag') {
+      // 改元素标签：p ↔ h1/h2/h3/h4。漂移检测：当前 tag 必须跟 args.from 一致
+      const from = (edit.args?.from || '').toLowerCase();
+      const to = (edit.args?.to || '').toLowerCase();
+      if (!to || !/^(p|h[1-6])$/.test(to)) {
+        stats.failed++;
+        stats.failures.push({ edit, reason: `invalid tag: ${to}` });
+        return false;
+      }
+      const curTag = el.tagName.toLowerCase();
+      if (from && curTag !== from) {
+        stats.failed++;
+        stats.failures.push({ edit, reason: 'tag-drift', current: curTag });
+        return false;
+      }
+      const newEl = el.ownerDocument.createElement(to);
+      for (const attr of el.attributes) newEl.setAttribute(attr.name, attr.value);
+      newEl.innerHTML = el.innerHTML;
+      el.parentNode.replaceChild(newEl, el);
     } else if (op === 'note' || op === 'replace-img') {
       stats.skipped++;
       stats.skips.push({ edit, reason: `op=${op} 不自动处理（让 Claude 跟用户对齐）` });
