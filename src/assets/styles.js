@@ -35,15 +35,29 @@ export const CSS = `
     .fbw-panel * { box-sizing: border-box; }
 
     .fbw-head {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: space-between;
+      /* 标题可能换行（EN locale 下"Feedback to Agent / Designer"会折两行）；
+         chip 和图标贴顶部，跟首行对齐而不是垂直居中 → 视觉锚点稳定 */
+      align-items: flex-start;
       font-size: 13.5px; font-weight: 600;
       color: #f5f3ef;
       padding-bottom: 11px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       letter-spacing: 0.005em;
+      gap: 8px;
     }
-    .fbw-head-title { display: inline-flex; align-items: center; gap: 8px; }
-    .fbw-head-title svg { width: 15px; height: 15px; opacity: 0.65; }
+    .fbw-head-title {
+      display: inline-flex; align-items: center; gap: 8px;
+      min-width: 0; flex: 1;
+      line-height: 1.4;
+    }
+    .fbw-head-title > span { word-break: break-word; }
+    .fbw-head-title svg { width: 15px; height: 15px; opacity: 0.65; flex-shrink: 0; }
+    .fbw-head-actions {
+      flex-shrink: 0;
+      /* icon-btn 高度 22px，跟标题首行 ~22px 视觉基线对齐（标题 13.5*1.4≈19） */
+      margin-top: 1px;
+    }
     .fbw-head-actions { display: inline-flex; align-items: center; gap: 4px; }
     .fbw-icon-btn {
       width: 22px; height: 22px;
@@ -1211,22 +1225,23 @@ export const CSS = `
       border-radius: 3px;
       vertical-align: middle;
       font-family: ui-monospace, "SF Mono", monospace;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     body.fbw-mode-review .fbw-mode-chip {
       background: rgba(220, 60, 60, 0.18);
       color: #ff8b8b;
     }
-    body.fbw-mode-review .fbw-mode-chip::before { content: '评审'; }
     body.fbw-mode-doc .fbw-mode-chip {
       background: rgba(255,255,255,0.08);
       color: rgba(255,255,255,0.6);
     }
-    body.fbw-mode-doc .fbw-mode-chip::before { content: '文档'; }
     body.fbw-mode-deck .fbw-mode-chip {
       background: rgba(255,255,255,0.08);
       color: rgba(255,255,255,0.6);
     }
-    body.fbw-mode-deck .fbw-mode-chip::before { content: '幻灯片'; }
+    /* chip 文字由 JS 按 locale 注入（templates.js 渲染 panelHTML / syncModeChip），
+       不再用 CSS ::before 硬编码中文 */
 
     /* Marker / 荧光笔 popover */
     .fbw-marker-popover {

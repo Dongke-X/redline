@@ -362,6 +362,13 @@ function detectAppMode() {
   return 'review';
 }
 
+// 把 chip 文字按 locale 写进去（之前用 CSS ::before 硬编码中文，EN 状态下出问题）
+function syncModeChip() {
+  const chip = state.panel?.querySelector('.fbw-mode-chip');
+  if (!chip) return;
+  chip.textContent = t('mode.chip.' + (state.appMode || 'doc'));
+}
+
 // SPA 路由切换 / DOM 大改动后重新评估 appMode + 切换 body class。
 // 注意：不重跑 registerEditableElements（避免重复注册），仅修正 mode 标签和 UI 行为分支。
 function watchAppModeChanges() {
@@ -372,6 +379,7 @@ function watchAppModeChanges() {
     document.body.classList.add('fbw-mode-' + newMode);
     DBG('appMode changed:', state.appMode, '→', newMode);
     state.appMode = newMode;
+    syncModeChip();
   };
   window.addEventListener('popstate', reapply);
   ['pushState', 'replaceState'].forEach(name => {
@@ -395,6 +403,7 @@ export function init() {
   state.appMode = detectAppMode();
   document.body.classList.add('fbw-mode-' + state.appMode);
   DBG('appMode:', state.appMode);
+  syncModeChip();
   watchAppModeChanges();
 
   const sections = registerEditableElements();

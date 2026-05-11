@@ -6,6 +6,15 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.11 — 2026-05-12  ·  EN locale 适配
+
+### Fixed
+- mode chip 之前用 CSS `::before` 硬编码"文档/幻灯片/评审"，EN locale 下仍然显示中文。改用 i18n key + JS 注入：`Deck / Doc / Review`（EN）/ `幻灯片 / 文档 / 评审`（ZH）。appMode 变化时同步刷新
+- chip 加 `white-space: nowrap` + `flex-shrink: 0`：防止窄字符宽度下被挤压成竖排
+- 面板标题在 EN locale 下会折两行（"Feedback to Agent / Designer"）：head 从 `align-items: center` 改成 `flex-start`，让 chip + 右侧 icon 跟标题首行对齐，不再"漂"在两行正中
+
+---
+
 ## 0.1.10 — 2026-05-12  ·  queryLocalFonts 不再误报
 
 ### Fixed
