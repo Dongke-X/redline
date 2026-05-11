@@ -6,6 +6,18 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.1 — 2026-05-11  ·  PDF 导出修复
+
+### Fixed
+- 长截图 PDF 在非 deck/slide 页面（普通 landing / 长文档）报「没找到 slide」直接退出 —— 现在 fallback 抓整页生成一张超长单页 PDF（超过 PDF 14400px 单页上限才自动切片）
+- 长截图 / 视口截屏把 redline 自身 UI（FAB、toast、面板）拍进图片：补上 `body.fbw-printing` 维度的隐藏规则，原来只在 `@media print` 下生效
+- 矢量 PDF 在 A4 portrait 下触发 880px 断点导致多列卡片被强压成单列、整张卡撑满一页留大白：`@media print` 强制恢复多列网格 + 补全 `.preview-card` 等卡片的 `break-inside: avoid`
+
+### Changed
+- `docs/zh.html` 打印样式：收紧卡片 padding / 字号，避免 portrait 单卡超页；`.hero-mockup` 打印时 `scale(.85)`
+
+---
+
 ## 0.1.0 — 2026-05-10  ·  首次公开发布 (Public release)
 
 > 版本号重置：v2.7.x（私有迭代）→ v0.1.0（公开首发）。

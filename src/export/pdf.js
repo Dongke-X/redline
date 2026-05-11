@@ -67,7 +67,9 @@ export async function exportImagePDF() {
   const designH = ds ? (parseInt(ds.getAttribute('height'), 10) || 1080) : 1080;
 
   const slides = [...document.querySelectorAll('section.slide')];
-  if (!slides.length) { showToast(t('pdf.noSlides')); return; }
+  if (!slides.length) {
+    return exportLongPagePDF();
+  }
 
   const activeStates = slides.map(s => s.hasAttribute('data-deck-active'));
   document.body.classList.add('fbw-printing');
@@ -166,6 +168,92 @@ export async function exportImagePDF() {
       if (activeStates[j]) s.setAttribute('data-deck-active', '');
       else s.removeAttribute('data-deck-active');
     });
+    document.body.classList.remove('fbw-printing');
+  }
+}
+
+// 长截图版 PDF：没有 deck-stage / section.slide 时的 fallback。
+// 整页一次性截下来，作为单张超长 PDF 页面输出 —— 不分页、不在尴尬位置断开。
+// PDF user-space 上限 14400px，遇超长页面会自动 fallback 切片。
+async function exportLongPagePDF() {
+  document.body.classList.add('fbw-printing');
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  try { await document.fonts.ready; } catch (_) {}
+
+  const docEl = document.documentElement;
+  const pageW = Math.max(docEl.scrollWidth, document.body.scrollWidth);
+  const pageH = Math.max(docEl.scrollHeight, document.body.scrollHeight);
+
+  showToast(t('pdf.progress', { i: 0, total: 1 }));
+  let canvas;
+  try {
+    canvas = await window.html2canvas(document.body, {
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      scale: 2,
+      x: 0,
+      y: 0,
+      width: pageW,
+      height: pageH,
+      windowWidth: pageW,
+      windowHeight: pageH,
+    });
+  } catch (err) {
+    console.error(err);
+    showToast(t('pdf.failed', { reason: err.message || err }));
+    document.body.classList.remove('fbw-printing');
+    return;
+  }
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const PDF_MAX = 14400; // PDF user-space 单页上限
+    const fname = (document.title || 'page').replace(/[\\/:*?"<>|]/g, '_') + '-long.pdf';
+
+    if (pageH <= PDF_MAX) {
+      // 主路径：整页一张超长 PDF 单页，阅读体验最佳
+      const pdf = new jsPDF({
+        unit: 'px', format: [pageW, pageH], orientation: 'portrait',
+        hotfixes: ['px_scaling'],
+      });
+      const img = canvas.toDataURL('image/jpeg', 0.9);
+      pdf.addImage(img, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+      pdf.save(fname);
+    } else {
+      // 兜底：页面太长超过 PDF 单页上限，按 PDF_MAX 切片
+      const sliceH = PDF_MAX;
+      const cScale = canvas.width / pageW;
+      const cSliceH = Math.floor(sliceH * cScale);
+      const total = Math.ceil(canvas.height / cSliceH);
+      const pdf = new jsPDF({
+        unit: 'px', format: [pageW, sliceH], orientation: 'portrait',
+        hotfixes: ['px_scaling'],
+      });
+      for (let i = 0; i < total; i++) {
+        showToast(t('pdf.progress', { i: i + 1, total }));
+        const sy = i * cSliceH;
+        const sh = Math.min(cSliceH, canvas.height - sy);
+        const slice = document.createElement('canvas');
+        slice.width = canvas.width;
+        slice.height = sh;
+        const ctx = slice.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, slice.width, slice.height);
+        ctx.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
+        const img = slice.toDataURL('image/jpeg', 0.9);
+        if (i > 0) pdf.addPage([pageW, sliceH], 'portrait');
+        pdf.addImage(img, 'JPEG', 0, 0, pageW, sh / cScale, undefined, 'FAST');
+        await new Promise(r => setTimeout(r, 0));
+      }
+      pdf.save(fname);
+    }
+    showToast(t('pdf.saved', { file: fname }));
+  } catch (err) {
+    console.error(err);
+    showToast(t('pdf.failed', { reason: err.message || err }));
+  } finally {
     document.body.classList.remove('fbw-printing');
   }
 }

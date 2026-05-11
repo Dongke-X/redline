@@ -391,12 +391,23 @@
     body { background: #fff; }
     /* 强制保留品牌色 / 深色块 */
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    /* 不在卡片中间断页 */
-    .problem-card, .step, .scenario, .case, .feature, .schema-block, .hero-mockup {
+    /* A4 portrait 的可打印宽 ~794px，会触发 @media (max-width:880px) 的单列 */
+    /* fallback；这里强制恢复多列布局，避免每张卡片撑满一页 */
+    .problem-grid, .scenarios, .features, .cases { grid-template-columns: repeat(2, 1fr) !important; }
+    .how, .preview-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    /* 不在卡片中间断页（去掉 .step：3 列下卡片本身就不高，break-inside 反而留大白） */
+    .problem-card, .scenario, .case, .feature, .schema-block, .preview-card {
       break-inside: avoid;
+      page-break-inside: avoid;
     }
+    /* 减少卡片内边距 + 收紧字号，避免单张卡片超过一页 */
+    .preview-card { padding: 18px !important; }
+    .preview-card p, .feature p, .step p { font-size: 12px !important; line-height: 1.6 !important; }
+    .preview-card-mock { padding: 10px !important; margin-bottom: 12px !important; }
+    .hero-mockup { break-inside: avoid; transform: scale(.85); transform-origin: top center; }
     nav.top .links { display: none; }
     .cta-row { display: none; }   /* PDF 里按钮无意义 */
+    section { padding: 40px 0 !important; }
   }
 </style>
 </head>

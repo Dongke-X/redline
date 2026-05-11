@@ -1206,6 +1206,26 @@ export const CSS = `
       color: #fff;
     }
 
+    /* 长截图 / 截屏：html2canvas 不进 print 媒介，要靠 body.fbw-printing 来藏 widget UI */
+    body.fbw-printing .fbw-panel,
+    body.fbw-printing .fbw-fab,
+    body.fbw-printing .fbw-fab-bar,
+    body.fbw-printing .fbw-fab-divider,
+    body.fbw-printing .fbw-toast,
+    body.fbw-printing .fbw-confirm,
+    body.fbw-printing .fbw-elem-toolbar,
+    body.fbw-printing .fbw-font-picker,
+    body.fbw-printing .fbw-note-popover,
+    body.fbw-printing .fbw-marker-popover,
+    body.fbw-printing .fbw-help-popover,
+    body.fbw-printing .fbw-tooltip,
+    body.fbw-printing .fbw-anno,
+    body.fbw-printing .fbw-anno-actions,
+    body.fbw-printing .fbw-marquee-drawing,
+    body.fbw-printing .fbw-resize-handles {
+      display: none !important;
+    }
+
     @media print {
       .fbw-panel, .fbw-fab, .fbw-fab-bar, .fbw-fab-divider,
       .fbw-toast, .fbw-confirm,
