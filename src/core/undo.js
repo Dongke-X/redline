@@ -95,15 +95,46 @@ export function pushUndo(el) {
   redoStack.length = 0;
 }
 
+// 多选场景：把一组元素打成一个 group entry，Cmd+Z 一次还原所有
+export function pushUndoGroup(els) {
+  if (!els || !els.length) return;
+  const snaps = [];
+  for (const el of els) {
+    const s = snapshot(el);
+    if (s) snaps.push(s);
+  }
+  if (!snaps.length) return;
+  undoStack.push({ __group: true, snaps });
+  if (undoStack.length > MAX_STACK) undoStack.shift();
+  redoStack.length = 0;
+}
+
+function applyEntry(entry) {
+  if (entry && entry.__group) {
+    let any = false;
+    for (const s of entry.snaps) { if (applySnapshot(s)) any = true; }
+    return any;
+  }
+  return applySnapshot(entry);
+}
+
+function captureEntryForRedo(entry) {
+  if (entry && entry.__group) {
+    const snaps = entry.snaps.map(s => snapshot(s.el)).filter(Boolean);
+    return snaps.length ? { __group: true, snaps } : null;
+  }
+  return snapshot(entry.el);
+}
+
 export function undo() {
   if (undoStack.length === 0) {
     showToast(t('undo.empty') || '没有可撤销的操作');
     return;
   }
-  const snap = undoStack.pop();
-  const cur = snapshot(snap.el);
+  const entry = undoStack.pop();
+  const cur = captureEntryForRedo(entry);
   if (cur) redoStack.push(cur);
-  if (applySnapshot(snap)) {
+  if (applyEntry(entry)) {
     updateCounter(getChanges);
     scheduleSave();
     showToast(t('undo.done') || '已撤销');
@@ -117,10 +148,10 @@ export function redo() {
     showToast(t('redo.empty') || '没有可重做的操作');
     return;
   }
-  const snap = redoStack.pop();
-  const cur = snapshot(snap.el);
+  const entry = redoStack.pop();
+  const cur = captureEntryForRedo(entry);
   if (cur) undoStack.push(cur);
-  if (applySnapshot(snap)) {
+  if (applyEntry(entry)) {
     updateCounter(getChanges);
     scheduleSave();
     showToast(t('redo.done') || '已重做');

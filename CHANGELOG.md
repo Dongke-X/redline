@@ -6,6 +6,15 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.18 — 2026-05-12  ·  取色器换图标 + 回归元素工具栏
+
+### Changed
+- 取色器图标从「斜向吸管」改成「水滴」—— 之前那个 path 跟 edit 模式的铅笔图标太像
+- 取色器**位置回归元素工具栏**（选中元素后那条 floating bar），跟字体 / 高亮 / 标签换 / 换图同档 design-tools 簇。理由：用户的典型流程是"选中元素 → 想改色 → 取色作参考"，挂在 element 上下文里比挂在全局 FAB 更顺手
+- FAB bar 和 deck overlay 移除取色器按钮
+
+---
+
 ## 0.1.17 — 2026-05-12  ·  撤销/重做 FAB + help 自适应
 
 ### Added

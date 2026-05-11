@@ -12,6 +12,7 @@ import { openTagPopover, closeTagPopover } from './tag-switch.js';
 import { pushUndo } from '../core/undo.js';
 import { showUndoToast } from '../utils/undo-toast.js';
 import { attachTagBarEvents, paintTagBar } from './design-tags.js';
+import { pickColor } from './eyedropper.js';
 import { renderAttachments } from '../feedback/attachments.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
@@ -166,6 +167,10 @@ export function attachToolbarEvents() {
     if (op === 'tag') {
       if (state.tagPopover?.classList.contains('fbw-on')) closeTagPopover();
       else { closeFontPicker(); closeNotePopover(); closeMarkerPopover(); openTagPopover(); }
+      return;
+    }
+    if (op === 'pick') {
+      pickColor();
       return;
     }
     if (op === 'note') {

@@ -126,10 +126,7 @@ export function selectElement(el) {
   const tagBtn = state.elemToolbar.querySelector('[data-op="tag"]');
   if (tagBtn) tagBtn.style.display = isHeadable ? 'inline-flex' : 'none';
 
-  // 第一个 divider：font/tag/highlight/replace-img 都隐藏才同时隐藏
-  // querySelectorAll 返回所有 divider，取第一个（标签 divider 之后）
-  const dividers = state.elemToolbar.querySelectorAll('.fbw-tb-divider:not([data-fbw-path-divider])');
-  if (dividers[0]) dividers[0].style.display = (isImg || isTextish || isHeadable) ? '' : 'none';
+  // 第一个 divider 始终显示（pick 取色器对任何元素都可用）
 
   // 改链接按钮：仅对 a[href] 元素显示
   const isLink = el.matches('a[href]');

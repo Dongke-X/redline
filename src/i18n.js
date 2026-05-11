@@ -111,6 +111,7 @@ const DICT = {
     // 工具栏 tooltip
     'tip.font': '字体（双击元素直接编辑文字）',
     'tip.tag': '改标签 (P / H1-H6)',
+    'tip.pick': '取色器：取页面任意位置的颜色（hex 复制到剪贴板 + 插入反馈框）',
     'tip.highlight': '高亮（马克笔）',
     'highlight.clear': '清除高亮',
     'op.highlight': '已高亮',
@@ -282,6 +283,7 @@ const DICT = {
     'note.placeholder': 'Feedback for this element (delete / change / redraw / note for agent...)',
     'tip.font': 'Font (double-click element to edit text directly)',
     'tip.tag': 'Change tag (P / H1-H6)',
+    'tip.pick': 'Eyedropper: sample any pixel on the page (hex to clipboard + feedback box)',
     'tip.highlight': 'Highlight (marker)',
     'highlight.clear': 'Clear highlight',
     'op.highlight': 'Highlighted',

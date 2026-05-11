@@ -1,14 +1,13 @@
 // deck-stage overlay 注入：检测到 <deck-stage> 后把按钮塞到 shadow DOM 内的 .overlay。
 // 没有 deck-stage 时退化为右下角 FAB（CSS 控制，body.fbw-no-overlay 类切换）。
 import { state } from '../core/state.js';
-import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_BOLT, ICON_MARQUEE, ICON_KEYBOARD, ICON_EYEDROPPER } from '../assets/icons.js';
+import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_BOLT, ICON_MARQUEE, ICON_KEYBOARD } from '../assets/icons.js';
 import { toggleEdit, deselectElement } from '../edit/selection.js';
 import { toggleFbPanel } from '../feedback/panel.js';
 import { exportPDF } from '../export/pdf.js';
 import { runPatchSource, clearSourceDir } from '../feedback/patchSource.js';
 import { toggleMarqueeMode } from '../edit/marquee.js';
 import { toggleHelpPopover } from '../feedback/help.js';
-import { pickColor } from '../edit/eyedropper.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
@@ -63,15 +62,6 @@ export function injectIntoOverlay() {
   state.marqueeToggleBtn = marqueeBtn;
 
   const div4 = document.createElement('span'); div4.className = 'divider';
-  // 取色器（deck 模式也放工具栏，跟 FAB bar 等价）
-  const pickBtn = document.createElement('button');
-  pickBtn.className = 'btn'; pickBtn.dataset.fbwBtn = 'pick'; pickBtn.type = 'button';
-  pickBtn.dataset.tooltip = t('overlay.pick');
-  pickBtn.setAttribute('aria-label', t('overlay.pick'));
-  pickBtn.innerHTML = ICON_EYEDROPPER.replace('viewBox="0 0 24 24"', 'viewBox="0 0 24 24" width="14" height="14"');
-  pickBtn.addEventListener('click', (e) => { e.stopPropagation(); pickColor(); });
-
-  const div4b = document.createElement('span'); div4b.className = 'divider';
   const exportBtn = document.createElement('button');
   exportBtn.className = 'btn'; exportBtn.dataset.fbwBtn = 'export'; exportBtn.type = 'button';
   exportBtn.dataset.tooltip = t('overlay.export');
@@ -88,8 +78,8 @@ export function injectIntoOverlay() {
   helpBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleHelpPopover(helpBtn); });
   state.helpToggleBtn = helpBtn;
 
-  if (reset) reset.after(div1, editBtn, saveEditBtn, div2, fbBtn, div3, marqueeBtn, div4, pickBtn, div4b, exportBtn, div5, helpBtn);
-  else overlay.append(div1, editBtn, saveEditBtn, div2, fbBtn, div3, marqueeBtn, div4, pickBtn, div4b, exportBtn, div5, helpBtn);
+  if (reset) reset.after(div1, editBtn, saveEditBtn, div2, fbBtn, div3, marqueeBtn, div4, exportBtn, div5, helpBtn);
+  else overlay.append(div1, editBtn, saveEditBtn, div2, fbBtn, div3, marqueeBtn, div4, exportBtn, div5, helpBtn);
   state.editToggleBtn = editBtn;
   state.fbToggleBtn = fbBtn;
 

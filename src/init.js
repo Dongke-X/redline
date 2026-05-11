@@ -2,7 +2,7 @@
 import { state } from './core/state.js';
 import { DBG, SECTION_SELECTORS } from './config.js';
 import { CSS } from './assets/styles.js';
-import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_MARQUEE, ICON_KEYBOARD, ICON_FOLD, ICON_EYEDROPPER, ICON_UNDO, ICON_REDO } from './assets/icons.js';
+import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_MARQUEE, ICON_KEYBOARD, ICON_FOLD, ICON_UNDO, ICON_REDO } from './assets/icons.js';
 import { t } from './i18n.js';
 import { toggleMarqueeMode } from './edit/marquee.js';
 import { attachTooltipDelegation } from './tooltip.js';
@@ -20,7 +20,6 @@ import { undo, redo, canUndo, canRedo } from './core/undo.js';
 import { copySelectedDescriptor } from './edit/clipboard.js';
 import { toggleAudit, refreshAuditIfOn } from './edit/audit.js';
 import { showMeasurement, hideMeasurement } from './edit/measure.js';
-import { pickColor } from './edit/eyedropper.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -70,13 +69,6 @@ function createDom() {
   marqueeFab.dataset.tooltip = t('overlay.marquee');
   marqueeFab.setAttribute('aria-label', t('overlay.marquee'));
   state.marqueeFab = marqueeFab;
-
-  const pickFab = document.createElement('button');
-  pickFab.className = 'fbw-fab fbw-pick-fab';
-  pickFab.innerHTML = ICON_EYEDROPPER;
-  pickFab.dataset.tooltip = t('overlay.pick');
-  pickFab.setAttribute('aria-label', t('overlay.pick'));
-  state.pickFab = pickFab;
 
   const undoFab = document.createElement('button');
   undoFab.className = 'fbw-fab fbw-undo-fab';
@@ -149,7 +141,6 @@ function createDom() {
   fabBar.appendChild(editFab);
   fabBar.appendChild(fbFab);
   fabBar.appendChild(marqueeFab);
-  fabBar.appendChild(pickFab);
   fabBar.appendChild(exportFab);
   // undo / redo 默认隐藏；栈非空才显示，避免空状态占视觉
   fabBar.appendChild(undoFab);
@@ -313,7 +304,6 @@ function attachFabClicks() {
   });
   state.exportFab.addEventListener('click', (e) => exportPDF({ image: e.shiftKey }, deselectElement));
   state.marqueeFab.addEventListener('click', toggleMarqueeMode);
-  state.pickFab.addEventListener('click', (e) => { e.stopPropagation(); pickColor(); });
   state.undoFab.addEventListener('click', (e) => { e.stopPropagation(); undo(); refreshUndoFabs(); });
   state.redoFab.addEventListener('click', (e) => { e.stopPropagation(); redo(); refreshUndoFabs(); });
   state.helpFab.addEventListener('click', (e) => { e.stopPropagation(); toggleHelpPopover(); });

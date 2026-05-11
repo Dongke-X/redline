@@ -40,6 +40,9 @@ export const state = {
   /** @type {HTMLElement|null} */ tagPopover: null,
   /** @type {HTMLElement|null} */ resizeHandles: null,
   /** @type {Function|null} */ onChangeHook: null,
+  /** 多选支持：state.selectedEl 始终指向 anchor（最近一次点）；selectedEls 是当前完整选区。
+   * 单选时两者一致；多选时 selectedEls 含 selectedEl 在内的所有元素 */
+  /** @type {Set<HTMLElement>} */ selectedEls: new Set(),
 
   // ════════════════════════ 2. 模式 + 交互态（频繁变） ════════════════════════
   /** @type {HTMLElement|null} */ selectedEl: null,

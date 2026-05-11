@@ -31,8 +31,9 @@ export const ICON_MINUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
 export const ICON_DRAG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>';
 // 标签切换：H 字形 = heading 语义
 export const ICON_HEADING = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4v16M18 4v16M6 12h12"/></svg>';
-// 取色器：水滴形（吸管的图形隐喻），强调 design 工具语义
-export const ICON_EYEDROPPER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 18l-7 4 4-7L17 4l3 3L11 18z"/><path d="M16 5l3 3"/></svg>';
+// 取色器：纯水滴形（color/ink 隐喻）。
+// 之前用斜向吸管 path 跟编辑铅笔太像，换成对称的 droplet 一眼分得开
+export const ICON_EYEDROPPER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5c-3 5-6 8-6 12a6 6 0 0 0 12 0c0-4-3-7-6-12z"/></svg>';
 // 撤销 / 重做：弯曲箭头（左 = 撤销，右 = 重做）
 export const ICON_UNDO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a6 6 0 0 1 0 12h-3"/></svg>';
 export const ICON_REDO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l4-4-4-4"/><path d="M19 10h-9a6 6 0 0 0 0 12h3"/></svg>';
