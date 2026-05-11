@@ -8,6 +8,7 @@ import { deselectElement } from '../edit/selection.js';
 import { showToast, updateCounter } from '../utils.js';
 import { t, toggleLocale } from '../i18n.js';
 import { captureViewport } from './screenshot.js';
+import { pickColor } from '../edit/eyedropper.js';
 
 export function toggleFbPanel() {
   state.panel.classList.toggle('fbw-open');
@@ -60,6 +61,15 @@ export function attachPanelEvents() {
       captureViewport().finally(() => {
         if (wasOpen) state.panel.classList.add('fbw-open');
       });
+    });
+  }
+
+  // 取色器按钮：开 EyeDropper 取一种颜色 → hex 到剪贴板 + 插入当前 focus 的反馈框
+  const pickBtn = state.panel.querySelector('[data-fbw-pick]');
+  if (pickBtn) {
+    pickBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      pickColor();
     });
   }
 

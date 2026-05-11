@@ -6,6 +6,16 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.14 — 2026-05-12  ·  颜色取色器
+
+### Added
+- **取色器按钮**（反馈面板 header 加一个水滴 icon）：点击 → 调起浏览器原生 EyeDropper（Chrome / Edge 95+）→ 在页面任意位置取一个像素 → hex 自动复制到剪贴板
+- 智能插入：如果取色时刚才有一个 textarea（反馈框 / 标注框 / note popover）处于 focus，hex 也会插到光标位置，省一次粘贴
+- 取色期间面板自动隐藏（避免遮挡），取完恢复
+- 不支持 EyeDropper API 的浏览器（Firefox / Safari）给一条明确 toast 提示
+
+---
+
 ## 0.1.13 — 2026-05-12  ·  间距测量（design feedback）
 
 ### Added

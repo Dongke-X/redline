@@ -2,7 +2,7 @@
 // 改成函数形式，运行时调用 t() 取 i18n 字符串。
 import {
   ICON_CHAT, ICON_TRASH, ICON_CAMERA, ICON_COPY, ICON_SAVE, ICON_GLOBE, ICON_LINK,
-  ICON_FONT, ICON_MARKER, ICON_IMAGE, ICON_HEADING,
+  ICON_FONT, ICON_MARKER, ICON_IMAGE, ICON_HEADING, ICON_EYEDROPPER,
   ICON_ARROW_UP, ICON_ARROW_DOWN, ICON_ARROW_LEFT, ICON_ARROW_RIGHT,
   ICON_PLUS, ICON_MINUS,
   ICON_EYE_OFF, ICON_RESTORE, ICON_X,
@@ -17,6 +17,7 @@ export function panelHTML() {
       <span class="fbw-head-title">${ICON_CHAT}<span>${t('panel.title')}</span></span>
       <span class="fbw-head-actions">
         <button class="fbw-icon-btn" data-fbw-shot data-tooltip="${t('panel.btn.shot.title')}">${ICON_CAMERA}</button>
+        <button class="fbw-icon-btn" data-fbw-pick data-tooltip="${t('panel.btn.pick.title')}">${ICON_EYEDROPPER}</button>
         <button class="fbw-icon-btn" data-fbw-locale data-tooltip="${t('panel.btn.locale.title', { lang: nextLang })}">${ICON_GLOBE}</button>
         <button class="fbw-icon-btn fbw-danger" data-fbw-clear-all data-tooltip="${t('panel.btn.clearAll')}">${ICON_TRASH}</button>
         <button class="fbw-icon-btn" data-fbw-close data-tooltip="${t('panel.btn.close')}">−</button>
