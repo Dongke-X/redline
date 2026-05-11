@@ -9,6 +9,7 @@ import { deselectElement, positionToolbar, followToolbar, liftTarget } from './s
 import { openFontPicker, closeFontPicker } from './fonts.js';
 import { openMarkerPopover, closeMarkerPopover } from './marker.js';
 import { openTagPopover, closeTagPopover } from './tag-switch.js';
+import { pushUndo } from '../core/undo.js';
 import { renderAttachments } from '../feedback/attachments.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
@@ -85,8 +86,8 @@ export function attachToolbarEvents() {
     const el = state.selectedEl;
 
     if (op === 'close') { deselectElement(); return; }
-    if (op === 'delete') { recordOp(el, 'delete'); el.dataset.fbwOpDeleted = '1'; showToast(t('op.delete')); return; }
-    if (op === 'hide')   { recordOp(el, 'hide');   el.dataset.fbwOpHidden  = '1'; showToast(t('op.hide')); return; }
+    if (op === 'delete') { pushUndo(el); recordOp(el, 'delete'); el.dataset.fbwOpDeleted = '1'; showToast(t('op.delete')); return; }
+    if (op === 'hide')   { pushUndo(el); recordOp(el, 'hide');   el.dataset.fbwOpHidden  = '1'; showToast(t('op.hide')); return; }
     if (op === 'link') {
       // a[href] 才能改链接。selection.js 已经按元素类型显隐，这里再兜底防御。
       if (el.tagName !== 'A') return;
@@ -96,12 +97,14 @@ export function attachToolbarEvents() {
       if (after == null) return;          // 用户取消
       const trimmed = after.trim();
       if (trimmed === before) return;     // 没变
+      pushUndo(el);
       el.setAttribute('href', trimmed);
       recordOp(el, 'href', { before, after: trimmed });
       showToast(t('op.link.done') || `链接已改：${trimmed.slice(0, 40)}${trimmed.length > 40 ? '…' : ''}`);
       return;
     }
     if (op === 'restore') {
+      pushUndo(el);
       delete el.dataset.fbwOpDeleted;
       delete el.dataset.fbwOpHidden;
       delete el.dataset.fbwTx; delete el.dataset.fbwTy; delete el.dataset.fbwScale; delete el.dataset.fbwRotate;
@@ -119,6 +122,7 @@ export function attachToolbarEvents() {
       return;
     }
     if (op.startsWith('move-')) {
+      pushUndo(el);
       const dir = op.slice(5);
       const t = getElTransform(el);
       const step = e.shiftKey ? 16 : 4;
@@ -132,6 +136,7 @@ export function attachToolbarEvents() {
       return;
     }
     if (op === 'zoom-in' || op === 'zoom-out') {
+      pushUndo(el);
       const t = getElTransform(el);
       const factor = op === 'zoom-in' ? 1.1 : (1 / 1.1);
       t.scale = Math.max(0.2, Math.min(3, t.scale * factor));
@@ -168,6 +173,7 @@ export function attachToolbarEvents() {
         const file = ev.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = () => {
+          pushUndo(el);
           if (el.tagName === 'IMG') {
             if (!el.dataset.fbwOriginalSrc) el.dataset.fbwOriginalSrc = el.src;
             el.src = reader.result;
@@ -222,6 +228,7 @@ export function attachDragEvents() {
       const dy = e.clientY - pendingDrag.startY;
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
       // 越阈值，正式进入拖拽
+      pushUndo(pendingDrag.el);
       state.dragState = { ...pendingDrag, moved: true };
       pendingDrag = null;
       document.body.style.cursor = 'move';

@@ -1242,6 +1242,8 @@ export const CSS = `
     [data-fbw-tag-as="h2"] { font-size: 1.5em !important; font-weight: 700 !important; line-height: 1.3 !important; }
     [data-fbw-tag-as="h3"] { font-size: 1.2em !important; font-weight: 700 !important; line-height: 1.35 !important; }
     [data-fbw-tag-as="h4"] { font-size: 1.05em !important; font-weight: 700 !important; }
+    [data-fbw-tag-as="h5"] { font-size: 0.95em !important; font-weight: 700 !important; }
+    [data-fbw-tag-as="h6"] { font-size: 0.88em !important; font-weight: 700 !important; color: #555 !important; }
     [data-fbw-tag-as="p"] { font-size: 1em !important; font-weight: 400 !important; line-height: 1.6 !important; }
 
     /* 拖动 scale / rotate 时的实时读数（跟随光标） */

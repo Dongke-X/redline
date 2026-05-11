@@ -3,10 +3,11 @@
 // 用 data-fbw-tag-as 属性 + 一组 CSS 让元素"看起来像"目标 tag，apply.mjs 在源 HTML 上做真正的 tag 替换。
 import { state } from '../core/state.js';
 import { recordOp, clearOpsOn } from '../core/elements.js';
+import { pushUndo } from '../core/undo.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
-const TAGS = ['p', 'h1', 'h2', 'h3', 'h4'];
+const TAGS = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
 let popover = null;
 
@@ -57,6 +58,7 @@ export function applyTagSwitch(el, toTag) {
     return;
   }
   if (toTag === fromLive) {
+    pushUndo(el);
     el.removeAttribute('data-fbw-tag-as');
     // 把 ops 里的 tag op 撤掉
     const rec = state.elementOps.get(el);
@@ -68,6 +70,7 @@ export function applyTagSwitch(el, toTag) {
     closeTagPopover();
     return;
   }
+  pushUndo(el);
   el.setAttribute('data-fbw-tag-as', toTag);
   recordOp(el, 'tag', { from: fromLive, to: toTag });
   showToast(t('op.tag.done', { tag: toTag.toUpperCase() }) || `标签变更为 ${toTag.toUpperCase()}`);

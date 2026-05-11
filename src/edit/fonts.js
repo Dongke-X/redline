@@ -2,6 +2,7 @@
 // 应用到选中元素时按 inline style 写 font-family。
 import { state } from '../core/state.js';
 import { recordOp } from '../core/elements.js';
+import { pushUndo } from '../core/undo.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
@@ -164,6 +165,7 @@ export function attachFontPickerEvents() {
     const family = item.dataset.fpFamily.replace(/&quot;/g, '"');
     const name = item.dataset.fpName;
     const el = state.selectedEl;
+    pushUndo(el);
     if (family === '__inherit__') {
       el.style.fontFamily = '';
       delete el.dataset.fbwFontName;

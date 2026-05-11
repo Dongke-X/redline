@@ -6,6 +6,17 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.5 — 2026-05-11  ·  撤销栈 + H1-H6 全套
+
+### Added
+- **撤销 / 重做**：`⌘+Z` 撤销最近一次操作，`⌘+Shift+Z` / `Ctrl+Y` 重做。栈深 50，对 tag / scale / rotate / move / hide / delete / highlight / font / replace-img / href 都生效。文字编辑由 contentEditable 原生 undo 处理（redline 在 contentEditable 内不抢 Cmd+Z）
+- 标签切换扩展到 **H5 / H6**（之前只到 H4）
+
+### 已知限制
+- 范围高亮（划词后插入 `<span class="fbw-hl">` 的那种）撤销后样式恢复了但 span 节点会残留，需要用马克笔 popover 的「清除」按一下
+
+---
+
 ## 0.1.4 — 2026-05-11  ·  标签切换 + 拖动读数
 
 ### Added

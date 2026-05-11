@@ -16,6 +16,7 @@ import { attachFontPickerEvents } from './edit/fonts.js';
 import { attachMarkerEvents } from './edit/marker.js';
 import { createResizeHandlesNode, attachResizeEvents } from './edit/resize.js';
 import { createTagPopoverNode, attachTagPopoverEvents } from './edit/tag-switch.js';
+import { undo, redo } from './core/undo.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -179,6 +180,20 @@ function attachKeyboardShortcuts() {
     if ((e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === 's' || e.key === 'S')) {
       e.preventDefault();
       state.panel?.querySelector('[data-fbw-action="save"]')?.click();
+      return;
+    }
+
+    // ⌘+Z / Ctrl+Z：撤销最近一次 op
+    if ((e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+      e.preventDefault();
+      undo();
+      return;
+    }
+    // ⌘+Shift+Z / Ctrl+Shift+Z / Ctrl+Y：重做
+    if (((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'z' || e.key === 'Z'))
+        || ((e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === 'y' || e.key === 'Y'))) {
+      e.preventDefault();
+      redo();
       return;
     }
 

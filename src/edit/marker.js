@@ -2,6 +2,7 @@
 // 提供 5 种荧光色 + 清除选项。
 import { state } from '../core/state.js';
 import { recordOp } from '../core/elements.js';
+import { pushUndo } from '../core/undo.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
@@ -112,6 +113,7 @@ function clearInlineHighlights(el) {
 
 function applyHighlight(el, color, name, range) {
   if (!el) return;
+  pushUndo(el);
   if (color) {
     if (range) {
       // 只高亮选中文字范围，跟真荧光笔一样

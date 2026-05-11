@@ -4,6 +4,7 @@
 import { state } from '../core/state.js';
 import { getElTransform, setElTransform, recordOp } from '../core/elements.js';
 import { onMousemove, onMouseup } from '../utils/events.js';
+import { pushUndo } from '../core/undo.js';
 
 const HANDLES = ['tl', 'tr', 'br', 'bl'];
 
@@ -118,6 +119,7 @@ export function attachResizeEvents() {
     const cy = rect.top + rect.height / 2;
     const tr = getElTransform(el);
 
+    pushUndo(el);
     if (scaleHandle) {
       const startDist = Math.hypot(e.clientX - cx, e.clientY - cy);
       activeDrag = {
