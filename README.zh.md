@@ -8,7 +8,7 @@
 
 agent 给你写 HTML，你在浏览器里 review，反馈以 HTML / PDF / ZIP 三种形态导出 —— 闭环，不用 Figma，不用录 Loom。
 
-[![version](https://img.shields.io/badge/version-0.1.47-c8242c)](./CHANGELOG.md) [![tests](https://img.shields.io/badge/tests-18%20passing-brightgreen)](./tests) [![bundle](https://img.shields.io/badge/bundle-238kb-blue)](./dist) [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![version](https://img.shields.io/github/v/release/Dongke-X/redline?color=c8242c&label=version)](https://github.com/Dongke-X/redline/releases) [![tests](https://img.shields.io/badge/tests-18%20passing-brightgreen)](./tests) [![bundle](https://img.shields.io/badge/bundle-238kb-blue)](./dist) [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 [![English](https://img.shields.io/badge/lang-English-555555?style=flat-square)](./README.md) [![简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-c8242c?style=flat-square)](./README.zh.md)
 
@@ -34,7 +34,7 @@ agent 给你写 HTML，你在浏览器里 review，反馈以 HTML / PDF / ZIP �
 
 ## 浏览器里都能干什么
 
-<p align="center"><img src="./docs/images/browser-canvas.zh.jpg" alt="landing 页被 redline 标注" width="720"></p>
+<p align="center"><img src="./docs/images/browser-canvas.jpg" alt="landing 页被 redline 标注" width="720"></p>
 
 - **改任何东西** —— 文字、颜色、字体、尺寸、transform；双击 + ⌘S 保存
 - **标注** —— 拖矩形画区域反馈、贴截图、写每节备注
@@ -85,7 +85,7 @@ HTML 导出让你把 review 转给任何有浏览器的人。接收端不用装 
 
 ## 三个核心场景
 
-<p align="center"><img src="./docs/images/modes.zh.jpg" alt="redline 适配演示 / 文档 / 页面三种 HTML" width="720"></p>
+<p align="center"><img src="./docs/images/modes.jpg" alt="redline 适配演示 / 文档 / 页面三种 HTML" width="720"></p>
 
 | | 什么时候用 | 你标注什么 | 输出 |
 |---|---|---|---|

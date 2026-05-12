@@ -8,7 +8,7 @@
 
 The agent writes HTML. You review it in the browser. Export back as HTML, PDF, or a structured feedback ZIP. Closed loop, no Figma, no Loom.
 
-[![version](https://img.shields.io/badge/version-0.1.47-c8242c)](./CHANGELOG.md) [![tests](https://img.shields.io/badge/tests-18%20passing-brightgreen)](./tests) [![bundle](https://img.shields.io/badge/bundle-238kb-blue)](./dist) [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![version](https://img.shields.io/github/v/release/Dongke-X/redline?color=c8242c&label=version)](https://github.com/Dongke-X/redline/releases) [![tests](https://img.shields.io/badge/tests-18%20passing-brightgreen)](./tests) [![bundle](https://img.shields.io/badge/bundle-238kb-blue)](./dist) [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 [![English](https://img.shields.io/badge/lang-English-c8242c?style=flat-square)](./README.md) [![简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-555555?style=flat-square)](./README.zh.md)
 
@@ -34,7 +34,7 @@ Only the ZIP loop touches the source HTML again — HTML and PDF exports are one
 
 ## What's in the browser
 
-<p align="center"><img src="./docs/images/browser-canvas.en.jpg" alt="A landing page being marked up with redline" width="720"></p>
+<p align="center"><img src="./docs/images/browser-canvas.jpg" alt="A landing page being marked up with redline" width="720"></p>
 
 - **Edit anything** — text, color, font, size, transform; double-click + ⌘S to save
 - **Annotate** — drag region notes, paste screenshots, per-section feedback
@@ -85,7 +85,7 @@ The HTML export lets you pass review to anyone who has a browser. No skill, no e
 
 ## Three core scenarios
 
-<p align="center"><img src="./docs/images/modes.en.jpg" alt="redline adapts to decks, docs, and pages" width="720"></p>
+<p align="center"><img src="./docs/images/modes.jpg" alt="redline adapts to decks, docs, and pages" width="720"></p>
 
 | | When | What you mark up | What ships |
 |---|---|---|---|

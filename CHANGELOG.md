@@ -6,6 +6,15 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.50 — 2026-05-12  ·  配图统一英文版 + 版本号 badge 自动追 release
+
+### Changed
+- 中英 README 现在共用同一套图（不再有 `.zh.jpg` 副本）。`docs/images/browser-canvas.jpg` / `modes.jpg` 用 EN 版作为权威版本
+- 删除 `browser-canvas.zh.jpg` / `modes.zh.jpg`
+- README version badge 从硬编码 `0.1.47` 改成 `shields.io/github/v/release` 动态查询，自动追最新 GitHub Release，永远不漂移
+
+---
+
 ## 0.1.49 — 2026-05-12  ·  语言切换 badge 化
 
 ### Changed
