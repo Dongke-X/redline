@@ -220,6 +220,20 @@ function attachKeyboardShortcuts() {
       return;
     }
 
+    // Space + H = 可编辑 HTML
+    if (spaceHeld && (e.key === 'h' || e.key === 'H') && !e.shiftKey) {
+      e.preventDefault();
+      exportSingleFile({ mode: 'editable' });
+      return;
+    }
+
+    // Shift + H = 只读 HTML
+    if (e.shiftKey && (e.key === 'H' || e.key === 'h')) {
+      e.preventDefault();
+      exportSingleFile({ mode: 'readonly' });
+      return;
+    }
+
     // ⌘+S / Ctrl+S：保存反馈
     if ((e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === 's' || e.key === 'S')) {
       e.preventDefault();

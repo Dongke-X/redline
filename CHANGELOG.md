@@ -6,6 +6,15 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.37 — 2026-05-12  ·  HTML 导出快捷键
+
+### Added
+- `Space + H` = 导出可编辑 HTML（跟 `Space + P` 矢量 PDF 对称）
+- `Shift + H` = 导出只读 HTML（跟 `Shift + P` 长图 PDF 对称）
+- 快捷指令面板「导出」组补上两行
+
+---
+
 ## 0.1.36 — 2026-05-12  ·  砍 PPT · 接收方 UX · 体积优化 · 版本链
 
 ### Removed

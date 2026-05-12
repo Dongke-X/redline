@@ -216,6 +216,8 @@ const DICT = {
     'help.shortcut.measure': '间距测量',
     'help.shortcut.pdfVector': '矢量 PDF',
     'help.shortcut.pdfImage': '长图 PDF',
+    'help.shortcut.htmlEditable': '可编辑 HTML',
+    'help.shortcut.htmlReadonly': '只读 HTML',
     'help.shortcut.help': '显示帮助',
   },
   en: {
@@ -418,6 +420,8 @@ const DICT = {
     'help.shortcut.measure': 'Measure',
     'help.shortcut.pdfVector': 'Vector PDF',
     'help.shortcut.pdfImage': 'Long-image PDF',
+    'help.shortcut.htmlEditable': 'Editable HTML',
+    'help.shortcut.htmlReadonly': 'Read-only HTML',
     'help.shortcut.help': 'Show help',
   },
 };

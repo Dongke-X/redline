@@ -66,6 +66,8 @@ export function buildHelpPopoverHTML() {
           <div class="fbw-help-group-label">${t('help.group.export')}</div>
           ${row(['Space', 'P'], t('help.shortcut.pdfVector'))}
           ${row(['Shift', 'P'], t('help.shortcut.pdfImage'))}
+          ${row(['Space', 'H'], t('help.shortcut.htmlEditable'))}
+          ${row(['Shift', 'H'], t('help.shortcut.htmlReadonly'))}
         </div>
       </div>
     </div>
