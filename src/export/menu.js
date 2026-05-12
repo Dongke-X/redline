@@ -12,28 +12,32 @@ let menu = null;
 export function createExportMenuNode() {
   menu = document.createElement('div');
   menu.className = 'fbw-export-menu';
+  const item = (key, name, hint, kbd) => `
+    <button class="fbw-export-item" data-export="${key}">
+      <span class="fbw-export-head">
+        <span class="fbw-export-name">${name}</span>
+        <span class="fbw-export-kbd">${kbd}</span>
+      </span>
+      <span class="fbw-export-hint">${hint}</span>
+    </button>`;
   menu.innerHTML = `
     <div class="fbw-export-group">
       <div class="fbw-export-group-label">PDF</div>
-      <button class="fbw-export-item" data-export="pdf-vector">
-        <span class="fbw-export-name">${t('export.pdf.vector') || '矢量 PDF'}</span>
-        <span class="fbw-export-hint">${t('export.pdf.vector.hint') || '可缩放 · 链接保留'}</span>
-      </button>
-      <button class="fbw-export-item" data-export="pdf-image">
-        <span class="fbw-export-name">${t('export.pdf.image') || '长图 PDF'}</span>
-        <span class="fbw-export-hint">${t('export.pdf.image.hint') || '整页一张超长图'}</span>
-      </button>
+      ${item('pdf-vector',  t('export.pdf.vector')        || '矢量 PDF',
+                            t('export.pdf.vector.hint')   || '可缩放 · 链接保留',
+                            'Space+P')}
+      ${item('pdf-image',   t('export.pdf.image')         || '长图 PDF',
+                            t('export.pdf.image.hint')    || '整页一张超长图',
+                            '⇧+P')}
     </div>
     <div class="fbw-export-group">
       <div class="fbw-export-group-label">HTML</div>
-      <button class="fbw-export-item" data-export="html-editable">
-        <span class="fbw-export-name">${t('export.html.editable') || '可编辑 HTML'}</span>
-        <span class="fbw-export-hint">${t('export.html.editable.hint') || '接收方可继续标注'}</span>
-      </button>
-      <button class="fbw-export-item" data-export="html-readonly">
-        <span class="fbw-export-name">${t('export.html.readonly') || '只读 HTML'}</span>
-        <span class="fbw-export-hint">${t('export.html.readonly.hint') || '给客户演示 · 不能编辑'}</span>
-      </button>
+      ${item('html-editable', t('export.html.editable')      || '可编辑 HTML',
+                              t('export.html.editable.hint') || '接收方可继续标注',
+                              'Space+H')}
+      ${item('html-readonly', t('export.html.readonly')      || '只读 HTML',
+                              t('export.html.readonly.hint') || '给客户演示 · 不能编辑',
+                              '⇧+H')}
     </div>
   `;
   return menu;

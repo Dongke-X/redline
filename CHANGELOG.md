@@ -6,6 +6,14 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.38 — 2026-05-12  ·  导出菜单显示快捷键 chip
+
+### Added
+- 导出菜单每一项右侧加 monospace 快捷键 chip：`Space+P` / `⇧+P` / `Space+H` / `⇧+H`
+- hover 时 chip 强调（背景 + 边框加深）
+
+---
+
 ## 0.1.37 — 2026-05-12  ·  HTML 导出快捷键
 
 ### Added

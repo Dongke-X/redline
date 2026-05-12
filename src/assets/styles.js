@@ -1474,8 +1474,8 @@ export const CSS = `
       width: 100%;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 1px;
+      align-items: stretch;
+      gap: 2px;
       padding: 7px 10px;
       background: transparent;
       color: rgba(245,243,239,0.92);
@@ -1488,10 +1488,33 @@ export const CSS = `
     .fbw-export-item:hover {
       background: rgba(255,255,255,0.08);
     }
+    .fbw-export-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
     .fbw-export-name {
       font-size: 12.5px;
       font-weight: 500;
       letter-spacing: 0.01em;
+    }
+    .fbw-export-kbd {
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 10.5px;
+      color: rgba(245,243,239,0.72);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      padding: 1px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .fbw-export-item:hover .fbw-export-kbd {
+      color: rgba(245,243,239,0.92);
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.18);
     }
     .fbw-export-hint {
       font-size: 10.5px;
