@@ -6,6 +6,22 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.35 — 2026-05-12  ·  PPT 导出
+
+### Added
+- 导出菜单新加「PowerPoint (.pptx)」选项：
+  - **deck 模式**（页面有 `section.slide`）：每页 html2canvas → 塞进 pptx 一张 slide，pptx 画布按 designW × designH 设布局
+  - **非 deck 模式**：整页一张图当一张 slide
+  - **sectionFeedback 写进 speaker notes**：每页的页面反馈作为 PPT 的演讲备注（接收方在 PPT 里直接看到反馈，不用切窗口）
+  - **全局反馈** 进单图 slide 的 notes
+- pptxgenjs 走 CDN 按需加载（不进 bundle，省 600KB）；html2canvas 复用 PDF 导出已加载的实例
+
+### 设计取舍
+- 每页是图片而不是结构化 slide → 拿到 PPT 里不能直接改文字。理由：HTML 流式布局没法 1:1 转 PPT 的「画布贴框」模型，强行转排版必废
+- 反馈走 speaker notes 而不是 slide 内 → 演示时听众看不到反馈，但讲者能看；适合「给老板讲，反馈作为脚注」场景
+
+---
+
 ## 0.1.34 — 2026-05-12  ·  Single-file 导出再修：直接 stash 源码字符串
 
 ### Fixed
