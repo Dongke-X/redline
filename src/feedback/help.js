@@ -54,9 +54,9 @@ export function buildHelpPopoverHTML() {
         </div>
         <div class="fbw-help-group">
           <div class="fbw-help-group-label">${t('help.group.pointer')}</div>
-          ${row(['Alt', 'hover'], t('help.shortcut.measure'))}
-          ${row(['Shift', 'click'], t('help.shortcut.multiSelect'))}
-          ${row('drag', t('help.shortcut.rubberBand'))}
+          ${row(['Alt', t('keys.hover')], t('help.shortcut.measure'))}
+          ${row(['Shift', t('keys.click')], t('help.shortcut.multiSelect'))}
+          ${row(t('keys.drag'), t('help.shortcut.rubberBand'))}
         </div>
         <div class="fbw-help-group">
           <div class="fbw-help-group-label">${t('help.group.export')}</div>

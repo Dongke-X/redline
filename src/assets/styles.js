@@ -1205,16 +1205,16 @@ export const CSS = `
     /* 文本化：kbd 不画框，全用 monospace 文字。每行栅格 = 固定 keys 列 + 1fr label */
     .fbw-help-row {
       display: grid;
-      grid-template-columns: 78px 1fr;
+      grid-template-columns: 86px 1fr;
       align-items: baseline;
       column-gap: 10px;
       font-size: 12.5px;
       line-height: 1.45;
       color: rgba(245,245,247,0.85);
-      white-space: nowrap !important;
       writing-mode: horizontal-tb !important;
       word-break: keep-all !important;
     }
+    /* keys 必须不换行（⌘+⇧+Z 拆开就废了）*/
     .fbw-help-keys {
       font-family: ui-monospace, "SF Mono", Menlo, monospace;
       font-size: 11.5px;
@@ -1222,9 +1222,12 @@ export const CSS = `
       letter-spacing: 0.02em;
       white-space: nowrap;
     }
+    /* label 允许换行；窄面板下折两行也比被截好 */
     .fbw-help-desc {
       color: rgba(245,243,239,0.78);
       letter-spacing: 0.01em;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     /* 自定义 tooltip —— 跟 widget panel 同设计语言 */

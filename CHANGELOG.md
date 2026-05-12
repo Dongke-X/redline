@@ -6,6 +6,15 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.29 — 2026-05-12  ·  鼠标手势中文化 + 长 label 不再被截
+
+### Fixed
+- 鼠标手势行原来显示 `Alt+hover` / `⇧+click` / `drag`，普通用户看不懂——「hover 是什么键？」。现在中文 locale 下显示 `Alt+悬停` / `⇧+点击` / `拖拽`，跟键盘组合的视觉区分但语义清楚
+- 长 label（「框选可编辑元素」「显示 / 隐藏帮助」）被裁掉：之前 `.fbw-help-row` 上有 `white-space: nowrap !important` 强制单行，撑爆 popover 也不让步。现在 nowrap 只锁在 keys 列（`⌘+⇧+Z` 拆开就废了），label 列允许换行 + `overflow-wrap: anywhere`，窄面板下折两行也比被截好
+- keys 列宽 78 → 86px，留出空间给「Alt+悬停」「Space+P」这种偏长的 key 组合
+
+---
+
 ## 0.1.28 — 2026-05-12  ·  快捷键面板紧凑化 + 关闭按钮
 
 ### Changed
