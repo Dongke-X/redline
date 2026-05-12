@@ -1,22 +1,18 @@
 // 视口截屏：用 html2canvas 抓当前可视区，扔到 attachments 里。
 // review 模式下尤其有用——线上 webapp 状态是动态的，截屏作为 agent 的视觉锚点。
+// html2canvas 走 CDN 按需加载，CSP-aware 三层兜底见 utils/cdn-loader.js
 import { addAttachment } from './attachments.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
+import { loadCdnLib } from '../utils/cdn-loader.js';
+
+const H2C_SPEC = {
+  src: 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+  integrity: 'sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H',
+};
 
 function loadH2C() {
-  return new Promise(resolve => {
-    if (window.html2canvas) return resolve(true);
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
-    // 跟 export/pdf.js 保持一致的 SRI hash，供应链锁定
-    s.integrity = 'sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H';
-    s.crossOrigin = 'anonymous';
-    s.referrerPolicy = 'no-referrer';
-    s.onload = () => resolve(true);
-    s.onerror = () => resolve(false);
-    document.head.appendChild(s);
-  });
+  return loadCdnLib(H2C_SPEC, () => !!window.html2canvas);
 }
 
 export async function captureViewport() {

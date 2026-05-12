@@ -6,6 +6,35 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.52 — 2026-05-12  ·  CSP-aware CDN 加载（长图 PDF / 截图在严 CSP 页面也尝试可用）
+
+### Fixed
+- 长图 PDF / 截图功能在严 CSP 页面（如 `script-src 'self' 'nonce-...'`）报错：
+  > Loading the script 'https://cdn.jsdelivr.net/...' violates the following Content Security Policy directive: "script-src 'self' 'nonce-...'"
+- 原因：html2canvas / jspdf 走 jsdelivr CDN，被页面 script-src 拦掉
+
+### Added
+- `src/utils/cdn-loader.js`：CSP-aware 三层兜底
+  1. 直接 `<script src=...>` 加载（最快）
+  2. 失败 → `fetch()` 拿源码 + 插入为带页面 nonce 的 inline `<script>`（绕开 script-src 源白名单）
+  3. SRI 校验：inline 路径本地校 SHA-384，hash 对不上拒绝注入（防供应链）
+  4. 都失败 → 调用方拿 false，给清晰 toast 让用户走兜底方案
+
+### Changed
+- `export/pdf.js` 跟 `feedback/screenshot.js` 都改用新 loader
+- 错误文案改清楚：「图片库加载失败 · 离线或页面 CSP 拦截 · 改用矢量 PDF（Space+P）」/「截屏库加载失败 · 离线或页面 CSP 拦截 · 用系统原生截屏粘到反馈框」
+- 中英都同步
+
+### 仍然失败的场景
+如果页面 CSP 同时锁了 `connect-src`（不让 fetch 跨域），第 2 层 fetch 也会被拦。这时只能：
+- 矢量 PDF（`Space+P`）：不依赖 CDN，永远可用
+- 系统截屏（macOS `⇧⌘4` / Win `Win+⇧+S`）粘到反馈框
+- 把页面下载到本地用 file:// 开
+
+未来如有需要，可以把 html2canvas / jspdf bundle 进 redline.js（+500KB）做到 100% offline。
+
+---
+
 ## 0.1.51 — 2026-05-12  ·  「不用 Claude Code 也能闭环」 prompt 模板
 
 ### Added

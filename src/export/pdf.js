@@ -1,8 +1,10 @@
 // PDF 导出：矢量版 (window.print) + 图片版 (html2canvas + jsPDF)。
 // 图片库走 CDN 按需加载（首次导出时联网拉取）。
+// 加载走三层兜底（utils/cdn-loader.js）应对页面 CSP：直接 script → fetch+inline-nonce → fail
 import { state } from '../core/state.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
+import { loadCdnLib } from '../utils/cdn-loader.js';
 
 // CDN 资源带 SRI 防供应链篡改。版本升级时同步更新这里的 hash。
 const CDN_LIBS = {
@@ -16,25 +18,13 @@ const CDN_LIBS = {
   },
 };
 
-function loadCdnScript({ src, integrity }) {
-  return new Promise(resolve => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.integrity = integrity;
-    s.crossOrigin = 'anonymous';
-    s.referrerPolicy = 'no-referrer';
-    s.onload = () => resolve(true);
-    s.onerror = () => resolve(false);
-    document.head.appendChild(s);
-  });
-}
-
-function loadExportLibs() {
+async function loadExportLibs() {
   const tasks = [];
-  if (!window.html2canvas) tasks.push(loadCdnScript(CDN_LIBS.html2canvas));
-  if (!window.jspdf) tasks.push(loadCdnScript(CDN_LIBS.jspdf));
-  if (!tasks.length) return Promise.resolve(true);
-  return Promise.all(tasks).then(results => results.every(Boolean) && !!window.html2canvas && !!window.jspdf);
+  if (!window.html2canvas) tasks.push(loadCdnLib(CDN_LIBS.html2canvas, () => !!window.html2canvas));
+  if (!window.jspdf)       tasks.push(loadCdnLib(CDN_LIBS.jspdf,       () => !!window.jspdf));
+  if (!tasks.length) return true;
+  const results = await Promise.all(tasks);
+  return results.every(Boolean) && !!window.html2canvas && !!window.jspdf;
 }
 
 // 矢量 PDF：deck-stage 内置 print mode，body 加 fbw-printing 类，window.print()
