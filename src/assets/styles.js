@@ -1330,6 +1330,7 @@ export const CSS = `
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="tag"]         { outline-color: rgba(139,92,246,0.80) !important; }
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="replace-img"] { outline-color: rgba(6,182,212,0.80) !important; }
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="font"]        { outline-color: rgba(59,130,246,0.80) !important; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="style"]       { outline-color: rgba(244,114,182,0.85) !important; }
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="highlight"]   { outline-color: rgba(234,179,8,0.90) !important; }
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="scale"],
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="rotate"],
@@ -1357,6 +1358,7 @@ export const CSS = `
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="tag"]::after         { background: #8b5cf6; }
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="replace-img"]::after { background: #06b6d4; }
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="font"]::after        { background: #3b82f6; }
+    body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="style"]::after       { background: #f472b6; }
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="highlight"]::after   { background: #eab308; color: #1a1a1a; }
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="scale"]::after,
     body.fbw-audit-mode .fbw-audit-changed[data-fbw-audit-op="rotate"]::after,
@@ -1402,6 +1404,99 @@ export const CSS = `
     [data-fbw-tag-as="h5"] { font-size: 0.95em !important; font-weight: 700 !important; }
     [data-fbw-tag-as="h6"] { font-size: 0.88em !important; font-weight: 700 !important; color: #555 !important; }
     [data-fbw-tag-as="p"] { font-size: 1em !important; font-weight: 400 !important; line-height: 1.6 !important; }
+
+    /* 样式注入面板：选中元素后调 font-size / padding / margin */
+    .fbw-style-panel {
+      position: fixed;
+      z-index: 2147483545;
+      display: none;
+      min-width: 240px;
+      background: rgba(28, 25, 22, 0.97);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 10px 12px 8px;
+      box-shadow:
+        0 16px 48px rgba(0,0,0,0.50),
+        0 2px 8px rgba(0,0,0,0.28),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
+      color: #f5f3ef;
+    }
+    .fbw-style-panel.fbw-on { display: block; }
+    .fbw-style-head {
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 9.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(245,243,239,0.45);
+      font-weight: 600;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .fbw-style-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+    .fbw-style-row:last-child { margin-bottom: 0; }
+    .fbw-style-label {
+      flex: 1;
+      font-size: 11.5px;
+      color: rgba(245,243,239,0.75);
+      letter-spacing: 0.02em;
+    }
+    .fbw-style-input {
+      width: 52px;
+      padding: 3px 6px;
+      background: rgba(0,0,0,0.30);
+      color: #f5f3ef;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 4px;
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    .fbw-style-input::-webkit-outer-spin-button,
+    .fbw-style-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .fbw-style-input:focus {
+      outline: none;
+      border-color: rgba(220,60,60,0.45);
+      box-shadow: 0 0 0 2px rgba(220,60,60,0.12);
+    }
+    .fbw-style-bump {
+      width: 22px; height: 22px;
+      padding: 0;
+      background: rgba(255,255,255,0.06);
+      color: rgba(245,243,239,0.75);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1;
+      font-family: inherit;
+    }
+    .fbw-style-bump:hover {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .fbw-style-unit {
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 10px;
+      color: rgba(245,243,239,0.42);
+      letter-spacing: 0.05em;
+      min-width: 16px;
+    }
 
     /* Rubber-band 框选：edit 模式下空白处拖出的选择矩形 */
     .fbw-rubber-band {
@@ -1535,6 +1630,7 @@ export const CSS = `
     body.fbw-printing .fbw-note-popover,
     body.fbw-printing .fbw-marker-popover,
     body.fbw-printing .fbw-tag-popover,
+    body.fbw-printing .fbw-style-panel,
     body.fbw-printing .fbw-help-popover,
     body.fbw-printing .fbw-tooltip,
     body.fbw-printing .fbw-anno,

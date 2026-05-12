@@ -227,6 +227,17 @@ function applyEdit(edit, stats) {
       const after = edit.args?.after ?? '';
       if (after) el.setAttribute('href', after);
       else el.removeAttribute('href');
+    } else if (op === 'style') {
+      // 样式注入：把 args.props 里的 font-size / padding / margin 写到 inline style
+      const props = edit.args?.props || {};
+      if (props.fontSize) el.style.fontSize = props.fontSize;
+      if (props.padding)  el.style.padding  = props.padding;
+      if (props.margin)   el.style.margin   = props.margin;
+      if (!Object.keys(props).length) {
+        stats.skipped++;
+        stats.skips.push({ edit, reason: 'empty style props' });
+        return false;
+      }
     } else if (op === 'tag') {
       // 改元素标签：p ↔ h1/h2/h3/h4。漂移检测：当前 tag 必须跟 args.from 一致
       const from = (edit.args?.from || '').toLowerCase();

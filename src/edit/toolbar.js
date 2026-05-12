@@ -13,6 +13,7 @@ import { pushUndo, pushUndoGroup } from '../core/undo.js';
 import { showUndoToast } from '../utils/undo-toast.js';
 import { attachTagBarEvents, paintTagBar } from './design-tags.js';
 import { pickColor } from './eyedropper.js';
+import { openStylePanel, closeStylePanel } from './style-panel.js';
 import { renderAttachments } from '../feedback/attachments.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
@@ -134,6 +135,8 @@ export function attachToolbarEvents() {
         x.removeAttribute('data-fbw-tag-as');
         x.style.transform = ''; x.style.backgroundImage = '';
         x.style.backgroundColor = '';
+        // 清掉样式注入面板写过的 inline 样式
+        x.style.fontSize = ''; x.style.padding = ''; x.style.margin = '';
         if (x.tagName === 'IMG' && x.dataset.fbwOriginalSrc) {
           x.src = x.dataset.fbwOriginalSrc;
           delete x.dataset.fbwOriginalSrc;
@@ -192,6 +195,11 @@ export function attachToolbarEvents() {
     }
     if (op === 'pick') {
       pickColor();
+      return;
+    }
+    if (op === 'style') {
+      if (state.stylePanel?.classList.contains('fbw-on')) closeStylePanel();
+      else { closeFontPicker(); closeNotePopover(); closeMarkerPopover(); closeTagPopover(); openStylePanel(); }
       return;
     }
     if (op === 'note') {

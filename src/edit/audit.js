@@ -7,7 +7,7 @@ import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
 // 元素的「主要 op」—— 用来决定描边颜色。多个 op 同时存在时按破坏性排序取最高优先级。
-const OP_PRIORITY = ['delete', 'hide', 'replace-img', 'tag', 'font', 'highlight', 'scale', 'rotate', 'move', 'href'];
+const OP_PRIORITY = ['delete', 'hide', 'replace-img', 'tag', 'style', 'font', 'highlight', 'scale', 'rotate', 'move', 'href'];
 
 function primaryOp(ops, hasTextEdit) {
   for (const p of OP_PRIORITY) {

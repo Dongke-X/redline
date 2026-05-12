@@ -23,6 +23,9 @@ function snapshot(el) {
       backgroundColor: el.style.backgroundColor || '',
       backgroundImage: el.style.backgroundImage || '',
       visibility: el.style.visibility || '',
+      fontSize: el.style.fontSize || '',
+      padding: el.style.padding || '',
+      margin: el.style.margin || '',
     },
     dataset: {
       fbwTx: el.dataset.fbwTx ?? null,

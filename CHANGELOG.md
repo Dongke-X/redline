@@ -6,6 +6,23 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.22 — 2026-05-12  ·  样式注入面板
+
+### Added
+- **元素工具栏新加滑块按钮**（在取色器右边）：点开弹小面板调 **字号 / 内边距 / 外边距** 三个维度
+- 三个数字输入 + 各自 `−` / `+` 微调（按住 Shift 跳 4px）
+- **实时预览**：输入即时改 inline style，松开还是当前 anchor 的样子
+- **多选 gang**：选了多个时调一次值，所有选中元素同步生效
+- **新 op 类型 `style`**：`args.props = { fontSize, padding, margin }`。`apply.mjs` 把这些写到源 HTML 的 inline style
+- 审计模式 `style` 类型用粉色描边 + 角标（#f472b6），跟 font 蓝色区分
+
+### 撤销栈
+- 打开面板时一次 pushUndoGroup 抓所有 selected 的 pre-edit 状态
+- session 内连续输入不重复入栈，Cmd+Z 一次还原到打开前
+- restore 按钮也清掉 style 写过的 inline font-size / padding / margin
+
+---
+
 ## 0.1.21 — 2026-05-12  ·  Rubber-band 框选
 
 ### Added

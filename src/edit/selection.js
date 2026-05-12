@@ -10,6 +10,7 @@ import { exitMarqueeMode } from './marquee.js';
 import { closeNotePopover } from './toolbar.js';
 import { closeMarkerPopover } from './marker.js';
 import { closeTagPopover } from './tag-switch.js';
+import { closeStylePanel } from './style-panel.js';
 import { pushUndo } from '../core/undo.js';
 import { getElementNote } from '../core/elements.js';
 import { showToast, updateCounter, pendingEditCount } from '../utils.js';
@@ -204,6 +205,7 @@ export function deselectElement() {
   closeNotePopover();
   closeMarkerPopover();
   closeTagPopover();
+  closeStylePanel();
   state.elemToolbar.classList.remove('fbw-toolbar-open');
   syncMultiBadge();
   hideResizeHandles();

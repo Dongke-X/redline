@@ -21,6 +21,7 @@ import { copySelectedDescriptor } from './edit/clipboard.js';
 import { toggleAudit, refreshAuditIfOn } from './edit/audit.js';
 import { showMeasurement, hideMeasurement } from './edit/measure.js';
 import { attachRubberBandEvents } from './edit/rubber-band.js';
+import { createStylePanelNode, attachStylePanelEvents } from './edit/style-panel.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -135,6 +136,9 @@ function createDom() {
   const tagPopover = createTagPopoverNode();
   state.tagPopover = tagPopover;
 
+  const stylePanel = createStylePanelNode();
+  state.stylePanel = stylePanel;
+
   // FAB 工具条：6 个按钮在浮动 pill 里
   // 顺序：编辑 → 反馈 → 框选 → 导出 ｜ 帮助 ｜ 折叠
   const fabBar = document.createElement('div');
@@ -165,6 +169,7 @@ function createDom() {
   document.body.appendChild(notePopover);
   document.body.appendChild(markerPopover);
   document.body.appendChild(tagPopover);
+  document.body.appendChild(stylePanel);
   document.body.appendChild(state.resizeHandles);
 }
 
@@ -476,6 +481,7 @@ export function init() {
   attachFontPickerEvents();
   attachMarkerEvents();
   attachTagPopoverEvents();
+  attachStylePanelEvents();
   attachNotePopoverEvents();
   attachPanelEvents();
   attachSaveButton();
