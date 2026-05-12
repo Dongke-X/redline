@@ -22,7 +22,7 @@ cd ~/.claude/skills/redline && npm install
 # 默认：拷 redline.js 到 HTML 同目录 + 加 <script src="redline.js">
 node ~/.claude/skills/redline/prepare.mjs path/to/report.html
 
-# 自包含：把 153KB bundle 直接 inline 进 HTML（单文件可分发）
+# 自包含：把 238KB bundle 直接 inline 进 HTML（单文件可分发）
 node ~/.claude/skills/redline/prepare.mjs path/to/report.html --inline
 
 # 移除注入（恢复原 HTML）
@@ -66,11 +66,18 @@ node ~/.claude/skills/redline/apply.mjs <session.json> [<source.html>] [--dry-ru
 |---|---|
 | `E` | 切换编辑模式 |
 | `F` | 切换反馈面板 |
-| `Space + P` | 矢量 PDF 导出 |
-| `Shift + P` | 长图 PDF 导出 |
+| `M` | 框选标注 |
+| `A` / `O` | 审计模式 / 前后对比 |
+| `Space + P` / `⇧+P` | 矢量 PDF / 长图 PDF |
+| `Space + H` / `⇧+H` | 编辑 HTML / 预览 HTML 导出 |
 | `⌘+S` / `Ctrl+S` | 保存反馈 |
 | `⌘+M` / `Ctrl+M` | 复制反馈 markdown 到剪贴板 |
+| `⌘+Z` / `⌘+⇧+Z` | 撤销 / 重做 |
+| `Del` / `Backspace` | 删除选中元素 |
+| `?` | 弹完整快捷键表 |
 | `Esc` | 取消选中 / 退出当前模式 |
+
+> v0.1.36+ 新加了 HTML 单文件导出 —— 详见仓库 [README HTML transport 段](../README.zh.md#html-转交--不依赖-claude-也不依赖扩展)。
 
 ## 三个数据流
 

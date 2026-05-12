@@ -6,6 +6,22 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.46 — 2026-05-12  ·  品牌 + 文档同步 · `redline.html`
+
+### Changed
+- README 标题统一为 `redline.html`（wordmark 风格），表达"redline 给 HTML 用"。repo 名 / 包名 / 扩展名都保持 `redline` 不动
+- README 重写「What is this」段：从"3 件东西打包"改为"捕获 / 传输 / 闭环"三段式，明确 3 种导出格式（HTML / PDF / ZIP）的适用场景
+- README + README.zh.md 加新段 `HTML transport / HTML 转交`，介绍 v0.1.36+ 的 HTML 单文件导出能力（版本链 / WebP 压缩 / receiver UX）
+- 修 badge：version 0.1.0 → 0.1.46，tests 17 → 18，bundle 153kb → 238kb（README + README.zh）
+- skill/SKILL.md 加段「HTML 导出：另一条不经 skill 的路」—— 告诉 agent 何时建议用户走 HTML / PDF / ZIP 三条路
+- skill/README.md 快捷键表补全：A / O / M / ⌘C / ⌘M / Del / ? / Space+H / ⇧+H
+- skill/CHANGELOG.md 清理旧 2.x 历史（widget 早期内部编号），统一到 0.1.x
+
+### Chore
+- 各文件 `153kb` / `153KB` 残留引用全部更新到 `238kb`
+
+---
+
 ## 0.1.45 — 2026-05-12  ·  折叠 tooltip 收短
 
 ### Fixed

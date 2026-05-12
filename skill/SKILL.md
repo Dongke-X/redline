@@ -1,6 +1,6 @@
 ---
 name: redline
-version: 0.1.45
+version: 0.1.46
 description: Closed-loop HTML feedback for AI-generated outputs. (a) prepare.mjs injects the redline editor into any HTML so the user can review it in their browser without a Chrome extension; (b) apply.mjs reads the feedback session from ~/.redline/sessions/ and patches edits + annotations back into the source HTML. Triggers on Chinese "准备 redline / 给 X 加 redline / 让我 review / 注入编辑器 / 读反馈 / 看反馈 / 应用反馈 / 把反馈应用到源 / 页面 review / 界面 review / 改稿 / 划线反馈 / 标注反馈" and English "prep this html / inject redline / let me review / open for review / apply feedback / read sessions / redline / design review / page review / visual feedback". Trigger proactively after writing any .html file the user might want to review, and after the user has used the in-browser redline UI and asks "what's next / 接下来怎么办".
 ---
 
@@ -41,7 +41,7 @@ description: Closed-loop HTML feedback for AI-generated outputs. (a) prepare.mjs
 # 默认：拷 redline.js 到 HTML 同目录 + 加 <script src="redline.js">
 node ~/.claude/skills/redline/prepare.mjs path/to/report.html
 
-# 自包含模式：把 153KB bundle 直接 inline 进 HTML，不留 sibling 文件
+# 自包含模式：把 238KB bundle 直接 inline 进 HTML，不留 sibling 文件
 node ~/.claude/skills/redline/prepare.mjs path/to/report.html --inline
 
 # 移除注入（恢复原 HTML，干净）
@@ -63,6 +63,24 @@ node ~/.claude/skills/redline/prepare.mjs path/to/dist/
 - `apply.mjs` 只处理 `edits[]`（text/move/scale/rotate/hide/delete/font/note 标记）。**适合**：用户改动多、纯文本/transform 类型、要快速批处理。
 - `annotations[]` + `feedback.global` + `feedback.perSection` —— **不要走脚本**，要你（Claude）做语义判断、跟用户对齐后再 Edit 工具改源。
 - 流程：先跑脚本批处理 edits → 然后**主动告诉用户**还有 N 个 annotations / M 条 feedback narrative 待处理 → 逐个跟用户对齐。
+
+## HTML 导出：另一条不经 skill 的路（v0.1.36+）
+
+用户在浏览器右下角点导出 FAB → 4 个选项里有两个是 HTML：
+
+| 格式 | 文件形态 | 适用 | 你（Claude）要做 |
+|---|---|---|---|
+| **编辑 HTML** | 单个 `.html`，redline 完整 inline 在里面 | 把 review 转交给另一个人 / 客户继续标注 | **什么都不用做** —— 接收方双击打开浏览器跑，redline 自动 rehydrate 状态，每次再导出 `revision +1` 形成版本链 |
+| **预览 HTML** | 同样单文件，但编辑入口锁住 | 给客户看 / 不让对方改 | **什么都不用做** —— 接收方拿到只读快照 + 内置打印按钮（可一键转 PDF） |
+
+**主动建议时机**：
+
+- 用户说"要把这个发给同事 / 客户继续标" → 推 **编辑 HTML**
+- 用户说"要给客户演示 / 不想让他改" → 推 **预览 HTML**
+- 用户说"要打印 / 邮件附件 / 归档" → 推 **矢量 PDF** 或 **长图 PDF**
+- 用户说"我自己改完想 patch 回源" → 走 **ZIP + apply.mjs**（原流程）
+
+HTML 导出完全不经过 skill —— 接收方拿到的 `.html` 在任何浏览器里直接跑（redline.js 已 inline）。所以**你不要试图 apply 一个从编辑 HTML 流程回来的反馈**，编辑 HTML 流程的反馈应该走另一次导出（包括导出回 ZIP）才能进 apply.mjs。
 
 ## 整体工作流
 

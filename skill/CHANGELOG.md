@@ -1,113 +1,48 @@
-# redline · CHANGELOG
+# redline · skill CHANGELOG
 
-skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动写到 SKILL.md frontmatter / config.js / extension/manifest.json。
+> skill 现已跟 widget 统一版本号（0.1.x），由 `scripts/sync-version.mjs` 自动写到 SKILL.md frontmatter / package.json。
+>
+> 此前 skill 用过的 2.x 编号是 widget 早期内部版本号，已废弃。skill 本身的协议没断 —— `prepare.mjs` / `apply.mjs` 自始至终向后兼容。
 
 格式：[Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semver.org/)
 
+完整改动历史（widget + skill 共用）见仓库根 [CHANGELOG.md](../CHANGELOG.md)。
+
 ---
 
-## 2.6.1 — 2026-05-10
-
-### Performance
-- 全局 mousemove / mouseup 监听合并到 `src/utils/events.js` 单一 dispatcher
-- document 上 mousemove 4→1，mouseup 4→1
-- bundle 150.2kb（持平）
-
-## 2.6.0 — 2026-05-10
-
-### Added
-- IndexedDB blobs store（`fs/idb.js` 升 v2）
-- attachments blob 走 IDB，localStorage 只存 metadata
-- 启动时 `rehydrateAttachments` 异步从 IDB 拉回 dataURL
+## 0.1.46 — 2026-05-12  ·  docs 同步
 
 ### Changed
-- saveState 不再写 attachment dataURL（base64 膨胀 33% → 0）
-- quota 降级路径只剥离 annotations.image.dataURL
+- README / skill docs 加 HTML 单文件导出说明（v0.1.36 起新增的能力）
+- SKILL.md 加「HTML 导出：另一条不经 skill 的路」段，告知 agent 何时建议用户走 HTML / PDF / ZIP
+- skill/README 快捷键表补全：A / O / M / ⌘C / ⌘M / Del / ? / Space+H / ⇧+H
+- 历史 2.x 改动从本 CHANGELOG 移除（旧编号体系不再维护）
 
-## 2.5.2 — 2026-05-10
+skill 协议没变，无需重新 `npm install`。
 
-### Security
-- 全仓敏感信息扫描（无 API key / token / 内网 IP）
-- schema/session.v1.example.json 路径占位化
+---
 
-### Performance
-- 折叠态 FAB 去 backdrop-filter（视觉无变化，省 GPU）
-- FAB pill blur 24→16 + will-change: opacity, transform
-- FAB 鼠标位置检测 mousemove 加 rAF 节流
+## 0.1.36+ ─ HTML 单文件导出（widget 侧能力，skill 不需要改）
 
-## 2.5.1 — 2026-05-10
+agent 视角的关键新事实：
 
-### Performance
-- 新增 `src/utils/events.js` 全局事件总线
-- scroll 5→1，resize 4→1（合并到单一 native listener）
+- 用户可以选择把整个 review 状态导出成单个 `.html`（编辑 / 预览两种），跳过 ZIP + apply.mjs 流程
+- 导出 HTML 的 receiver 直接用浏览器打开，redline.js 已 inline，无需 skill / 扩展
+- `revisionId` / `parentRevisionId` 链式追踪多版传递
+- 详细 agent 行为建议见 SKILL.md「HTML 导出」段
 
-## 2.5.0 — 2026-05-10
+---
 
-### Performance
-- esbuild `--minify` 默认开启：207.9kb → 149.2kb (-28%)
-- registerEditableElements 叶子扫描改 TreeWalker：DOM 大时 200ms → 20ms
-- detectBgUnderFab 改 elementFromPoint 单点 + 缓存
-- pruneStaleElementOps：getChanges 时清理离开 DOM 的元素引用
-- 新增 build:dev / watch 带 sourcemap 模式
+## 0.1.x — 浏览器侧 widget 大量迭代
 
-## 2.4.4 — 2026-05-10
+skill 协议保持稳定。每个 widget 版本的详细改动见根 [CHANGELOG.md](../CHANGELOG.md)。涉及 skill 行为时会在 SKILL.md 同步更新。
 
-### Added
-- `src/types.js` 中央 JSDoc 类型定义
-- `jsconfig.json` checkJs 让 VS Code 走 IDE 类型检查
-- state.js 字段加 @type，按职责分组
+跟 skill 联动相关的几个里程碑：
 
-## 2.4.3 — 2026-05-10
+- **v0.1.31** — Single-file HTML 导出落地（`<script data-fbw-state>` + bundle inline）
+- **v0.1.34** — single-file 导出在 Chrome 扩展 MAIN world 下稳定（bundle source stash）
+- **v0.1.36** — 砍 PPT，HTML 加版本链 / WebP 压缩 / receiver UX
+- **v0.1.37** — HTML 导出加键盘快捷键
+- **v0.1.45** — 所有 FAB tooltip 两行排版统一
 
-### Added
-- vitest + happy-dom 测试工程
-- 17 个 critical-path test（markdown / persist / sessionWriter / elements）
-- npm test / npm run test:watch
-
-## 2.4.2 — 2026-05-09
-
-### Added
-- `scripts/sync-version.mjs`：package.json → manifest.json + config.js 自动同步
-- session.json 加 env metadata（userAgent / locale / viewport / timezone）
-- SPA 路由切换重评估 appMode（popstate + pushState/replaceState 监听）
-
-### Security
-- markdown.js: escapeFence + escapeLeading 防止用户内容注入
-
-## 2.4.1 — 2026-05-09
-
-### Fixed (P0)
-- marquee anno 拖动事件监听器内存泄漏（per-anno 改模块单例）
-- localStorage quota silent fail → 显式 toast + 降级写
-- html2canvas / jspdf CDN script 加 SRI integrity hash
-
-### Performance
-- 截图 PNG → JPEG 0.85，体积 4-8x 减小
-
-## 2.4.0 — 2026-05-09
-
-### Added
-- 三模式探测：deck / doc / review
-- review 模式专属：隐藏换字体/换图，元素操作打 `proposed: true`
-- 视口截屏（panel 📷 按钮）
-- URL-keyed 反馈恢复 toast
-
-## 2.2.0 — 2026-05-09
-
-### Added
-- Chrome MV3 扩展骨架（`extension/`）
-- background.js 注入 / toggle 面板
-- 红线 R 图标
-
-## 2.1.0 — 2026-05-09
-
-### Changed
-- 重命名 feedback-widget → redline（公开面）
-- 内部 fbw-* 类前缀保留
-
-## 2.0.6 — 2026-05-09
-
-### Added
-- 初始 release：编辑模式 / 框选标注 / 反馈面板 / PDF 导出 / FS Access 写盘 / SKILL.md / apply-feedback.mjs
-- session.v1 协议 + JSON schema
-- 中英 i18n
+apply.mjs / prepare.mjs 不需要因为这些 widget 变化做改动。
