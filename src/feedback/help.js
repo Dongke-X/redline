@@ -38,6 +38,7 @@ export function buildHelpPopoverHTML() {
           ${row('A', t('help.shortcut.audit'))}
           ${row(['Alt', 'hover'], t('help.shortcut.measure'))}
           ${row(['Shift', 'click'], t('help.shortcut.multiSelect'))}
+          ${row('drag', t('help.shortcut.rubberBand'))}
         </div>
       </div>
       <div class="fbw-help-col">

@@ -20,6 +20,7 @@ import { undo, redo, canUndo, canRedo } from './core/undo.js';
 import { copySelectedDescriptor } from './edit/clipboard.js';
 import { toggleAudit, refreshAuditIfOn } from './edit/audit.js';
 import { showMeasurement, hideMeasurement } from './edit/measure.js';
+import { attachRubberBandEvents } from './edit/rubber-band.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -467,6 +468,7 @@ export function init() {
   const sections = registerEditableElements();
 
   attachSelectionEvents();
+  attachRubberBandEvents();
   attachToolbarEvents();
   attachDragEvents();
   attachResizeEvents();

@@ -1403,6 +1403,18 @@ export const CSS = `
     [data-fbw-tag-as="h6"] { font-size: 0.88em !important; font-weight: 700 !important; color: #555 !important; }
     [data-fbw-tag-as="p"] { font-size: 1em !important; font-weight: 400 !important; line-height: 1.6 !important; }
 
+    /* Rubber-band 框选：edit 模式下空白处拖出的选择矩形 */
+    .fbw-rubber-band {
+      position: fixed;
+      z-index: 2147483540;
+      pointer-events: none;
+      display: none;
+      border: 1px dashed rgba(220, 60, 60, 0.7);
+      background: rgba(220, 60, 60, 0.06);
+      box-sizing: border-box;
+    }
+    .fbw-rubber-band.fbw-on { display: block; }
+
     /* Design 分类 chip 行：用在 note popover、marquee 标注的 note 输入框上方
        点一下在反馈文本前 toggle [标签]，给 agent 一个明确的语义信号 */
     .fbw-design-tags {
