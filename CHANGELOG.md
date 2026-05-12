@@ -6,6 +6,14 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.20 — 2026-05-12  ·  补齐多选两个洞
+
+### Added
+- **gang 自由拖动**：选中多个元素后，拖动任一选中元素 → 整组同步位移。每个元素 mousedown 时各自记 base transform，mousemove 时各加同一个 dx/dy → 相对位置不变。一次 pushUndoGroup 包了所有元素，Cmd+Z 整组回退
+- **多选 ⌘+C 复制全部描述符**：原来只复制 anchor 一个；现在选了 N 个就复制 N 段，按 `[1] ...\n\n[2] ...` 编号格式排列，方便回 Claude 粘贴时引用
+
+---
+
 ## 0.1.19 — 2026-05-12  ·  多选
 
 ### Added

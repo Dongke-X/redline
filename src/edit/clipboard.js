@@ -34,18 +34,24 @@ export async function copySelectedDescriptor() {
     showToast(t('copy.descriptor.empty') || '没有选中元素');
     return;
   }
-  const text = descriptorText(state.selectedEl);
+  // 多选 → 每个元素描述符一段，用空行分隔，编号方便 agent 引用
+  const els = [...state.selectedEls].filter(el => document.contains(el));
+  const text = els.length > 1
+    ? els.map((el, i) => `[${i + 1}] ${descriptorText(el)}`).join('\n\n')
+    : descriptorText(state.selectedEl);
+  const doneMsg = els.length > 1
+    ? `${t('copy.descriptor.done') || '已复制元素描述符'} · ${els.length}`
+    : (t('copy.descriptor.done') || '已复制元素描述符');
   try {
     await navigator.clipboard.writeText(text);
-    showToast(t('copy.descriptor.done') || '已复制元素描述符');
+    showToast(doneMsg);
   } catch (e) {
-    // fallback: textarea trick
     const ta = document.createElement('textarea');
     ta.value = text;
     ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand('copy'); showToast(t('copy.descriptor.done') || '已复制元素描述符'); }
+    try { document.execCommand('copy'); showToast(doneMsg); }
     catch (_) { showToast(t('copy.descriptor.fail') || '复制失败'); }
     document.body.removeChild(ta);
   }

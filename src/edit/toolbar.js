@@ -240,28 +240,33 @@ export function attachDragEvents() {
     if (!state.editMode || !state.selectedEl) return;
     if (e.button !== 0) return;
     if (e.target.closest('.fbw-elem-toolbar, .fbw-panel, .fbw-fab, .fbw-resize-handle')) return;
-    const t = e.target;
-    const lifted = liftTarget(t);
-    const sameAsSelected = (t === state.selectedEl) || (lifted === state.selectedEl) || state.selectedEl.contains(t);
-    if (!sameAsSelected) return;
+    // 多选时：mousedown 必须打在选中集合里的某个元素上（或其子元素），否则不拖
+    const target = e.target;
+    const lifted = liftTarget(target);
+    const hits = getSelectedEls().filter(x => x === target || x === lifted || x.contains(target));
+    if (!hits.length) return;
     if (state.selectedEl.dataset.fbwEditing === '1') return;
-    // ⚠️ 不在这里 preventDefault，让浏览器默认 click/blur 行为正常跑
-    const tr = getElTransform(state.selectedEl);
+    const els = getSelectedEls();
+    // 每个元素记录自己的初始 transform，mousemove 时各自加同一个 dx/dy
+    const bases = new Map();
+    els.forEach(x => {
+      const tr = getElTransform(x);
+      bases.set(x, { x: tr.x, y: tr.y, scale: tr.scale });
+    });
     pendingDrag = {
-      el: state.selectedEl,
+      els, bases,
+      anchor: state.selectedEl,
       startX: e.clientX, startY: e.clientY,
-      baseX: tr.x, baseY: tr.y, baseScale: tr.scale,
     };
   }, true);
 
   onMousemove((e) => {
-    // 还没确认拖拽 → 检查是否越阈值
     if (pendingDrag && !state.dragState) {
       const dx = e.clientX - pendingDrag.startX;
       const dy = e.clientY - pendingDrag.startY;
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
-      // 越阈值，正式进入拖拽
-      pushUndo(pendingDrag.el);
+      // 越阈值 → 正式拖拽。一次 pushUndoGroup 记录所有元素的 pre-drag 状态
+      pushUndoGroup(pendingDrag.els);
       state.dragState = { ...pendingDrag, moved: true };
       pendingDrag = null;
       document.body.style.cursor = 'move';
@@ -270,18 +275,22 @@ export function attachDragEvents() {
     if (!state.dragState) return;
     const dx = e.clientX - state.dragState.startX;
     const dy = e.clientY - state.dragState.startY;
-    const t = { x: state.dragState.baseX + dx, y: state.dragState.baseY + dy, scale: state.dragState.baseScale };
-    setElTransform(state.dragState.el, t);
+    state.dragState.els.forEach(x => {
+      const base = state.dragState.bases.get(x);
+      if (!base) return;
+      setElTransform(x, { x: base.x + dx, y: base.y + dy, scale: base.scale });
+    });
     followToolbar();
   });
 
   onMouseup(() => {
     pendingDrag = null;
     if (!state.dragState) return;
-    const el = state.dragState.el;
     if (state.dragState.moved) {
-      const tr = getElTransform(el);
-      recordOp(el, 'move', { x: Math.round(tr.x), y: Math.round(tr.y) });
+      state.dragState.els.forEach(x => {
+        const tr = getElTransform(x);
+        recordOp(x, 'move', { x: Math.round(tr.x), y: Math.round(tr.y) });
+      });
     }
     state.dragState = null;
     document.body.style.cursor = '';
