@@ -2,8 +2,9 @@
 // 提供 5 种荧光色 + 清除选项。
 import { state } from '../core/state.js';
 import { recordOp } from '../core/elements.js';
-import { pushUndo } from '../core/undo.js';
+import { pushUndo, pushUndoGroup } from '../core/undo.js';
 import { showUndoToast } from '../utils/undo-toast.js';
+import { getSelectedEls } from './selection.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
@@ -112,28 +113,35 @@ function clearInlineHighlights(el) {
   });
 }
 
-function applyHighlight(el, color, name, range) {
-  if (!el) return;
-  pushUndo(el);
-  if (color) {
-    if (range) {
-      // 只高亮选中文字范围，跟真荧光笔一样
+function applyHighlight(anchorEl, color, name, range) {
+  if (!anchorEl) return;
+  // range（划词高亮）只对 anchor 生效（其他元素没文字选区）；元素级高亮支持多选 gang
+  if (range) {
+    pushUndo(anchorEl);
+    if (color) {
       wrapRangeWithHighlight(range, color, name);
       window.getSelection()?.removeAllRanges();
-    } else {
-      // 没文本选区 → 整元素背景
-      el.style.background = color;
-      el.dataset.fbwHighlight = name || '1';
+      recordOp(anchorEl, 'highlight', { color, name, scope: 'range' });
+      showUndoToast(t('op.highlight') + (name ? ': ' + name : ''));
     }
-    recordOp(el, 'highlight', { color, name, scope: range ? 'range' : 'element' });
-    showUndoToast(t('op.highlight') + (name ? ': ' + name : ''));
-  } else {
-    clearInlineHighlights(el);
-    el.style.background = '';
-    delete el.dataset.fbwHighlight;
-    recordOp(el, 'highlight', { color: null });
-    showUndoToast(t('highlight.clear'));
+    return;
   }
+  const els = getSelectedEls();
+  pushUndoGroup(els);
+  els.forEach(x => {
+    if (color) {
+      x.style.background = color;
+      x.dataset.fbwHighlight = name || '1';
+      recordOp(x, 'highlight', { color, name, scope: 'element' });
+    } else {
+      clearInlineHighlights(x);
+      x.style.background = '';
+      delete x.dataset.fbwHighlight;
+      recordOp(x, 'highlight', { color: null });
+    }
+  });
+  const base = color ? (t('op.highlight') + (name ? ': ' + name : '')) : t('highlight.clear');
+  showUndoToast(els.length > 1 ? `${base} · ${els.length}` : base);
 }
 
 export function attachMarkerEvents() {

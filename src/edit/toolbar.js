@@ -5,11 +5,11 @@ import {
   recordOp, clearOpsOn, getElTransform, setElTransform,
   recordNote, getElementNote,
 } from '../core/elements.js';
-import { deselectElement, positionToolbar, followToolbar, liftTarget } from './selection.js';
+import { deselectElement, positionToolbar, followToolbar, liftTarget, getSelectedEls } from './selection.js';
 import { openFontPicker, closeFontPicker } from './fonts.js';
 import { openMarkerPopover, closeMarkerPopover } from './marker.js';
 import { openTagPopover, closeTagPopover } from './tag-switch.js';
-import { pushUndo } from '../core/undo.js';
+import { pushUndo, pushUndoGroup } from '../core/undo.js';
 import { showUndoToast } from '../utils/undo-toast.js';
 import { attachTagBarEvents, paintTagBar } from './design-tags.js';
 import { pickColor } from './eyedropper.js';
@@ -94,8 +94,20 @@ export function attachToolbarEvents() {
     const el = state.selectedEl;
 
     if (op === 'close') { deselectElement(); return; }
-    if (op === 'delete') { pushUndo(el); recordOp(el, 'delete'); el.dataset.fbwOpDeleted = '1'; showUndoToast(t('op.delete')); return; }
-    if (op === 'hide')   { pushUndo(el); recordOp(el, 'hide');   el.dataset.fbwOpHidden  = '1'; showUndoToast(t('op.hide')); return; }
+    if (op === 'delete') {
+      const els = getSelectedEls();
+      pushUndoGroup(els);
+      els.forEach(x => { recordOp(x, 'delete'); x.dataset.fbwOpDeleted = '1'; });
+      showUndoToast(els.length > 1 ? `${t('op.delete')} · ${els.length}` : t('op.delete'));
+      return;
+    }
+    if (op === 'hide') {
+      const els = getSelectedEls();
+      pushUndoGroup(els);
+      els.forEach(x => { recordOp(x, 'hide'); x.dataset.fbwOpHidden = '1'; });
+      showUndoToast(els.length > 1 ? `${t('op.hide')} · ${els.length}` : t('op.hide'));
+      return;
+    }
     if (op === 'link') {
       // a[href] 才能改链接。selection.js 已经按元素类型显隐，这里再兜底防御。
       if (el.tagName !== 'A') return;
@@ -112,44 +124,53 @@ export function attachToolbarEvents() {
       return;
     }
     if (op === 'restore') {
-      pushUndo(el);
-      delete el.dataset.fbwOpDeleted;
-      delete el.dataset.fbwOpHidden;
-      delete el.dataset.fbwTx; delete el.dataset.fbwTy; delete el.dataset.fbwScale; delete el.dataset.fbwRotate;
-      delete el.dataset.fbwHighlight;
-      el.removeAttribute('data-fbw-tag-as');
-      el.style.transform = ''; el.style.backgroundImage = '';
-      el.style.backgroundColor = '';
-      if (el.tagName === 'IMG' && el.dataset.fbwOriginalSrc) {
-        el.src = el.dataset.fbwOriginalSrc;
-        delete el.dataset.fbwOriginalSrc;
-      }
-      clearOpsOn(el);
-      showUndoToast(t('op.restore'));
+      const els = getSelectedEls();
+      pushUndoGroup(els);
+      els.forEach(x => {
+        delete x.dataset.fbwOpDeleted;
+        delete x.dataset.fbwOpHidden;
+        delete x.dataset.fbwTx; delete x.dataset.fbwTy; delete x.dataset.fbwScale; delete x.dataset.fbwRotate;
+        delete x.dataset.fbwHighlight;
+        x.removeAttribute('data-fbw-tag-as');
+        x.style.transform = ''; x.style.backgroundImage = '';
+        x.style.backgroundColor = '';
+        if (x.tagName === 'IMG' && x.dataset.fbwOriginalSrc) {
+          x.src = x.dataset.fbwOriginalSrc;
+          delete x.dataset.fbwOriginalSrc;
+        }
+        clearOpsOn(x);
+      });
+      showUndoToast(els.length > 1 ? `${t('op.restore')} · ${els.length}` : t('op.restore'));
       positionToolbar(el);
       return;
     }
     if (op.startsWith('move-')) {
-      pushUndo(el);
+      const els = getSelectedEls();
+      pushUndoGroup(els);
       const dir = op.slice(5);
-      const t = getElTransform(el);
       const step = e.shiftKey ? 16 : 4;
-      if (dir === 'up') t.y -= step;
-      if (dir === 'down') t.y += step;
-      if (dir === 'left') t.x -= step;
-      if (dir === 'right') t.x += step;
-      setElTransform(el, t);
-      recordOp(el, 'move', { x: t.x, y: t.y });
+      els.forEach(x => {
+        const tr = getElTransform(x);
+        if (dir === 'up') tr.y -= step;
+        if (dir === 'down') tr.y += step;
+        if (dir === 'left') tr.x -= step;
+        if (dir === 'right') tr.x += step;
+        setElTransform(x, tr);
+        recordOp(x, 'move', { x: tr.x, y: tr.y });
+      });
       positionToolbar(el);
       return;
     }
     if (op === 'zoom-in' || op === 'zoom-out') {
-      pushUndo(el);
-      const t = getElTransform(el);
+      const els = getSelectedEls();
+      pushUndoGroup(els);
       const factor = op === 'zoom-in' ? 1.1 : (1 / 1.1);
-      t.scale = Math.max(0.2, Math.min(3, t.scale * factor));
-      setElTransform(el, t);
-      recordOp(el, 'scale', { scale: parseFloat(t.scale.toFixed(3)) });
+      els.forEach(x => {
+        const tr = getElTransform(x);
+        tr.scale = Math.max(0.2, Math.min(3, tr.scale * factor));
+        setElTransform(x, tr);
+        recordOp(x, 'scale', { scale: parseFloat(tr.scale.toFixed(3)) });
+      });
       positionToolbar(el);
       return;
     }

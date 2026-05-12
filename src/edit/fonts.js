@@ -2,8 +2,9 @@
 // 应用到选中元素时按 inline style 写 font-family。
 import { state } from '../core/state.js';
 import { recordOp } from '../core/elements.js';
-import { pushUndo } from '../core/undo.js';
+import { pushUndo, pushUndoGroup } from '../core/undo.js';
 import { showUndoToast } from '../utils/undo-toast.js';
+import { getSelectedEls } from './selection.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
 
@@ -166,18 +167,20 @@ export function attachFontPickerEvents() {
     e.stopPropagation();
     const family = item.dataset.fpFamily.replace(/&quot;/g, '"');
     const name = item.dataset.fpName;
-    const el = state.selectedEl;
-    pushUndo(el);
-    if (family === '__inherit__') {
-      el.style.fontFamily = '';
-      delete el.dataset.fbwFontName;
-      recordOp(el, 'font', { family: '系统默认' });
-    } else {
-      el.style.fontFamily = family;
-      el.dataset.fbwFontName = name;
-      recordOp(el, 'font', { family: name });
-    }
-    showUndoToast(t('op.font', { name }));
+    const els = getSelectedEls();
+    pushUndoGroup(els);
+    els.forEach(x => {
+      if (family === '__inherit__') {
+        x.style.fontFamily = '';
+        delete x.dataset.fbwFontName;
+        recordOp(x, 'font', { family: '系统默认' });
+      } else {
+        x.style.fontFamily = family;
+        x.dataset.fbwFontName = name;
+        recordOp(x, 'font', { family: name });
+      }
+    });
+    showUndoToast(els.length > 1 ? `${t('op.font', { name })} · ${els.length}` : t('op.font', { name }));
     closeFontPicker();
   });
 

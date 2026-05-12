@@ -6,6 +6,26 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.19 — 2026-05-12  ·  多选
+
+### Added
+- **Shift / Cmd / Ctrl + click 切换多选**：可选多个元素一起操作。`state.selectedEls` 持有 Set，`state.selectedEl` 始终指向 anchor（最近一次操作的那个）。工具栏右上角出现「N」红色 monospace 徽章
+- 撤销栈支持 group entry：批量操作一次 Cmd+Z 还原所有改动
+
+### Gang-able ops（多选时一次操作所有元素）
+- delete / hide / restore
+- 字体 / 高亮（整元素背景）
+- 移动方向键 / 缩放按钮（保持每个元素的独立 transform）
+
+### Single-only ops（多选时按钮自动隐藏）
+- link（改 href）/ note（元素反馈）/ tag 切换 / 替换图片 / 划词高亮 / 双击文字编辑
+
+### 已知限制
+- ⌘+C 复制描述符目前只复制 anchor 一个，不复制全部选区
+- 拖动 / 缩放手柄目前只动 anchor，不 gang（保留给将来）
+
+---
+
 ## 0.1.18 — 2026-05-12  ·  取色器换图标 + 回归元素工具栏
 
 ### Changed

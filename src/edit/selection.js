@@ -104,47 +104,100 @@ function hasOwnText(el) {
   return false;
 }
 
+// 工具栏右上角的「N selected」徽章 —— 多选时显示，单选时藏
+function syncMultiBadge() {
+  if (!state.elemToolbar) return;
+  let badge = state.elemToolbar.querySelector('.fbw-tb-count');
+  const size = state.selectedEls.size;
+  if (size <= 1) {
+    if (badge) badge.remove();
+    return;
+  }
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'fbw-tb-count';
+    state.elemToolbar.appendChild(badge);
+  }
+  badge.textContent = size;
+  badge.title = `${size} selected`;
+}
+
+// 工具栏按钮可见性：多选时隐藏「单元素才有意义」的操作（link / replace-img / note / tag）
+function syncToolbarVisibility(anchorEl) {
+  if (!state.elemToolbar || !anchorEl) return;
+  const multi = state.selectedEls.size > 1;
+
+  const isImg = anchorEl.matches('img') || (getComputedStyle(anchorEl).backgroundImage || 'none') !== 'none';
+  state.elemToolbar.querySelector('[data-op="replace-img"]').style.display = (!multi && isImg) ? 'inline-flex' : 'none';
+
+  const isTextish = hasOwnText(anchorEl) && !anchorEl.matches('img, svg, video, iframe');
+  const fontBtn = state.elemToolbar.querySelector('[data-op="font"]');
+  if (fontBtn) fontBtn.style.display = isTextish ? 'inline-flex' : 'none'; // font 支持多选
+  const hlBtn = state.elemToolbar.querySelector('[data-op="highlight"]');
+  if (hlBtn) hlBtn.style.display = isTextish ? 'inline-flex' : 'none';     // highlight 支持多选
+
+  const isHeadable = /^(p|h[1-6])$/i.test(anchorEl.tagName);
+  const tagBtn = state.elemToolbar.querySelector('[data-op="tag"]');
+  if (tagBtn) tagBtn.style.display = (!multi && isHeadable) ? 'inline-flex' : 'none'; // tag 单选
+
+  const isLink = anchorEl.matches('a[href]');
+  const linkBtn = state.elemToolbar.querySelector('[data-op="link"]');
+  if (linkBtn) linkBtn.style.display = (!multi && isLink) ? 'inline-flex' : 'none'; // link 单选
+
+  const noteBtn = state.elemToolbar.querySelector('[data-op="note"]');
+  if (noteBtn) {
+    noteBtn.style.display = multi ? 'none' : 'inline-flex';                // note 单选
+    noteBtn.classList.toggle('fbw-has-note', !!getElementNote(anchorEl));
+  }
+}
+
+// 单选模型保留：selectElement 清空旧选区，只选一个
 export function selectElement(el) {
-  if (state.selectedEl === el) return;
+  if (state.selectedEls.size === 1 && state.selectedEl === el) return;
   deselectElement();
   state.selectedEl = el;
+  state.selectedEls.add(el);
   el.classList.add('fbw-selected');
 
-  // 换图按钮：仅对图片元素显示
-  const isImg = el.matches('img') || (getComputedStyle(el).backgroundImage || 'none') !== 'none';
-  state.elemToolbar.querySelector('[data-op="replace-img"]').style.display = isImg ? 'inline-flex' : 'none';
-
-  // 字体 + 高亮按钮：仅对自带文字的元素显示
-  const isTextish = hasOwnText(el) && !el.matches('img, svg, video, iframe');
-  const fontBtn = state.elemToolbar.querySelector('[data-op="font"]');
-  if (fontBtn) fontBtn.style.display = isTextish ? 'inline-flex' : 'none';
-  const hlBtn = state.elemToolbar.querySelector('[data-op="highlight"]');
-  if (hlBtn) hlBtn.style.display = isTextish ? 'inline-flex' : 'none';
-
-  // 标签切换按钮：仅对 p / h1-h6 显示
-  const isHeadable = /^(p|h[1-6])$/i.test(el.tagName);
-  const tagBtn = state.elemToolbar.querySelector('[data-op="tag"]');
-  if (tagBtn) tagBtn.style.display = isHeadable ? 'inline-flex' : 'none';
-
-  // 第一个 divider 始终显示（pick 取色器对任何元素都可用）
-
-  // 改链接按钮：仅对 a[href] 元素显示
-  const isLink = el.matches('a[href]');
-  const linkBtn = state.elemToolbar.querySelector('[data-op="link"]');
-  if (linkBtn) linkBtn.style.display = isLink ? 'inline-flex' : 'none';
-
-  // 反馈按钮：如果有 note 显示绿点
-  const noteBtn = state.elemToolbar.querySelector('[data-op="note"]');
-  if (noteBtn) noteBtn.classList.toggle('fbw-has-note', !!getElementNote(el));
-
+  syncToolbarVisibility(el);
+  syncMultiBadge();
   updateBreadcrumb(el);
   state.elemToolbar.classList.add('fbw-toolbar-open');
   positionToolbar(el);
   showResizeHandles(el);
 }
 
+// 多选：Shift+click 切换某个元素的选中态。anchor 始终是「最近一次操作」的元素
+export function toggleSelection(el) {
+  if (state.selectedEls.has(el)) {
+    state.selectedEls.delete(el);
+    el.classList.remove('fbw-selected');
+    if (state.selectedEl === el) {
+      // anchor 从集合里随便挑一个；空了就 deselect
+      const next = state.selectedEls.values().next().value;
+      if (next) {
+        state.selectedEl = next;
+      } else {
+        deselectElement();
+        return;
+      }
+    }
+  } else {
+    state.selectedEls.add(el);
+    el.classList.add('fbw-selected');
+    state.selectedEl = el; // 最近 Shift 点的当 anchor
+  }
+  syncToolbarVisibility(state.selectedEl);
+  syncMultiBadge();
+  updateBreadcrumb(state.selectedEl);
+  state.elemToolbar.classList.add('fbw-toolbar-open');
+  positionToolbar(state.selectedEl);
+  showResizeHandles(state.selectedEl);
+}
+
 export function deselectElement() {
-  if (state.selectedEl) state.selectedEl.classList.remove('fbw-selected');
+  state.selectedEls.forEach(el => el.classList.remove('fbw-selected'));
+  state.selectedEls.clear();
   state.selectedEl = null;
   if (typeof window !== 'undefined') window.__fbwSelEl = null;
   closeFontPicker();
@@ -152,7 +205,13 @@ export function deselectElement() {
   closeMarkerPopover();
   closeTagPopover();
   state.elemToolbar.classList.remove('fbw-toolbar-open');
+  syncMultiBadge();
   hideResizeHandles();
+}
+
+// gang-op 辅助：返回当前选区数组，过滤掉已离开 DOM 的
+export function getSelectedEls() {
+  return [...state.selectedEls].filter(el => document.contains(el));
 }
 
 export function enterTextEdit(el) {
@@ -264,7 +323,12 @@ export function attachSelectionEvents() {
     target = liftTarget(target);
     if (target.isContentEditable && target === state.selectedEl) return;
     e.preventDefault(); e.stopPropagation();
-    selectElement(target);
+    // Shift / Cmd / Ctrl + click → 切换多选；普通 click → 单选
+    if (e.shiftKey || e.metaKey || e.ctrlKey) {
+      toggleSelection(target);
+    } else {
+      selectElement(target);
+    }
   }, true);
 
   document.addEventListener('dblclick', (e) => {

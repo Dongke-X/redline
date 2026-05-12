@@ -450,6 +450,21 @@ export const CSS = `
     .fbw-elem-toolbar .fbw-tb-divider {
       width: 1px; height: 18px; background: rgba(255,255,255,0.10); margin: 0 2px;
     }
+    /* 多选 count badge：>1 个选中时显示在工具栏右上角 */
+    .fbw-elem-toolbar .fbw-tb-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px; height: 18px;
+      padding: 0 5px;
+      margin-left: 6px;
+      background: rgba(220,60,60,0.22);
+      color: #ff9d9d;
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 10.5px; font-weight: 700;
+      border-radius: 9px;
+      letter-spacing: 0.02em;
+    }
     .fbw-elem-toolbar .fbw-tb-label {
       font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
       font-size: 11px; color: rgba(255,255,255,0.55);

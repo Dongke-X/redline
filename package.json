@@ -1,6 +1,6 @@
 {
   "name": "redline",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "Browser-injected widget + Claude Code skill for end-to-end design feedback. Capture UI edits / annotations / screenshots in browser, agent patches source HTML directly.",
   "main": "dist/redline.js",
   "files": [
