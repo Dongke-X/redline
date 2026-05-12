@@ -6,6 +6,20 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.32 — 2026-05-12  ·  导出菜单：PDF + HTML 一处选
+
+### Changed
+- **Single-file HTML 入口从反馈面板挪到 FAB 导出按钮**：反馈面板留给「跟 agent 的交互」语义，「发给人看」的导出动作（PDF / HTML）都聚到导出 FAB
+- 点导出 FAB → 弹一个 4 选项小菜单：
+  - **PDF · 矢量** —— 可缩放、链接保留
+  - **PDF · 长图** —— 整页一张超长图
+  - **HTML · 可编辑** —— 接收方双击就能继续标
+  - **HTML · 只读** —— 给客户演示，编辑入口锁
+- 兼容旧 muscle memory：**Shift+点击** 导出 FAB 直接出长图 PDF，不弹菜单
+- deck 模式 overlay 的导出按钮同步走菜单逻辑
+
+---
+
 ## 0.1.31 — 2026-05-12  ·  Single-file HTML 导出 + readonly 模式
 
 ### Added

@@ -1440,6 +1440,65 @@ export const CSS = `
     [data-fbw-tag-as="h6"] { font-size: 0.88em !important; font-weight: 700 !important; color: #555 !important; }
     [data-fbw-tag-as="p"] { font-size: 1em !important; font-weight: 400 !important; line-height: 1.6 !important; }
 
+    /* 导出菜单：点 FAB 上的导出按钮弹出，4 选项 + 分两组（PDF / HTML） */
+    .fbw-export-menu {
+      position: fixed;
+      z-index: 2147483546;
+      display: none;
+      min-width: 260px;
+      background: rgba(28, 25, 22, 0.97);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 6px;
+      box-shadow:
+        0 16px 48px rgba(0,0,0,0.50),
+        0 2px 8px rgba(0,0,0,0.28),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
+    }
+    .fbw-export-menu.fbw-on { display: block; }
+    .fbw-export-group { padding: 4px 0; }
+    .fbw-export-group + .fbw-export-group { border-top: 1px solid rgba(255,255,255,0.06); margin-top: 4px; }
+    .fbw-export-group-label {
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(245,243,239,0.40);
+      font-weight: 600;
+      padding: 4px 10px 4px;
+    }
+    .fbw-export-item {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+      padding: 7px 10px;
+      background: transparent;
+      color: rgba(245,243,239,0.92);
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+    }
+    .fbw-export-item:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    .fbw-export-name {
+      font-size: 12.5px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    .fbw-export-hint {
+      font-size: 10.5px;
+      color: rgba(245,243,239,0.45);
+      letter-spacing: 0.01em;
+    }
+
     /* 样式注入面板：选中元素后调 font-size / padding / margin */
     .fbw-style-panel {
       position: fixed;
@@ -1664,7 +1723,8 @@ export const CSS = `
     body.fbw-compare-before .fbw-marker-popover,
     body.fbw-compare-before .fbw-tag-popover,
     body.fbw-compare-before .fbw-note-popover,
-    body.fbw-compare-before .fbw-style-panel {
+    body.fbw-compare-before .fbw-style-panel,
+    body.fbw-compare-before .fbw-export-menu {
       display: none !important;
     }
 
@@ -1801,6 +1861,7 @@ export const CSS = `
     body.fbw-printing .fbw-marker-popover,
     body.fbw-printing .fbw-tag-popover,
     body.fbw-printing .fbw-style-panel,
+    body.fbw-printing .fbw-export-menu,
     body.fbw-printing .fbw-help-popover,
     body.fbw-printing .fbw-tooltip,
     body.fbw-printing .fbw-anno,

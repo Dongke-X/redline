@@ -18,7 +18,6 @@ export function panelHTML() {
       <span class="fbw-head-title">${ICON_CHAT}<span>${t('panel.title')}</span></span>
       <span class="fbw-head-actions">
         <button class="fbw-icon-btn" data-fbw-shot data-tooltip="${t('panel.btn.shot.title')}">${ICON_CAMERA}</button>
-        <button class="fbw-icon-btn" data-fbw-export-html data-tooltip="${t('panel.btn.exportHtml.title')}">${ICON_DOWNLOAD}</button>
         <button class="fbw-icon-btn" data-fbw-locale data-tooltip="${t('panel.btn.locale.title', { lang: nextLang })}">${ICON_GLOBE}</button>
         <button class="fbw-icon-btn fbw-danger" data-fbw-clear-all data-tooltip="${t('panel.btn.clearAll')}">${ICON_TRASH}</button>
         <button class="fbw-icon-btn" data-fbw-close data-tooltip="${t('panel.btn.close')}">−</button>

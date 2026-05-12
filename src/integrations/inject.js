@@ -5,6 +5,7 @@ import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_BOLT, ICON_MARQUEE, ICON_KEYBO
 import { toggleEdit, deselectElement } from '../edit/selection.js';
 import { toggleFbPanel } from '../feedback/panel.js';
 import { exportPDF } from '../export/pdf.js';
+import { openExportMenu, closeExportMenu } from '../export/menu.js';
 import { runPatchSource, clearSourceDir } from '../feedback/patchSource.js';
 import { toggleMarqueeMode } from '../edit/marquee.js';
 import { toggleHelpPopover } from '../feedback/help.js';
@@ -67,7 +68,12 @@ export function injectIntoOverlay() {
   exportBtn.dataset.tooltip = t('overlay.export');
   exportBtn.setAttribute('aria-label', t('overlay.export'));
   exportBtn.innerHTML = ICON_SHARE.replace('viewBox="0 0 24 24"', 'viewBox="0 0 24 24" width="14" height="14"');
-  exportBtn.addEventListener('click', (e) => { e.stopPropagation(); exportPDF({ image: e.shiftKey }, deselectElement); });
+  exportBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (e.shiftKey) { exportPDF({ image: true }, deselectElement); return; }
+    if (state.exportMenu?.classList.contains('fbw-on')) closeExportMenu();
+    else openExportMenu();
+  });
 
   const div5 = document.createElement('span'); div5.className = 'divider';
   const helpBtn = document.createElement('button');

@@ -25,6 +25,7 @@ import { createStylePanelNode, attachStylePanelEvents } from './edit/style-panel
 import { toggleCompare } from './edit/compare.js';
 import { exportSingleFile } from './export/singlefile.js';
 import { detectRehydrate } from './core/rehydrate.js';
+import { createExportMenuNode, attachExportMenuEvents, openExportMenu, closeExportMenu } from './export/menu.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -149,6 +150,9 @@ function createDom() {
   const stylePanel = createStylePanelNode();
   state.stylePanel = stylePanel;
 
+  const exportMenu = createExportMenuNode();
+  state.exportMenu = exportMenu;
+
   // FAB 工具条：6 个按钮在浮动 pill 里
   // 顺序：编辑 → 反馈 → 框选 → 导出 ｜ 帮助 ｜ 折叠
   const fabBar = document.createElement('div');
@@ -181,6 +185,7 @@ function createDom() {
   document.body.appendChild(markerPopover);
   document.body.appendChild(tagPopover);
   document.body.appendChild(stylePanel);
+  document.body.appendChild(exportMenu);
   document.body.appendChild(state.resizeHandles);
 }
 
@@ -320,7 +325,14 @@ function attachFabClicks() {
     }
     toggleEdit();
   });
-  state.exportFab.addEventListener('click', (e) => exportPDF({ image: e.shiftKey }, deselectElement));
+  // 点导出 FAB → 弹 4 选项菜单（PDF 矢量 / 长图、HTML 可编辑 / 只读）
+  // 兼容旧 muscle memory：Shift+click 直接出长图 PDF，不弹菜单
+  state.exportFab.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (e.shiftKey) { exportPDF({ image: true }, deselectElement); return; }
+    if (state.exportMenu?.classList.contains('fbw-on')) closeExportMenu();
+    else openExportMenu();
+  });
   state.marqueeFab.addEventListener('click', toggleMarqueeMode);
   state.undoFab.addEventListener('click', (e) => { e.stopPropagation(); undo(); refreshUndoFabs(); });
   state.redoFab.addEventListener('click', (e) => { e.stopPropagation(); redo(); refreshUndoFabs(); });
@@ -498,6 +510,7 @@ export function init() {
   attachMarkerEvents();
   attachTagPopoverEvents();
   attachStylePanelEvents();
+  attachExportMenuEvents();
   attachNotePopoverEvents();
   attachPanelEvents();
   attachSaveButton();

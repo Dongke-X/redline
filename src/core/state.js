@@ -40,6 +40,7 @@ export const state = {
   /** @type {HTMLElement|null} */ markerPopover: null,
   /** @type {HTMLElement|null} */ tagPopover: null,
   /** @type {HTMLElement|null} */ stylePanel: null,
+  /** @type {HTMLElement|null} */ exportMenu: null,
   /** @type {HTMLElement|null} */ resizeHandles: null,
   /** @type {Function|null} */ onChangeHook: null,
   /** 多选支持：state.selectedEl 始终指向 anchor（最近一次点）；selectedEls 是当前完整选区。

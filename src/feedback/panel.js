@@ -8,7 +8,6 @@ import { deselectElement } from '../edit/selection.js';
 import { showToast, updateCounter } from '../utils.js';
 import { t, toggleLocale } from '../i18n.js';
 import { captureViewport } from './screenshot.js';
-import { exportSingleFile } from '../export/singlefile.js';
 
 export function toggleFbPanel() {
   state.panel.classList.toggle('fbw-open');
@@ -61,15 +60,6 @@ export function attachPanelEvents() {
       captureViewport().finally(() => {
         if (wasOpen) state.panel.classList.add('fbw-open');
       });
-    });
-  }
-
-  // 导出 single-file HTML：click = 可编辑模式（默认）；Shift+click = 只读模式
-  const exportHtmlBtn = state.panel.querySelector('[data-fbw-export-html]');
-  if (exportHtmlBtn) {
-    exportHtmlBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      exportSingleFile({ mode: e.shiftKey ? 'readonly' : 'editable' });
     });
   }
 
