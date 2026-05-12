@@ -6,6 +6,28 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.44 — 2026-05-12  ·  所有 FAB tooltip 统一两行排版
+
+### Changed
+全部 `overlay.*` tooltip 用统一模板：第一行 `名称（快捷键）`，第二行简短说明。
+中英都改：
+
+| key | 行 1 | 行 2 |
+|---|---|---|
+| edit | 编辑模式 (E) | 双击元素直接改文字 / 颜色 / 尺寸 |
+| feedback | 反馈面板 (F) | 写反馈 · 截图 · 附件 |
+| pick | 取色器 | 点页面任意位置取色 · hex 入剪贴板 + 反馈框 |
+| undo | 撤销 (⌘Z) | 回滚最近一次操作 |
+| redo | 重做 (⌘⇧Z) | 恢复被撤销的操作 |
+| save | 保存编辑 | 改动写回源 HTML · 自动备份 · 右键重选目录 |
+| marquee | 框选标注 (M) | 拖一个框 → 写文字 / 加图片 |
+| help | 快捷键 / 帮助 (?) | 查所有快捷键 |
+| fold | 折叠工具条 | 点编辑 FAB 可重新展开 |
+
+`overlay.export` / `overlay.compare` 已在 v0.1.42 / v0.1.43 改完。
+
+---
+
 ## 0.1.43 — 2026-05-12  ·  前后对比 tooltip 也改两行
 
 ### Changed
