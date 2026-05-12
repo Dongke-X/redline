@@ -1201,14 +1201,14 @@ export const CSS = `
       min-width: 140px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 14px;
     }
     .fbw-help-col + .fbw-help-col {
       padding-left: 14px;
       margin-left: 0;
       border-left: 1px solid rgba(255,255,255,0.06);
     }
-    .fbw-help-group { display: flex; flex-direction: column; gap: 3px; }
+    .fbw-help-group { display: flex; flex-direction: column; gap: 4px; }
     .fbw-help-group-label {
       font-family: ui-monospace, "SF Mono", monospace;
       font-size: 9px;

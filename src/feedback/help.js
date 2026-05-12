@@ -40,14 +40,17 @@ export function buildHelpPopoverHTML() {
           ${row('M', t('help.shortcut.marquee'))}
         </div>
         <div class="fbw-help-group">
-          <div class="fbw-help-group-label">${t('help.group.actions')}</div>
+          <div class="fbw-help-group-label">${t('help.group.selection')}</div>
           ${row('Esc', t('help.shortcut.cancel'))}
           ${row('Del', t('help.shortcut.delete'))}
+          ${row([cmd, 'C'], t('help.shortcut.copyDescriptor'))}
+        </div>
+        <div class="fbw-help-group">
+          <div class="fbw-help-group-label">${t('help.group.history')}</div>
           ${row([cmd, 'S'], t('help.shortcut.save'))}
           ${row([cmd, 'M'], t('help.shortcut.copy'))}
           ${row([cmd, 'Z'], t('help.shortcut.undo'))}
           ${row([cmd, 'Shift', 'Z'], t('help.shortcut.redo'))}
-          ${row([cmd, 'C'], t('help.shortcut.copyDescriptor'))}
         </div>
       </div>
       <div class="fbw-help-col">
