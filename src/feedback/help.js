@@ -2,6 +2,7 @@
 import { state } from '../core/state.js';
 import { t } from '../i18n.js';
 import { onResize } from '../utils/events.js';
+import { ICON_X } from '../assets/icons.js';
 
 function platformCmdLabel() {
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -23,7 +24,10 @@ function row(keys, label) {
 export function buildHelpPopoverHTML() {
   const cmd = platformCmdLabel();
   return `
-    <div class="fbw-help-title">${t('help.title')}</div>
+    <div class="fbw-help-header">
+      <span class="fbw-help-title">${t('help.title')}</span>
+      <button class="fbw-help-close" data-fbw-help-close type="button" aria-label="${t('panel.btn.close')}">${ICON_X}</button>
+    </div>
     <div class="fbw-help-cols">
       <div class="fbw-help-col">
         <div class="fbw-help-group">
@@ -111,6 +115,13 @@ export function closeHelpPopover() {
 }
 
 export function attachHelpEvents() {
+  // 内置 X 关闭按钮
+  document.addEventListener('click', (e) => {
+    if (e.target.closest && e.target.closest('[data-fbw-help-close]')) {
+      e.stopPropagation();
+      closeHelpPopover();
+    }
+  }, true);
   // 点 popover 外面关闭。deck-stage 的按钮在 shadow DOM 里，e.target 会被重定向到
   // deck-stage host，所以也要走 composedPath() 检查。
   document.addEventListener('mousedown', (e) => {

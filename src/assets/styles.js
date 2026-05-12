@@ -1123,7 +1123,7 @@ export const CSS = `
       background: rgba(28, 25, 22, 0.96);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 12px;
-      padding: 14px 18px;
+      padding: 12px 14px;
       box-shadow:
         0 20px 60px rgba(0,0,0,0.52),
         0 2px 8px rgba(0,0,0,0.30),
@@ -1133,59 +1133,83 @@ export const CSS = `
       display: none;
       font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
       color: #f5f3ef;
-      min-width: 360px;
+      min-width: 340px;
+      max-width: 92vw;
       box-sizing: border-box;
     }
     .fbw-help-popover.fbw-on { display: block; }
-    .fbw-help-title {
-      font-family: ui-monospace, "SF Mono", monospace;
-      font-size: 9.5px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: rgba(245,245,247,0.50);
-      font-weight: 600;
-      margin-bottom: 10px;
-      padding-bottom: 8px;
+    /* 标题栏：左侧标题 + 右侧 X 关闭按钮 */
+    .fbw-help-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .fbw-help-rows { display: flex; flex-direction: column; gap: 8px; }
-    .fbw-help-groups { display: flex; flex-direction: column; gap: 14px; }
+    .fbw-help-title {
+      font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
+      font-size: 13.5px;
+      letter-spacing: 0.01em;
+      color: rgba(245,243,239,0.92);
+      font-weight: 600;
+    }
+    .fbw-help-close {
+      width: 22px; height: 22px;
+      background: transparent;
+      color: rgba(245,243,239,0.50);
+      border: 0;
+      border-radius: 5px;
+      cursor: pointer;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 120ms, color 120ms;
+    }
+    .fbw-help-close:hover {
+      background: rgba(255,255,255,0.08);
+      color: #f5f3ef;
+    }
+    .fbw-help-close svg { width: 14px; height: 14px; }
+    .fbw-help-rows { display: flex; flex-direction: column; gap: 6px; }
+    .fbw-help-groups { display: flex; flex-direction: column; gap: 10px; }
     /* 双列布局：左=模式+核心操作，右=视图工具 + 鼠标手势 + 导出 + 其他 */
     .fbw-help-cols {
       display: flex;
-      gap: 18px;
+      gap: 14px;
       align-items: flex-start;
     }
     .fbw-help-col {
       flex: 1;
-      min-width: 160px;
+      min-width: 140px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
-    /* 左右两列之间加一条极淡的分隔线，强化分栏视觉 */
     .fbw-help-col + .fbw-help-col {
-      padding-left: 18px;
+      padding-left: 14px;
       margin-left: 0;
       border-left: 1px solid rgba(255,255,255,0.06);
     }
-    .fbw-help-group { display: flex; flex-direction: column; gap: 5px; }
+    .fbw-help-group { display: flex; flex-direction: column; gap: 3px; }
     .fbw-help-group-label {
       font-family: ui-monospace, "SF Mono", monospace;
       font-size: 9px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: rgba(245,245,247,0.38);
+      color: rgba(245,243,239,0.36);
       font-weight: 600;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
     /* 文本化：kbd 不画框，全用 monospace 文字。每行栅格 = 固定 keys 列 + 1fr label */
     .fbw-help-row {
       display: grid;
-      grid-template-columns: 90px 1fr;
+      grid-template-columns: 78px 1fr;
       align-items: baseline;
-      column-gap: 12px;
+      column-gap: 10px;
       font-size: 12.5px;
+      line-height: 1.45;
       color: rgba(245,245,247,0.85);
       white-space: nowrap !important;
       writing-mode: horizontal-tb !important;

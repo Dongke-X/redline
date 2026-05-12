@@ -6,6 +6,16 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.28 — 2026-05-12  ·  快捷键面板紧凑化 + 关闭按钮
+
+### Changed
+- **整体收紧**：popover padding 14/18 → 12/14；组间距 14 → 10；行间距 5 → 3；列间距 18 → 14；列内 keys slot 90 → 78px
+- **标题加大**：从 9.5px mono uppercase → 13.5px 普通 sans bold，"SHORTCUTS" 那种装饰感太弱了，现在是清晰的「快捷键」section header
+- **加 X 关闭按钮**：标题右侧，hover 灰底，跟反馈面板 close 一致
+- **自适应**：popover `max-width: 92vw`，列 `min-width: 160 → 140`，避免在窄视口下被撑出屏幕
+
+---
+
 ## 0.1.27 — 2026-05-12  ·  快捷键面板文本化
 
 ### Changed
