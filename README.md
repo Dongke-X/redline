@@ -76,6 +76,8 @@ Web Store submission is in progress. See [SUBMISSION_CHECKLIST.md](./SUBMISSION_
 
 The HTML export lets you pass review to anyone who has a browser. No skill, no extension required on the receiving end.
 
+<p align="center"><img src="./docs/images/version-chain.jpg" alt="HTML revision chain: v1 → v2 → v3 with parentRevisionId" width="720"></p>
+
 - **Editable HTML** — a single `.html` with the full redline editor embedded. Receiver double-clicks to open and keeps annotating. Every export bumps a `revision` chain (`revisionId` / `parentRevisionId` / `exporter`) so future versions can be diffed
 - **Preview HTML** (read-only) — same single-file shape, but editing is locked. A built-in print button in the corner lets the receiver one-click to PDF. Good for client review where you don't want them to modify
 - **Auto image optimization** — any image larger than 500 KB is transcoded to WebP @ 80 % during export (SVG / GIF skipped, original kept if WebP comes out larger). Typically 60–80 % smaller files
@@ -94,6 +96,8 @@ The HTML export lets you pass review to anyone who has a browser. No skill, no e
 See [examples/landing.html](./examples/landing.html) for a live walkthrough.
 
 ## How the skill resolves selectors
+
+<p align="center"><img src="./docs/images/selector-fallback.jpg" alt="Four-layer selector fallback: id → fbId → cssPath → contentHash" width="620"></p>
 
 When `apply.mjs` writes back, it tries the selector strategies in order:
 

@@ -6,6 +6,15 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.48 — 2026-05-12  ·  README 配图 P1（版本链 + Selector 兜底）
+
+### Added
+- `docs/images/version-chain.jpg` — HTML 版本链可视化：deck-v1 → v2 → v3，parentRevisionId 串联，每版 exporter 不同。放在 "HTML transport" / "HTML 转交" 段
+- `docs/images/selector-fallback.jpg` — Selector 四层兜底流程图：id → fbId → cssPath → contentHash → skip。放在 "How the skill resolves selectors" / "Skill 怎么定位元素" 段
+- 中英两版 README 同步插入（两张图技术术语为主，无需双语版本）
+
+---
+
 ## 0.1.47 — 2026-05-12  ·  README 配图（6 张手绘）
 
 ### Added

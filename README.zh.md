@@ -76,6 +76,8 @@ claude: 读 ZIP，把改动写回 ./report.html
 
 HTML 导出让你把 review 转给任何有浏览器的人。接收端不用装 skill / 不用装扩展。
 
+<p align="center"><img src="./docs/images/version-chain.jpg" alt="HTML 版本链：v1 → v2 → v3 通过 parentRevisionId 串联" width="720"></p>
+
 - **编辑 HTML** —— 单个 `.html` 文件，redline 编辑器 inline 在里面。接收方双击打开继续标。每次导出都会推进一段 `revision` 链（`revisionId` / `parentRevisionId` / `exporter`），后续可做版本 diff
 - **预览 HTML**（只读）—— 同样是单文件，但编辑入口锁住。右下角内置打印按钮，接收方一键转 PDF。**适用**：给客户演示、不让对方改
 - **自动图片压缩** —— 单图 >500KB 自动转 WebP @ 80%（SVG / GIF 跳过，转得更大则回原图），平均瘦 60–80%
@@ -94,6 +96,8 @@ HTML 导出让你把 review 转给任何有浏览器的人。接收端不用装 
 完整演示见 [examples/landing.zh.html](./examples/landing.zh.html)。
 
 ## Skill 怎么定位元素
+
+<p align="center"><img src="./docs/images/selector-fallback.jpg" alt="Selector 四层兜底：id → fbId → cssPath → contentHash" width="620"></p>
 
 `apply.mjs` 把反馈写回时按这个优先级匹配 selector：
 
