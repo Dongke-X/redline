@@ -6,6 +6,16 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.41 — 2026-05-12  ·  tooltip 自适应换行
+
+### Fixed
+- 长 tooltip（如英文「Export PDF (vector / long-image) · HTML (preview / edit)」）右侧被屏幕裁掉
+- 根因：CSS 里 `white-space: nowrap` 跟 `max-width: 320px` 同时存在，nowrap 赢，max-width 失效
+- 改为 `white-space: normal` + `overflow-wrap: anywhere`，长文案自动换行
+- `max-width: min(360px, 100vw - 24px)` 视口窄时自动收
+
+---
+
 ## 0.1.40 — 2026-05-12  ·  快捷键面板左右平衡
 
 ### Changed

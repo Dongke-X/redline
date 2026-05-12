@@ -1262,11 +1262,13 @@ export const CSS = `
       z-index: 2147483700;
       box-shadow: 0 6px 22px rgba(0,0,0,0.42);
       font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
-      white-space: nowrap;
+      /* 长文案自适应换行 —— 过去 nowrap + max-width 同时存在，nowrap 赢，导致超长 tooltip 被屏幕剪掉 */
+      white-space: normal;
+      overflow-wrap: anywhere;
       backdrop-filter: blur(16px) saturate(1.2);
       -webkit-backdrop-filter: blur(16px) saturate(1.2);
       letter-spacing: 0.01em;
-      max-width: 320px;
+      max-width: min(360px, calc(100vw - 24px));
       line-height: 1.4;
     }
     .fbw-tooltip.fbw-on { opacity: 1; }
