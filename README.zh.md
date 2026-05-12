@@ -72,6 +72,25 @@ claude: 读 ZIP，把改动写回 ./report.html
 
 应用商店上架准备中，详见 [SUBMISSION_CHECKLIST.md](./SUBMISSION_CHECKLIST.md)。
 
+## 不用 Claude Code 也能闭环
+
+没有 Claude Code 访问权限？用**任意 LLM** 都能跑闭环 —— ChatGPT、Claude 网页版、DeepSeek、通义、智谱、扣子 / Dify 里跑的 agent，统统可以。
+
+浏览器里导出 ZIP 之后：
+
+1. 解开 ZIP，找到 `session.json`（机器可读的反馈包）
+2. 把源 HTML + `session.json` 一起粘到 LLM 对话框
+3. 用 [`docs/agent-prompts/`](./docs/agent-prompts/) 里的提示词模板告诉 LLM 怎么应用反馈
+4. LLM 返回 patched 后的 HTML
+
+| 模板 | 语言 | 适用 |
+|---|---|---|
+| [Full](./docs/agent-prompts/apply-feedback.en.md) | EN | 全部 edit 类型 + 标注 + 反馈叙事 |
+| [完整版](./docs/agent-prompts/apply-feedback.zh.md) | 中 | 全部 edit 类型 + 标注 + 反馈叙事 |
+| 精简版（同文件内） | EN / 中 | 只改文字，粘贴更短，适合小窗口模型 |
+
+Claude Code 的 `apply.mjs` skill 仍然是最丝滑的路径 —— 自动处理 selector 兜底 + 直接写盘。这些模板让"应用回源"这最后一步**跟平台无关**，没装 Claude Code 的人也能完成完整闭环。
+
 ## HTML 转交 —— 不依赖 Claude 也不依赖扩展
 
 HTML 导出让你把 review 转给任何有浏览器的人。接收端不用装 skill / 不用装扩展。

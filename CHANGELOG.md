@@ -6,6 +6,31 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.51 — 2026-05-12  ·  「不用 Claude Code 也能闭环」 prompt 模板
+
+### Added
+- `docs/agent-prompts/apply-feedback.en.md` —— 英文版提示词模板（完整版 + 精简版）
+- `docs/agent-prompts/apply-feedback.zh.md` —— 中文版同上
+- README 加新 section「Use redline without Claude Code / 不用 Claude Code 也能闭环」，介绍这条路径
+- 位置：README 里 Chrome 扩展安装段之后、HTML transport 段之前
+
+### 背景
+- 之前 redline 闭环只支持 Claude Code（apply.mjs skill）
+- 国内大量用户用不了 Claude Code，只能 DeepSeek / 通义 / 智谱 / 扣子 等
+- 这些模板让最后一步「把反馈应用回源 HTML」**跟 LLM 平台无关** —— 任何能输入文本的对话窗都能跑
+
+模板覆盖：
+- 8 种 edit op（text / move / scale / rotate / hide / delete / font / note / replace-img）
+- selector 四层兜底（id → fbId → cssPath → contentHash）
+- annotations / feedback 分流到 summary 让用户自己决定
+- 精简版只处理文字编辑，token 占用最少，适合小上下文窗口的模型
+
+### 取舍说明
+- 没做扣子 / Dify 专属 plugin —— 形态错位（云端 HTTP plugin vs 本地 CLI），ROI 负
+- 没做 MCP server —— 留作中长期，先用 prompt 模板让国内用户能跑闭环
+
+---
+
 ## 0.1.50 — 2026-05-12  ·  配图统一英文版 + 版本号 badge 自动追 release
 
 ### Changed

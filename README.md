@@ -72,6 +72,25 @@ claude: reads ZIP, patches ./report.html
 
 Web Store submission is in progress. See [SUBMISSION_CHECKLIST.md](./SUBMISSION_CHECKLIST.md).
 
+## Use redline without Claude Code
+
+Don't have Claude Code access? You can still close the loop with **any LLM** — ChatGPT, Claude (web), DeepSeek, Tongyi, Zhipu, agents inside Coze / Dify, etc.
+
+After exporting a ZIP in the browser:
+
+1. Open the ZIP, grab `session.json` (the machine-readable feedback)
+2. Paste both your source HTML and the `session.json` into your LLM
+3. Use one of the prompt templates in [`docs/agent-prompts/`](./docs/agent-prompts/) to tell the LLM how to apply changes
+4. The LLM returns the patched HTML
+
+| Template | Lang | When |
+|---|---|---|
+| [Full](./docs/agent-prompts/apply-feedback.en.md) | EN | All edit types + annotations + feedback narrative |
+| [完整版](./docs/agent-prompts/apply-feedback.zh.md) | 中 | 全部 edit 类型 + 标注 + 反馈叙事 |
+| Lite (in same files) | EN / 中 | Text edits only — shorter paste, smaller LLMs |
+
+The Claude Code skill (`apply.mjs`) is still the smoothest path — it handles selector fallbacks and writes to disk automatically. These templates make the final "apply back" step LLM-agnostic for everyone else.
+
 ## HTML transport — hand off the review without Claude or the extension
 
 The HTML export lets you pass review to anyone who has a browser. No skill, no extension required on the receiving end.
