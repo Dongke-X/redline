@@ -58,6 +58,9 @@ export const state = {
   // ════════════════════════ 3. 业务数据（持久化目标） ════════════════════════
   /** edit-id → 原始 textContent  @type {Map<string, string>} */
   originals: new Map(),
+  // 注册时也存一份 innerHTML，compare 模式还原内部结构（em / br / strong 等）。
+  // textContent 那一份（originals）仍保留：getChanges() 比文字差异只看 textContent
+  originalsHTML: new Map(),
   /** element → { ops: Op[], descriptor: string }  @type {Map<HTMLElement, {ops: Op[], descriptor: string}>} */
   elementOps: new Map(),
   /** secId → { label, note }  @type {Map<string, SectionFeedback>} */

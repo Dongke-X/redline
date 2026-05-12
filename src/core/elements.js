@@ -32,6 +32,8 @@ function register(el) {
   const id = 'fbw-e-' + (idCounter++);
   el.dataset.fbwEditId = id;
   state.originals.set(id, getText(el));
+  // 多存一份 innerHTML，给 compare 模式还原内部 markup（em/strong/br/...）
+  state.originalsHTML.set(id, el.innerHTML);
 }
 
 // 扫描页面：标记所有 section 的 fbw-sec-id/label，注册所有可编辑元素。

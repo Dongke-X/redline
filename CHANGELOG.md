@@ -6,6 +6,19 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.25 — 2026-05-12  ·  保住内部 markup（`<em>` / `<br>` / `<strong>` 不再被吃）
+
+### Fixed
+- **bug**：用户编辑标题如 `把<em>任何网页</em><br>变成可标注的画布。` 后，红色 `<em>` 和换行 `<br>` 经常被吃掉，变成纯文字。Compare 模式切到"看原稿"时也只能看纯文字，红色 + 换行全没了
+- **根因**：之前 `state.originals` 只存 textContent；undo 和 compare 用 textContent 还原 → 内部 markup 全 trim 掉
+- **修法**：注册可编辑元素时**额外存一份 innerHTML**（`state.originalsHTML`）。compare 模式还原文字编辑过的元素时用 innerHTML；undo 的 snapshot 也升级到 innerHTML
+
+### 副作用 & 取舍
+- 撤销 / compare 切换时 descendants 会被 innerHTML 替换重建（DOM 节点是新的）。data-fbw-edit-id 仍按 id 工作（getChanges 走 querySelectorAll），影响有限
+- 内存：每个可编辑元素多存一份 innerHTML 字符串；典型页面单元素几百字节，总开销可接受
+
+---
+
 ## 0.1.24 — 2026-05-12  ·  前后对比模式
 
 ### Added

@@ -30,7 +30,8 @@ function snapshotEdited(el) {
     fbwHighlight: el.dataset.fbwHighlight ?? null,
     fbwFontName:  el.dataset.fbwFontName  ?? null,
     fbwOriginalSrc: el.dataset.fbwOriginalSrc ?? null,
-    textContent: el.textContent,
+    // 存 innerHTML 而非 textContent —— 保住内部 markup
+    innerHTML: el.innerHTML,
   };
 }
 
@@ -74,8 +75,8 @@ function restoreFromSnap(el, snap) {
     else el.dataset[k] = snap[k];
   });
   if (el.tagName === 'IMG' && snap.src != null) el.src = snap.src;
-  if (snap.textContent != null && el.textContent !== snap.textContent) {
-    el.textContent = snap.textContent;
+  if (snap.innerHTML != null && el.innerHTML !== snap.innerHTML) {
+    el.innerHTML = snap.innerHTML;
   }
 }
 
@@ -112,7 +113,13 @@ export function toggleCompare() {
     const orig = state.originals.get(id);
     if (orig === undefined || getText(el) === orig) return;
     if (!cache.has(el)) cache.set(el, snapshotEdited(el));
-    el.textContent = orig;
+    // 用 innerHTML 还原（保住 <em>/<strong>/<br> 等内部 markup）；没存就退回 textContent
+    const origHTML = state.originalsHTML?.get(id);
+    if (origHTML !== undefined) {
+      el.innerHTML = origHTML;
+    } else {
+      el.textContent = orig;
+    }
   });
   if (cache.size === 0) {
     showToast(t('compare.empty') || '没有改动可比对');
