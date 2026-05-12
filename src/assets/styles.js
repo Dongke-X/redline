@@ -1147,12 +1147,28 @@ export const CSS = `
       padding-bottom: 6px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
+    .fbw-help-titlewrap {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+    }
     .fbw-help-title {
       font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
       font-size: 13.5px;
       letter-spacing: 0.01em;
       color: rgba(245,243,239,0.92);
       font-weight: 600;
+    }
+    /* title 旁边的 ? chip：表示此面板的开关快捷键 */
+    .fbw-help-headkbd {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 10.5px;
+      color: rgba(245,243,239,0.50);
+      letter-spacing: 0.04em;
+      padding: 1px 6px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 4px;
+      cursor: help;
     }
     .fbw-help-close {
       width: 22px; height: 22px;

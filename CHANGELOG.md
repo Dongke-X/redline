@@ -6,6 +6,15 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.30 — 2026-05-12  ·  ? 收到 header 标题旁
+
+### Changed
+- 「显示 / 隐藏帮助」缩成「显示帮助」（EN：「Toggle help」→「Show help」），不再折行
+- 把 `?` 这个单条目从「其他」分组挪到 header 标题旁边：小 chip 带描边，hover tooltip 显示「显示帮助」
+- 「其他」分组整段删掉 —— 一行内容不值得占一个 group。整个面板少一行 + 少一个 group label，视觉重心稳得多
+
+---
+
 ## 0.1.29 — 2026-05-12  ·  鼠标手势中文化 + 长 label 不再被截
 
 ### Fixed

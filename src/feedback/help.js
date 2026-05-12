@@ -25,7 +25,10 @@ export function buildHelpPopoverHTML() {
   const cmd = platformCmdLabel();
   return `
     <div class="fbw-help-header">
-      <span class="fbw-help-title">${t('help.title')}</span>
+      <span class="fbw-help-titlewrap">
+        <span class="fbw-help-title">${t('help.title')}</span>
+        <span class="fbw-help-headkbd" title="${t('help.shortcut.help')}">?</span>
+      </span>
       <button class="fbw-help-close" data-fbw-help-close type="button" aria-label="${t('panel.btn.close')}">${ICON_X}</button>
     </div>
     <div class="fbw-help-cols">
@@ -62,10 +65,6 @@ export function buildHelpPopoverHTML() {
           <div class="fbw-help-group-label">${t('help.group.export')}</div>
           ${row(['Space', 'P'], t('help.shortcut.pdfVector'))}
           ${row(['Shift', 'P'], t('help.shortcut.pdfImage'))}
-        </div>
-        <div class="fbw-help-group">
-          <div class="fbw-help-group-label">${t('help.group.misc')}</div>
-          ${row('?', t('help.shortcut.help'))}
         </div>
       </div>
     </div>

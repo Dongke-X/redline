@@ -202,7 +202,7 @@ const DICT = {
     'help.shortcut.measure': '间距测量',
     'help.shortcut.pdfVector': '矢量 PDF',
     'help.shortcut.pdfImage': '长图 PDF',
-    'help.shortcut.help': '显示 / 隐藏帮助',
+    'help.shortcut.help': '显示帮助',
   },
   en: {
     'edit.on': 'Edit mode on · Click to select · Double-click to edit text · Esc to cancel',
@@ -390,7 +390,7 @@ const DICT = {
     'help.shortcut.measure': 'Measure',
     'help.shortcut.pdfVector': 'Vector PDF',
     'help.shortcut.pdfImage': 'Long-image PDF',
-    'help.shortcut.help': 'Toggle help',
+    'help.shortcut.help': 'Show help',
   },
 };
 
