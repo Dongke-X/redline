@@ -302,6 +302,7 @@ export function attachSelectionEvents() {
 
   document.addEventListener('click', (e) => {
     if (!state.editMode) return;
+    if (state.readOnly) return;
     if (isCompareBefore()) return; // 改前模式下禁止选中编辑
     let target = e.target;
     if (!target || target.closest(UI_GUARD)) return;
@@ -337,6 +338,7 @@ export function attachSelectionEvents() {
 
   document.addEventListener('dblclick', (e) => {
     if (!state.editMode) return;
+    if (state.readOnly) return;
     if (isCompareBefore()) return;
     let target = e.target;
     if (!target || target.closest(UI_GUARD)) return;

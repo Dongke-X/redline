@@ -1613,6 +1613,26 @@ export const CSS = `
       line-height: 1;
     }
 
+    /* Single-file 导出的接收方场景：readonly 模式禁用编辑入口，仅保留 view / compare / help */
+    body.fbw-readonly .fbw-edit-fab,
+    body.fbw-readonly .fbw-marquee-fab,
+    body.fbw-readonly .fbw-fb-fab,
+    body.fbw-readonly .fbw-export-fab,
+    body.fbw-readonly .fbw-elem-toolbar,
+    body.fbw-readonly .fbw-resize-handles,
+    body.fbw-readonly .fbw-style-panel,
+    body.fbw-readonly .fbw-note-popover,
+    body.fbw-readonly .fbw-marker-popover,
+    body.fbw-readonly .fbw-tag-popover,
+    body.fbw-readonly .fbw-font-picker,
+    body.fbw-readonly .fbw-panel {
+      display: none !important;
+    }
+    body.fbw-readonly [data-fbw-edit-id]:hover {
+      outline: none !important;
+      background: transparent !important;
+    }
+
     /* 前后对比模式：body 加这个 class 时，顶部出一条"在看原稿"提示条 */
     body.fbw-compare-before::before {
       content: '看原稿 \xb7 再按 O 或工具栏图标切回改后';

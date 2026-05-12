@@ -23,6 +23,8 @@ import { showMeasurement, hideMeasurement } from './edit/measure.js';
 import { attachRubberBandEvents } from './edit/rubber-band.js';
 import { createStylePanelNode, attachStylePanelEvents } from './edit/style-panel.js';
 import { toggleCompare } from './edit/compare.js';
+import { exportSingleFile } from './export/singlefile.js';
+import { detectRehydrate } from './core/rehydrate.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -481,6 +483,9 @@ export function init() {
   syncModeChip();
   watchAppModeChanges();
 
+  // 如果是 single-file 导出回放的场景，先把 state 灌回去（必须在 register 之前，否则会重复发 id）
+  const rehydrated = detectRehydrate();
+
   const sections = registerEditableElements();
 
   attachSelectionEvents();
@@ -513,7 +518,14 @@ export function init() {
     document.body.classList.add('fbw-no-overlay');
   }
 
-  loadState();
+  // single-file 已经在 detectRehydrate 里灌了 state；不再读 localStorage（避免覆盖）
+  if (!rehydrated) loadState();
+  // 全局反馈也走 rehydrate stash
+  if (state.__rehydrateGlobalNote && state.panel) {
+    const ta = state.panel.querySelector('[data-fbw-global]');
+    if (ta) ta.value = state.__rehydrateGlobalNote;
+    delete state.__rehydrateGlobalNote;
+  }
   renderAttachments();
   rerenderAllAnnotations();
   updateCounter(getChanges);

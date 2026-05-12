@@ -6,6 +6,24 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.31 — 2026-05-12  ·  Single-file HTML 导出 + readonly 模式
+
+### Added
+- **Single-file HTML 导出**：反馈面板 header 多一个下载图标按钮，点一下打包整页：
+  - 资源 inline：所有 `<img>` / `<link rel="stylesheet">` / CSS 内 `url()` / `@font-face` 全部 base64 化（跨域 CORS 拒绝的留原 URL）
+  - State 序列化：annotations / elementOps / sectionFeedback / attachments / 文字编辑 / originals / originalsHTML / 全局反馈 全部 dump 到 `<script type="application/json" data-fbw-state>`
+  - Bundle 内嵌：把 redline.js 整个 inline 进 `<script>`，接收方双击 .html 就完整启动一份 redline
+- **接力体验**：接收方打开后 = 完整 redline 工作台，能在你标的基础上继续标、改、再导出一份给下一个人
+- **只读模式**：Shift+点击导出按钮 → 接收方拿到的 HTML 里 redline UI 锁定：FAB bar / 元素工具栏 / 编辑相关 popover 全隐藏，但 view 工具（前后对比 / 审计模式 / 帮助）保留 → 适合给客户演示
+- **接收方启动流程**：`detectRehydrate` 在 `registerEditableElements` 之前跑，把 state 灌回去；register 看到已有 `data-fbw-edit-id` 跳过，不会重复发 ID
+
+### 实现细节
+- 资源 inline 走 `fetchAsDataURL`，递归处理 CSS 里的 `url()` 引用
+- redline bundle 来源：扩展走 `chrome.runtime.getURL('redline.js')`；skill 注入走现有 `<script src>`；其他兜底找带 `__feedbackWidgetVersion` marker 的内联 script
+- `state.readOnly` 触发 `body.fbw-readonly`，CSS 一键禁用编辑入口
+
+---
+
 ## 0.1.30 — 2026-05-12  ·  ? 收到 header 标题旁
 
 ### Changed
