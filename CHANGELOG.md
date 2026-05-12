@@ -6,6 +6,15 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.43 — 2026-05-12  ·  前后对比 tooltip 也改两行
+
+### Changed
+- `overlay.compare` 中英都改两行：
+  - ZH：`前后对比 (O)` / `切换看原稿 / 看改后`
+  - EN：`Before / after (O)` / `Toggle original vs edited`
+
+---
+
 ## 0.1.42 — 2026-05-12  ·  导出 tooltip 强制两行
 
 ### Changed
