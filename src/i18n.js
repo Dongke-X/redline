@@ -166,7 +166,7 @@ const DICT = {
     // overlay 按钮
     'overlay.edit': '编辑模式 (E)',
     'overlay.feedback': '反馈面板 (F)',
-    'overlay.export': '导出 PDF（矢量 / 长图）· HTML（预览 / 编辑）',
+    'overlay.export': '导出 PDF（矢量 / 长图）\n导出 HTML（预览 / 编辑）',
     'export.pdf.vector': '矢量 PDF',
     'export.pdf.vector.hint': '可缩放 · 链接保留',
     'export.pdf.image': '长图 PDF',
@@ -373,7 +373,7 @@ const DICT = {
     'tip.scale': 'Drag to scale',
     'overlay.edit': 'Edit mode (E)',
     'overlay.feedback': 'Feedback panel (F)',
-    'overlay.export': 'Export PDF (vector / long-image) · HTML (preview / edit)',
+    'overlay.export': 'Export PDF (vector / long-image)\nExport HTML (preview / edit)',
     'export.pdf.vector': 'Vector PDF',
     'export.pdf.vector.hint': 'Scalable · links preserved',
     'export.pdf.image': 'Long-image PDF',

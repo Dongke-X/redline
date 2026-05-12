@@ -6,6 +6,16 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.42 — 2026-05-12  ·  导出 tooltip 强制两行
+
+### Changed
+- 导出 FAB tooltip 改成两行排版，PDF / HTML 各占一行：
+  - ZH：`导出 PDF（矢量 / 长图）` / `导出 HTML（预览 / 编辑）`
+  - EN：`Export PDF (vector / long-image)` / `Export HTML (preview / edit)`
+- CSS：`white-space: normal` → `pre-line`，i18n 字符串里的 `\n` 渲染成真换行
+
+---
+
 ## 0.1.41 — 2026-05-12  ·  tooltip 自适应换行
 
 ### Fixed

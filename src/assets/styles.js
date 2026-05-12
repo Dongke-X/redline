@@ -1262,8 +1262,8 @@ export const CSS = `
       z-index: 2147483700;
       box-shadow: 0 6px 22px rgba(0,0,0,0.42);
       font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
-      /* 长文案自适应换行 —— 过去 nowrap + max-width 同时存在，nowrap 赢，导致超长 tooltip 被屏幕剪掉 */
-      white-space: normal;
+      /* 长文案自适应换行；pre-line 让 i18n 里的 \n 渲染成真正的换行（两行版排版） */
+      white-space: pre-line;
       overflow-wrap: anywhere;
       backdrop-filter: blur(16px) saturate(1.2);
       -webkit-backdrop-filter: blur(16px) saturate(1.2);
