@@ -40,7 +40,14 @@ chrome.action.onClicked.addListener(async (tab) => {
       return;
     }
 
-    // 首次注入：把 bundle 灌进 page MAIN world
+    // 首次注入：先把 bundle URL stash 到页面，给 single-file export 用（MAIN world 拿不到 chrome.runtime）
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      world: 'MAIN',
+      func: (url) => { window.__fbwBundleURL = url; },
+      args: [chrome.runtime.getURL('redline.js')],
+    });
+    // 然后把 bundle 灌进 page MAIN world
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       world: 'MAIN',

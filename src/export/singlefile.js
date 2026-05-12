@@ -39,8 +39,17 @@ export async function exportSingleFile(opts = {}) {
   }
 }
 
-// 拿 bundle 源码：扩展走 chrome.runtime.getURL；skill 注入走 <script src> 或 inline
+// 拿 bundle 源码。bundle 在 MAIN world 运行 → chrome.runtime 拿不到，所以：
+// 1. 扩展场景：background 在注入前 stash window.__fbwBundleURL（chrome-extension://...）
+// 2. skill 注入（prepare.mjs --copy）：<script src="redline.js"> 形式
+// 3. skill 注入（prepare.mjs --inline）：inline <script> 含 __feedbackWidgetVersion marker
 async function getBundleText() {
+  if (typeof window !== 'undefined' && window.__fbwBundleURL) {
+    try {
+      const res = await fetch(window.__fbwBundleURL);
+      if (res.ok) return await res.text();
+    } catch (_) {}
+  }
   if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
     try {
       const url = chrome.runtime.getURL('redline.js');

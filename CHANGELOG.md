@@ -6,6 +6,18 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.33 — 2026-05-12  ·  修 single-file 导出"redline.js not found"
+
+### Fixed
+- v0.1.31 没考虑扩展用 MAIN world 注入：bundle 在 page 全局跑，`chrome.runtime` 拿不到，导致 `getBundleText` 三条路径全 miss
+- background.js 在注入 bundle 之前先 stash `window.__fbwBundleURL = chrome.runtime.getURL('redline.js')` 到 page，bundle 自己 fetch 这个 URL 就能拿到自己源码（web_accessible_resources 已允许）
+
+### 不影响场景
+- skill 注入（prepare.mjs --copy）走 `<script src>` 形式，原 fallback 仍然有效
+- skill --inline 注入走 inline marker fallback
+
+---
+
 ## 0.1.32 — 2026-05-12  ·  导出菜单：PDF + HTML 一处选
 
 ### Changed
