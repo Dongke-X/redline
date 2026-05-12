@@ -42,6 +42,7 @@ export function buildHelpPopoverHTML() {
         <div class="fbw-help-group">
           <div class="fbw-help-group-label">${t('help.group.actions')}</div>
           ${row('Esc', t('help.shortcut.cancel'))}
+          ${row('Del', t('help.shortcut.delete'))}
           ${row([cmd, 'S'], t('help.shortcut.save'))}
           ${row([cmd, 'M'], t('help.shortcut.copy'))}
           ${row([cmd, 'Z'], t('help.shortcut.undo'))}

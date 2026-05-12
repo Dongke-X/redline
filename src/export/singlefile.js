@@ -104,6 +104,9 @@ function stripWidgetBodyClasses(root) {
   remove.forEach(c => body.classList.remove(c));
 }
 
+// 大图阈值 500KB：超过的转 WebP 80%，平均能瘦 60-80%。SVG 不转（会丢矢量）
+const LARGE_IMAGE_BYTES = 500 * 1024;
+
 // ── 资源内联 ──────────────────────────────────────
 async function inlineResources(root) {
   // img
@@ -111,7 +114,7 @@ async function inlineResources(root) {
     const src = img.getAttribute('src');
     if (!src || src.startsWith('data:')) continue;
     try {
-      img.setAttribute('src', await fetchAsDataURL(absUrl(src)));
+      img.setAttribute('src', await fetchImageAsDataURL(absUrl(src)));
     } catch (_) {}
   }
   // <link rel="stylesheet">
@@ -161,11 +164,47 @@ async function fetchAsDataURL(url) {
   const res = await fetch(url, { mode: 'cors' });
   if (!res.ok) throw new Error('fetch failed: ' + res.status);
   const blob = await res.blob();
-  return await new Promise((resolve, reject) => {
+  return await blobToDataURL(blob);
+}
+
+function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
     const r = new FileReader();
     r.onload = () => resolve(r.result);
     r.onerror = reject;
     r.readAsDataURL(blob);
+  });
+}
+
+// 跟 fetchAsDataURL 一样，但对大位图自动转 WebP 80%。SVG 保留原样。
+async function fetchImageAsDataURL(url) {
+  const res = await fetch(url, { mode: 'cors' });
+  if (!res.ok) throw new Error('fetch failed: ' + res.status);
+  const blob = await res.blob();
+  const type = blob.type || '';
+  if (blob.size <= LARGE_IMAGE_BYTES || type.includes('svg') || type.includes('gif')) {
+    return await blobToDataURL(blob);
+  }
+  try {
+    return await transcodeToWebP(blob);
+  } catch (_) {
+    return await blobToDataURL(blob);
+  }
+}
+
+async function transcodeToWebP(blob) {
+  const bmp = await createImageBitmap(blob);
+  const c = document.createElement('canvas');
+  c.width = bmp.width; c.height = bmp.height;
+  c.getContext('2d').drawImage(bmp, 0, 0);
+  bmp.close?.();
+  return await new Promise((resolve, reject) => {
+    c.toBlob(b => {
+      if (!b) return reject(new Error('toBlob failed'));
+      // 如果转出来反而更大（小图 / 已是高压缩格式），用原图
+      if (b.size >= blob.size) blobToDataURL(blob).then(resolve, reject);
+      else blobToDataURL(b).then(resolve, reject);
+    }, 'image/webp', 0.8);
   });
 }
 
@@ -193,9 +232,19 @@ function serializeState() {
   const secFeedback = {};
   state.sectionFeedback.forEach((v, k) => { secFeedback[k] = v; });
 
+  // 版本链：第 N 版导出 → revision = N，parent = 上一版 revisionId（接收方 rehydrate 时拿到的）
+  const parentId = state.__rehydrateRevision?.id || null;
+  const parentRevision = state.__rehydrateRevision?.revision || 0;
+  const revisionId = randomId();
+  const revision = parentRevision + 1;
+
   return {
     schemaVersion: 'fbw-singlefile-1',
     capturedAt: new Date().toISOString(),
+    revisionId,
+    revision,
+    parentRevisionId: parentId,
+    exporter: shortUA(),
     annotations: state.annotations,
     elementOps: ops,
     sectionFeedback: secFeedback,
@@ -205,6 +254,24 @@ function serializeState() {
     originalsHTML: Array.from(state.originalsHTML.entries()),
     globalNote: state.panel?.querySelector('[data-fbw-global]')?.value || '',
   };
+}
+
+function randomId() {
+  if (crypto?.randomUUID) return crypto.randomUUID();
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+}
+
+// UA 摘要：从 navigator.userAgent 抽 browser + version + OS，作为导出者标识
+function shortUA() {
+  const ua = navigator.userAgent || '';
+  const browser = (() => {
+    const m = ua.match(/(Edg|Chrome|Firefox|Safari)\/([\d.]+)/);
+    if (!m) return 'browser';
+    if (m[1] === 'Safari' && /Chrome\//.test(ua)) return 'Chrome/' + ua.match(/Chrome\/(\d+)/)?.[1];
+    return m[1] + '/' + m[2].split('.')[0];
+  })();
+  const os = /Mac/.test(ua) ? 'mac' : /Win/.test(ua) ? 'win' : /Linux/.test(ua) ? 'linux' : 'other';
+  return `${browser} ${os}`;
 }
 
 function injectModeMeta(root, mode) {

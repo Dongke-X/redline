@@ -1692,6 +1692,63 @@ export const CSS = `
       background: transparent !important;
     }
 
+    /* 只读 HTML 的打印小按钮（接收方拿到只读 HTML 想出 PDF 时自助打印） */
+    .fbw-print-fab {
+      position: fixed;
+      bottom: 18px; right: 18px;
+      z-index: 2147483600;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(28, 25, 22, 0.92);
+      color: #f5f3ef;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.36);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      transition: transform 0.16s ease, background 0.16s ease;
+    }
+    .fbw-print-fab:hover { transform: translateY(-1px); background: rgba(28,25,22,0.98); }
+    .fbw-print-fab svg { width: 18px; height: 18px; opacity: 0.9; }
+    @media print { .fbw-print-fab { display: none !important; } }
+
+    /* 可编辑 HTML 接收方第一次打开：FAB 上呼吸光一次 + tooltip 渐显，不打扰 */
+    @keyframes fbw-breathe {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(229, 110, 76, 0.0); }
+      50%      { box-shadow: 0 0 0 10px rgba(229, 110, 76, 0.28); }
+    }
+    .fbw-breathe { animation: fbw-breathe 1.6s ease 2; }
+    .fbw-welcome-tip {
+      position: fixed;
+      z-index: 2147483600;
+      background: rgba(28, 25, 22, 0.94);
+      color: #f5f3ef;
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.36);
+      max-width: 260px;
+      line-height: 1.45;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.32s ease, transform 0.32s ease;
+      transform: translateY(4px);
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    }
+    .fbw-welcome-tip.fbw-on { opacity: 1; transform: translateY(0); }
+    .fbw-welcome-tip::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%; transform: translateX(-50%);
+      width: 10px; height: 10px;
+      background: rgba(28,25,22,0.94);
+      border-bottom-right-radius: 2px;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
     /* 前后对比模式：body 加这个 class 时，顶部出一条"在看原稿"提示条 */
     body.fbw-compare-before::before {
       content: '看原稿 \xb7 再按 O 或工具栏图标切回改后';

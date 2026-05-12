@@ -4,7 +4,6 @@
 import { state } from '../core/state.js';
 import { exportPDF } from './pdf.js';
 import { exportSingleFile } from './singlefile.js';
-import { exportPPTX } from './pptx.js';
 import { deselectElement } from '../edit/selection.js';
 import { t } from '../i18n.js';
 
@@ -34,13 +33,6 @@ export function createExportMenuNode() {
       <button class="fbw-export-item" data-export="html-readonly">
         <span class="fbw-export-name">${t('export.html.readonly') || '只读 HTML'}</span>
         <span class="fbw-export-hint">${t('export.html.readonly.hint') || '给客户演示 · 不能编辑'}</span>
-      </button>
-    </div>
-    <div class="fbw-export-group">
-      <div class="fbw-export-group-label">${t('export.group.pptx') || 'PPT'}</div>
-      <button class="fbw-export-item" data-export="pptx">
-        <span class="fbw-export-name">${t('export.pptx') || 'PowerPoint (.pptx)'}</span>
-        <span class="fbw-export-hint">${t('export.pptx.hint') || '每页一张 slide · 反馈进 speaker notes'}</span>
       </button>
     </div>
   `;
@@ -83,7 +75,6 @@ export function attachExportMenuEvents() {
     else if (key === 'pdf-image') exportPDF({ image: true }, deselectElement);
     else if (key === 'html-editable') exportSingleFile({ mode: 'editable' });
     else if (key === 'html-readonly') exportSingleFile({ mode: 'readonly' });
-    else if (key === 'pptx') exportPPTX();
   });
   document.addEventListener('mousedown', (e) => {
     if (!menu.classList.contains('fbw-on')) return;

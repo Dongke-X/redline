@@ -24,7 +24,7 @@ import { attachRubberBandEvents } from './edit/rubber-band.js';
 import { createStylePanelNode, attachStylePanelEvents } from './edit/style-panel.js';
 import { toggleCompare } from './edit/compare.js';
 import { exportSingleFile } from './export/singlefile.js';
-import { detectRehydrate } from './core/rehydrate.js';
+import { detectRehydrate, applyRehydrateUX } from './core/rehydrate.js';
 import { createExportMenuNode, attachExportMenuEvents, openExportMenu, closeExportMenu } from './export/menu.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
@@ -544,5 +544,7 @@ export function init() {
   updateCounter(getChanges);
   // 异步把 attachments blob 从 IDB 拉回内存（dataURL 由 IDB 重建，不阻塞 init）
   rehydrateAttachments().catch(e => DBG('rehydrate failed:', e));
+  // 接收方 UX：readonly → 打印按钮；editable → FAB 呼吸光 + 一次性 tooltip
+  if (rehydrated) applyRehydrateUX();
   DBG('init done');
 }

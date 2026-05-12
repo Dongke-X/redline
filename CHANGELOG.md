@@ -6,6 +6,24 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.36 — 2026-05-12  ·  砍 PPT · 接收方 UX · 体积优化 · 版本链
+
+### Removed
+- **PPT (.pptx) 导出**：上版刚加完，这版砍掉。理由：导出是图片不可编辑，"演示场景"用「只读 HTML + F11 全屏」就解决了，PPT 没有独占价值；600KB CDN 依赖 + html2canvas 排版偏差不值得维护。导出矩阵收敛到 PDF（矢量/长图）+ HTML（可编辑/只读）
+
+### Added
+- **只读 HTML 加打印按钮**：接收方拿到只读 HTML 想出 PDF 时，右下角小打印按钮一键 `window.print()`；@media print 自动隐藏
+- **可编辑 HTML 接收方欢迎提示（不弹模态）**：第一次打开时，编辑 FAB 呼吸光 1.6s × 2 + 浮一条 4 秒 tooltip "双击元素继续标注 · ⌘Z 撤销"；不挡操作不打断
+- **HTML 体积优化**：单图 >500KB 自动转 WebP 80%（SVG/GIF 跳过），保底用原图（转出更大时回退）；平均瘦 60-80%
+- **HTML 版本链**：导出元数据加 `revisionId` / `revision` / `parentRevisionId` / `exporter`（UA 摘要：Chrome/120 mac 这种），接收方再导出时 revision +1 且 parentRevisionId 指上一版，后续可做 diff
+- **快捷指令面板补 Delete 行**：`Del` 删除选中元素（之前快捷键存在但 help 面板没列）
+
+### Changed
+- 导出菜单恢复 2 组：PDF（矢量 / 长图）+ HTML（可编辑 / 只读）
+- `rehydrate.js` 拆出 `applyRehydrateUX()`，按 mode 分发接收方注入逻辑
+
+---
+
 ## 0.1.35 — 2026-05-12  ·  PPT 导出
 
 ### Added
