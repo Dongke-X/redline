@@ -6,6 +6,24 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.23 — 2026-05-12  ·  样式面板加滑块 + 4 边独立
+
+### Changed
+- **滑块**：font-size / padding / margin 三行都加 `<input type="range">`，跟数字输入双向同步。拖滑块 = 实时预览；数字输入还能精准敲值
+- **数字输入框宽度变窄**（44px），给滑块腾呼吸空间。`−` / `+` 微调按钮去掉（滑块覆盖了快速调整场景）
+
+### Added
+- **padding / margin 4 边独立**：每行右侧多一个「⇄」链接按钮
+  - 点开 → 行展开成 4 个小输入框（T / R / B / L 横向排列）
+  - 改任一边 → 元素 inline style 用 shorthand `${t}px ${r}px ${b}px ${l}px`
+  - 再点 ⇄ 回到统一模式，取 top 值作为新 uniform 值同步给四边
+- 打开面板时如果当前 inline 已经是非 uniform（agent 给的源 HTML 就 4 边不一），自动进入 4 边模式
+
+### 没做
+- 颜色相关样式（已被取色器 + design chip 覆盖反馈路径，单独再开一个 panel 维度收益不大）
+
+---
+
 ## 0.1.22 — 2026-05-12  ·  样式注入面板
 
 ### Added

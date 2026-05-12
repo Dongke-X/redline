@@ -1410,7 +1410,7 @@ export const CSS = `
       position: fixed;
       z-index: 2147483545;
       display: none;
-      min-width: 240px;
+      min-width: 280px;
       background: rgba(28, 25, 22, 0.97);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 10px;
@@ -1439,19 +1439,51 @@ export const CSS = `
     .fbw-style-row {
       display: flex;
       align-items: center;
-      gap: 4px;
-      margin-bottom: 6px;
+      gap: 6px;
+      margin-bottom: 8px;
     }
     .fbw-style-row:last-child { margin-bottom: 0; }
     .fbw-style-label {
-      flex: 1;
+      width: 56px;
       font-size: 11.5px;
       color: rgba(245,243,239,0.75);
       letter-spacing: 0.02em;
+      flex-shrink: 0;
+    }
+    .fbw-style-linked {
+      flex: 1;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .fbw-style-range {
+      flex: 1; min-width: 60px;
+      -webkit-appearance: none; appearance: none;
+      height: 4px;
+      background: rgba(255,255,255,0.10);
+      border-radius: 2px;
+      outline: none;
+      padding: 0;
+      cursor: pointer;
+    }
+    .fbw-style-range::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #dc3c3c;
+      border: 2px solid #f5f3ef;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      cursor: pointer;
+    }
+    .fbw-style-range::-moz-range-thumb {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #dc3c3c;
+      border: 2px solid #f5f3ef;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      cursor: pointer;
     }
     .fbw-style-input {
-      width: 52px;
-      padding: 3px 6px;
+      width: 44px;
+      padding: 3px 5px;
       background: rgba(0,0,0,0.30);
       color: #f5f3ef;
       border: 1px solid rgba(255,255,255,0.10);
@@ -1465,37 +1497,85 @@ export const CSS = `
     }
     .fbw-style-input::-webkit-outer-spin-button,
     .fbw-style-input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
+      -webkit-appearance: none; margin: 0;
     }
     .fbw-style-input:focus {
       outline: none;
       border-color: rgba(220,60,60,0.45);
       box-shadow: 0 0 0 2px rgba(220,60,60,0.12);
     }
-    .fbw-style-bump {
-      width: 22px; height: 22px;
-      padding: 0;
-      background: rgba(255,255,255,0.06);
-      color: rgba(245,243,239,0.75);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1;
-      font-family: inherit;
-    }
-    .fbw-style-bump:hover {
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-    }
     .fbw-style-unit {
       font-family: ui-monospace, "SF Mono", monospace;
       font-size: 10px;
       color: rgba(245,243,239,0.42);
       letter-spacing: 0.05em;
-      min-width: 16px;
+      min-width: 14px;
+    }
+    /* 链 / 解链 切换：padding / margin 用 */
+    .fbw-style-link {
+      width: 22px; height: 22px;
+      padding: 0;
+      background: rgba(255,255,255,0.06);
+      color: rgba(245,243,239,0.65);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      line-height: 1;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .fbw-style-link:hover {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .fbw-style-row.fbw-style-row-sided .fbw-style-link {
+      background: rgba(220,60,60,0.20);
+      color: #ff9d9d;
+      border-color: rgba(220,60,60,0.32);
+    }
+    /* 4 边输入网格 */
+    .fbw-style-sided {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+    .fbw-style-side-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+    .fbw-style-side-input {
+      width: 100%;
+      padding: 3px 2px;
+      background: rgba(0,0,0,0.30);
+      color: #f5f3ef;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 4px;
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    .fbw-style-side-input::-webkit-outer-spin-button,
+    .fbw-style-side-input::-webkit-inner-spin-button {
+      -webkit-appearance: none; margin: 0;
+    }
+    .fbw-style-side-input:focus {
+      outline: none;
+      border-color: rgba(220,60,60,0.45);
+      box-shadow: 0 0 0 2px rgba(220,60,60,0.12);
+    }
+    .fbw-style-side-label {
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 8.5px;
+      color: rgba(245,243,239,0.40);
+      letter-spacing: 0.04em;
+      line-height: 1;
     }
 
     /* Rubber-band 框选：edit 模式下空白处拖出的选择矩形 */

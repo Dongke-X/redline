@@ -1,6 +1,6 @@
-// 样式注入面板：选中元素后开一个小面板，调 font-size / padding / margin。
-// 输入即时预览（inline style），并把变化以 'style' op 记入 elementOps。
-// 多选时一次同步给所有 selectedEls。打开时 pushUndoGroup 一次 —— Cmd+Z 整体回退。
+// 样式注入面板：font-size / padding / margin，实时预览 + 多选 gang。
+// 每个属性行：滑块 + 数字输入双向同步；padding/margin 多一个「链」按钮，
+// 解开后展开成 T/R/B/L 四个独立输入。
 import { state } from '../core/state.js';
 import { recordOp, clearOpsOn } from '../core/elements.js';
 import { pushUndoGroup } from '../core/undo.js';
@@ -8,22 +8,46 @@ import { getSelectedEls } from './selection.js';
 import { t } from '../i18n.js';
 
 const PROPS = [
-  { key: 'fontSize',  cssProp: 'font-size',     i18n: 'style.fontSize',  defaultUnit: 'px', min: 8,  max: 96 },
-  { key: 'padding',   cssProp: 'padding',       i18n: 'style.padding',   defaultUnit: 'px', min: 0,  max: 80 },
-  { key: 'margin',    cssProp: 'margin',        i18n: 'style.margin',    defaultUnit: 'px', min: 0,  max: 120 },
+  { key: 'fontSize', i18n: 'style.fontSize', min: 8,  max: 96,  step: 1, sided: false },
+  { key: 'padding',  i18n: 'style.padding',  min: 0,  max: 80,  step: 1, sided: true  },
+  { key: 'margin',   i18n: 'style.margin',   min: 0,  max: 120, step: 1, sided: true  },
 ];
 
 let panel = null;
-let sessionPushed = false; // 这次打开里 pushUndoGroup 是否已经走过
+let sessionPushed = false;
+let sideState = { padding: false, margin: false }; // false = linked (uniform), true = unlinked (4-side)
 
 function rowHTML(prop) {
+  const sided = prop.sided
+    ? `<button class="fbw-style-link" data-link="${prop.key}" tabindex="-1" title="${t('style.unlink')}">⇄</button>`
+    : '';
   return `
-    <div class="fbw-style-row">
+    <div class="fbw-style-row" data-row="${prop.key}">
       <label class="fbw-style-label">${t(prop.i18n)}</label>
-      <button class="fbw-style-bump" data-bump="-" data-prop="${prop.key}" tabindex="-1">−</button>
-      <input class="fbw-style-input" type="number" data-prop="${prop.key}" min="${prop.min}" max="${prop.max}" step="1">
-      <button class="fbw-style-bump" data-bump="+" data-prop="${prop.key}" tabindex="-1">+</button>
-      <span class="fbw-style-unit">px</span>
+      <div class="fbw-style-linked" data-mode="linked">
+        <input class="fbw-style-range" type="range" data-prop="${prop.key}" min="${prop.min}" max="${prop.max}" step="${prop.step}">
+        <input class="fbw-style-input" type="number" data-prop="${prop.key}" min="${prop.min}" max="${prop.max}" step="${prop.step}">
+        <span class="fbw-style-unit">px</span>
+      </div>
+      ${prop.sided ? sidedHTML(prop) : ''}
+      ${sided}
+    </div>
+  `;
+}
+
+function sidedHTML(prop) {
+  // 4 个小输入：T R B L（按视觉位置排）
+  const sides = ['top', 'right', 'bottom', 'left'];
+  return `
+    <div class="fbw-style-sided" data-mode="sided" data-prop="${prop.key}" style="display:none;">
+      ${sides.map(side => `
+        <span class="fbw-style-side-cell">
+          <input class="fbw-style-side-input" type="number"
+                 data-prop="${prop.key}" data-side="${side}"
+                 min="${prop.min}" max="${prop.max}" step="${prop.step}">
+          <span class="fbw-style-side-label">${side[0].toUpperCase()}</span>
+        </span>
+      `).join('')}
     </div>
   `;
 }
@@ -38,13 +62,50 @@ export function createStylePanelNode() {
   return panel;
 }
 
-function readCurrent(el) {
+function readSides(el, prop) {
   const cs = getComputedStyle(el);
-  return {
-    fontSize: parseInt(cs.fontSize, 10) || 0,
-    padding:  parseInt(cs.paddingTop, 10) || 0,
-    margin:   parseInt(cs.marginTop, 10) || 0,
+  const map = {
+    padding: ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'],
+    margin:  ['marginTop',  'marginRight',  'marginBottom',  'marginLeft'],
   };
+  if (!map[prop]) return null;
+  return {
+    top:    parseInt(cs[map[prop][0]], 10) || 0,
+    right:  parseInt(cs[map[prop][1]], 10) || 0,
+    bottom: parseInt(cs[map[prop][2]], 10) || 0,
+    left:   parseInt(cs[map[prop][3]], 10) || 0,
+  };
+}
+
+function isUniform(sides) {
+  return sides.top === sides.right && sides.right === sides.bottom && sides.bottom === sides.left;
+}
+
+function paintRow(prop, anchorEl) {
+  const row = panel.querySelector(`[data-row="${prop.key}"]`);
+  if (!row) return;
+  if (prop.sided) {
+    const sides = readSides(anchorEl, prop.key);
+    const uniform = isUniform(sides);
+    sideState[prop.key] = !uniform;
+    row.classList.toggle('fbw-style-row-sided', !uniform);
+    row.querySelector('[data-mode="linked"]').style.display = uniform ? '' : 'none';
+    row.querySelector('[data-mode="sided"]').style.display = uniform ? 'none' : '';
+    if (uniform) {
+      const v = sides.top;
+      row.querySelector(`input.fbw-style-range[data-prop="${prop.key}"]`).value = String(v);
+      row.querySelector(`input.fbw-style-input[data-prop="${prop.key}"]`).value = String(v);
+    } else {
+      ['top','right','bottom','left'].forEach(side => {
+        row.querySelector(`input.fbw-style-side-input[data-prop="${prop.key}"][data-side="${side}"]`).value = String(sides[side]);
+      });
+    }
+  } else {
+    const cs = getComputedStyle(anchorEl);
+    const v = parseInt(cs.fontSize, 10) || 0;
+    row.querySelector(`input.fbw-style-range[data-prop="${prop.key}"]`).value = String(v);
+    row.querySelector(`input.fbw-style-input[data-prop="${prop.key}"]`).value = String(v);
+  }
 }
 
 function positionPanel() {
@@ -52,8 +113,7 @@ function positionPanel() {
   const tb = state.elemToolbar.getBoundingClientRect();
   panel.style.top = (tb.bottom + 6) + 'px';
   panel.style.left = tb.left + 'px';
-  // 右侧溢出兜底
-  const pw = panel.offsetWidth || 220;
+  const pw = panel.offsetWidth || 280;
   if (tb.left + pw > window.innerWidth - 8) {
     panel.style.left = Math.max(8, window.innerWidth - pw - 8) + 'px';
   }
@@ -61,11 +121,7 @@ function positionPanel() {
 
 export function openStylePanel() {
   if (!panel || !state.selectedEl) return;
-  const cur = readCurrent(state.selectedEl);
-  PROPS.forEach(p => {
-    const input = panel.querySelector(`input[data-prop="${p.key}"]`);
-    if (input) input.value = String(cur[p.key]);
-  });
+  PROPS.forEach(p => paintRow(p, state.selectedEl));
   sessionPushed = false;
   panel.classList.add('fbw-on');
   positionPanel();
@@ -75,7 +131,12 @@ export function closeStylePanel() {
   if (panel) panel.classList.remove('fbw-on');
 }
 
-// 把当前的 inline style 收集成 op args；空了就把 style op 撤掉
+function ensureUndo() {
+  if (sessionPushed) return;
+  pushUndoGroup(getSelectedEls());
+  sessionPushed = true;
+}
+
 function syncOp(el) {
   const props = {};
   if (el.style.fontSize) props.fontSize = el.style.fontSize;
@@ -92,62 +153,106 @@ function syncOp(el) {
   }
 }
 
-function applyToSelection(propKey, valueStr) {
+function applyUniform(propKey, valueStr) {
   const def = PROPS.find(p => p.key === propKey);
   if (!def) return;
   const els = getSelectedEls();
   if (!els.length) return;
-  if (!sessionPushed) {
-    pushUndoGroup(els);
-    sessionPushed = true;
-  }
-  const numericRaw = parseFloat(valueStr);
-  const finalVal = (valueStr === '' || isNaN(numericRaw))
-    ? '' // 清掉
-    : Math.max(def.min, Math.min(def.max, numericRaw)) + def.defaultUnit;
+  ensureUndo();
+  const raw = parseFloat(valueStr);
+  const final = (valueStr === '' || isNaN(raw)) ? '' : Math.max(def.min, Math.min(def.max, raw)) + 'px';
+  const cssProp = propKey === 'fontSize' ? 'fontSize' : propKey;
   els.forEach(el => {
-    const cssProp = def.cssProp;
-    if (!finalVal) {
-      // 清掉对应 inline style
-      if (cssProp === 'font-size') el.style.fontSize = '';
-      else if (cssProp === 'padding') el.style.padding = '';
-      else if (cssProp === 'margin') el.style.margin = '';
-    } else {
-      if (cssProp === 'font-size') el.style.fontSize = finalVal;
-      else if (cssProp === 'padding') el.style.padding = finalVal;
-      else if (cssProp === 'margin') el.style.margin = finalVal;
-    }
+    el.style[cssProp] = final;
     syncOp(el);
   });
+}
+
+function applySided(propKey, side, valueStr) {
+  const def = PROPS.find(p => p.key === propKey);
+  if (!def) return;
+  const els = getSelectedEls();
+  if (!els.length) return;
+  ensureUndo();
+  const raw = parseFloat(valueStr);
+  const val = (valueStr === '' || isNaN(raw)) ? 0 : Math.max(def.min, Math.min(def.max, raw));
+  // 把 panel 上 4 个输入的当前值收集起来作为新 shorthand
+  const cells = {
+    top:    parseInt(panel.querySelector(`input[data-prop="${propKey}"][data-side="top"]`).value, 10) || 0,
+    right:  parseInt(panel.querySelector(`input[data-prop="${propKey}"][data-side="right"]`).value, 10) || 0,
+    bottom: parseInt(panel.querySelector(`input[data-prop="${propKey}"][data-side="bottom"]`).value, 10) || 0,
+    left:   parseInt(panel.querySelector(`input[data-prop="${propKey}"][data-side="left"]`).value, 10) || 0,
+  };
+  cells[side] = val;
+  const shorthand = `${cells.top}px ${cells.right}px ${cells.bottom}px ${cells.left}px`;
+  els.forEach(el => {
+    el.style[propKey] = shorthand;
+    syncOp(el);
+  });
+}
+
+function toggleLink(propKey) {
+  const def = PROPS.find(p => p.key === propKey);
+  if (!def || !def.sided) return;
+  const row = panel.querySelector(`[data-row="${propKey}"]`);
+  if (!row) return;
+  const goingSided = !sideState[propKey];
+  sideState[propKey] = goingSided;
+  row.classList.toggle('fbw-style-row-sided', goingSided);
+  row.querySelector('[data-mode="linked"]').style.display = goingSided ? 'none' : '';
+  row.querySelector('[data-mode="sided"]').style.display = goingSided ? '' : 'none';
+  // 切换模式时把当前值同步到目标 UI
+  const els = getSelectedEls();
+  const anchor = state.selectedEl;
+  if (!anchor) return;
+  if (goingSided) {
+    // 进 4 边模式：linked 的值复制到 4 边
+    const v = parseInt(row.querySelector(`input.fbw-style-input[data-prop="${propKey}"]`).value, 10) || 0;
+    ['top','right','bottom','left'].forEach(side => {
+      row.querySelector(`input[data-prop="${propKey}"][data-side="${side}"]`).value = String(v);
+    });
+  } else {
+    // 回 linked：取 top 值作为统一值并写回
+    const v = parseInt(row.querySelector(`input[data-prop="${propKey}"][data-side="top"]`).value, 10) || 0;
+    row.querySelector(`input.fbw-style-range[data-prop="${propKey}"]`).value = String(v);
+    row.querySelector(`input.fbw-style-input[data-prop="${propKey}"]`).value = String(v);
+    applyUniform(propKey, String(v));
+  }
 }
 
 export function attachStylePanelEvents() {
   if (!panel) return;
   panel.addEventListener('input', (e) => {
-    const inp = e.target.closest('input[data-prop]');
-    if (!inp) return;
-    applyToSelection(inp.dataset.prop, inp.value);
+    const target = e.target;
+    if (!target.dataset.prop) return;
+    if (target.classList.contains('fbw-style-side-input')) {
+      applySided(target.dataset.prop, target.dataset.side, target.value);
+      return;
+    }
+    if (target.classList.contains('fbw-style-range') || target.classList.contains('fbw-style-input')) {
+      const row = target.closest('[data-row]');
+      if (row) {
+        // 双向同步：滑块 ↔ 数字输入
+        row.querySelectorAll(`input[data-prop="${target.dataset.prop}"]:not([data-side])`).forEach(inp => {
+          if (inp !== target) inp.value = target.value;
+        });
+      }
+      applyUniform(target.dataset.prop, target.value);
+    }
   });
   panel.addEventListener('click', (e) => {
-    const bump = e.target.closest('[data-bump]');
-    if (!bump) return;
-    const propKey = bump.dataset.prop;
-    const input = panel.querySelector(`input[data-prop="${propKey}"]`);
-    if (!input) return;
-    const def = PROPS.find(p => p.key === propKey);
-    const step = e.shiftKey ? 4 : 1;
-    const cur = parseFloat(input.value) || 0;
-    const next = bump.dataset.bump === '+' ? cur + step : cur - step;
-    input.value = String(Math.max(def.min, Math.min(def.max, next)));
-    applyToSelection(propKey, input.value);
+    const link = e.target.closest('[data-link]');
+    if (link) {
+      e.stopPropagation();
+      toggleLink(link.dataset.link);
+      return;
+    }
   });
-  // 输入框内键盘不冒泡到全局快捷键
   ['keydown', 'keyup', 'keypress', 'mousedown'].forEach(ev => {
     panel.addEventListener(ev, (e) => {
       if (e.target.tagName === 'INPUT' || e.target.closest('button')) e.stopPropagation();
     }, true);
   });
-  // 面板外 mousedown 关闭
   document.addEventListener('mousedown', (e) => {
     if (!panel.classList.contains('fbw-on')) return;
     if (e.target.closest('.fbw-style-panel, [data-op="style"]')) return;
