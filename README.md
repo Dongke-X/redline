@@ -1,12 +1,14 @@
 <div align="center">
 
+<img src="./docs/images/banner.jpg" alt="redline.html — Visual feedback for any HTML" width="100%">
+
 # redline.html
 
 **Visual feedback for any HTML — for the agent era.**
 
 The agent writes HTML. You review it in the browser. Export back as HTML, PDF, or a structured feedback ZIP. Closed loop, no Figma, no Loom.
 
-[![version](https://img.shields.io/badge/version-0.1.45-c8242c)](./CHANGELOG.md) [![tests](https://img.shields.io/badge/tests-18%20passing-brightgreen)](./tests) [![bundle](https://img.shields.io/badge/bundle-238kb-blue)](./dist) [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![version](https://img.shields.io/badge/version-0.1.47-c8242c)](./CHANGELOG.md) [![tests](https://img.shields.io/badge/tests-18%20passing-brightgreen)](./tests) [![bundle](https://img.shields.io/badge/bundle-238kb-blue)](./dist) [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 **Languages:** **English** · [简体中文](./README.zh.md)
 
@@ -18,6 +20,8 @@ The agent writes HTML. You review it in the browser. Export back as HTML, PDF, o
 
 A browser-injected HTML editor + a Claude Code skill + a Chrome extension. Three pieces that turn any HTML page into a feedback canvas — capture, transport, close the loop.
 
+<p align="center"><img src="./docs/images/hero.jpg" alt="Agent writes → You review → Three transport formats" width="620"></p>
+
 **One in-browser session, three transport formats:**
 
 | Format | When | Who consumes |
@@ -26,28 +30,11 @@ A browser-injected HTML editor + a Claude Code skill + a Chrome extension. Three
 | **PDF** (vector / long-image) | Print, email, archive | Anyone who needs a static doc |
 | **ZIP** (`session.json` + `.md` + images) | Feed back to Claude Code via `apply.mjs` | The agent, to patch source HTML |
 
-```
-   Agent writes report.html
-            ↓
-   ┌─────────────────────────┐
-   │ skill: prepare.mjs       │  ← injects editor into the HTML
-   └─────────────────────────┘
-            ↓
-   Open in browser → edit / annotate / screenshot
-            ↓
-   Export as:
-     ─ HTML (edit / preview)       → share, hand-off, archive
-     ─ PDF (vector / long-image)   → print, email
-     ─ ZIP (session.json + assets) → back to the agent
-            ↓
-   ┌─────────────────────────┐
-   │ skill: apply.mjs         │  ← patches edits back to source HTML
-   └─────────────────────────┘
-            ↓
-   report.html reflects your feedback
-```
+Only the ZIP loop touches the source HTML again — HTML and PDF exports are one-way to humans.
 
 ## What's in the browser
+
+<p align="center"><img src="./docs/images/browser-canvas.en.jpg" alt="A landing page being marked up with redline" width="720"></p>
 
 - **Edit anything** — text, color, font, size, transform; double-click + ⌘S to save
 - **Annotate** — drag region notes, paste screenshots, per-section feedback
@@ -95,6 +82,8 @@ The HTML export lets you pass review to anyone who has a browser. No skill, no e
 - **Recipient UX** — editable HTML shows a one-time welcome cue on the edit FAB so the receiver knows where to start; read-only HTML auto-injects the print button
 
 ## Three core scenarios
+
+<p align="center"><img src="./docs/images/modes.en.jpg" alt="redline adapts to decks, docs, and pages" width="720"></p>
 
 | | When | What you mark up | What ships |
 |---|---|---|---|

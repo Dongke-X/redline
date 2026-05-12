@@ -6,6 +6,26 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.47 — 2026-05-12  ·  README 配图（6 张手绘）
+
+### Added
+`docs/images/` 加 6 张 Excalidraw 风格手绘配图：
+
+| 文件 | 位置 |
+|---|---|
+| `banner.jpg` | README 顶部 wordmark（中英共用） |
+| `hero.jpg` | "What is this" 闭环图（中英共用） |
+| `browser-canvas.en.jpg` / `.zh.jpg` | "What's in the browser" / "浏览器里都能干什么" |
+| `modes.en.jpg` / `.zh.jpg` | "Three core scenarios" / "三个核心场景" |
+
+每张 JPEG @ 88% 质量，单图 ~310KB，总计 ~1.9MB（GitHub 加载友好）。
+
+### Changed
+- README.md / README.zh.md 在对应段插入图片引用
+- ASCII workflow 图删除（Hero 图取代）
+
+---
+
 ## 0.1.46 — 2026-05-12  ·  品牌 + 文档同步 · `redline.html`
 
 ### Changed
