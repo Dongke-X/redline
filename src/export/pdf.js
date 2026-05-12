@@ -1,31 +1,11 @@
 // PDF 导出：矢量版 (window.print) + 图片版 (html2canvas + jsPDF)。
-// 图片库走 CDN 按需加载（首次导出时联网拉取）。
-// 加载走三层兜底（utils/cdn-loader.js）应对页面 CSP：直接 script → fetch+inline-nonce → fail
+// v0.1.53+ 图片库直接 bundle 进 redline.js，100% offline + CSP-proof。
+// 代价：bundle 从 ~240KB → ~750KB，可接受。
 import { state } from '../core/state.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
-import { loadCdnLib } from '../utils/cdn-loader.js';
-
-// CDN 资源带 SRI 防供应链篡改。版本升级时同步更新这里的 hash。
-const CDN_LIBS = {
-  html2canvas: {
-    src: 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
-    integrity: 'sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H',
-  },
-  jspdf: {
-    src: 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
-    integrity: 'sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk',
-  },
-};
-
-async function loadExportLibs() {
-  const tasks = [];
-  if (!window.html2canvas) tasks.push(loadCdnLib(CDN_LIBS.html2canvas, () => !!window.html2canvas));
-  if (!window.jspdf)       tasks.push(loadCdnLib(CDN_LIBS.jspdf,       () => !!window.jspdf));
-  if (!tasks.length) return true;
-  const results = await Promise.all(tasks);
-  return results.every(Boolean) && !!window.html2canvas && !!window.jspdf;
-}
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 // 矢量 PDF：deck-stage 内置 print mode，body 加 fbw-printing 类，window.print()
 export function exportPDF(opts, deselectFn) {
@@ -49,8 +29,6 @@ export function exportPDF(opts, deselectFn) {
 // 处理 deck-stage 缩放、SVG <use> 引用展开、active 状态备份恢复。
 export async function exportImagePDF() {
   showToast(t('pdf.loading'));
-  const ok = await loadExportLibs();
-  if (!ok) { showToast(t('pdf.loadFailed')); return; }
 
   const ds = document.querySelector('deck-stage');
   const designW = ds ? (parseInt(ds.getAttribute('width'), 10) || 1920) : 1920;
@@ -71,7 +49,7 @@ export async function exportImagePDF() {
     canvasEl.style.transform = 'none';
   }
 
-  const { jsPDF } = window.jspdf;
+  
   const orientation = designW > designH ? 'landscape' : 'portrait';
   const pdf = new jsPDF({ unit: 'px', format: [designW, designH], orientation, hotfixes: ['px_scaling'] });
 
@@ -130,10 +108,10 @@ export async function exportImagePDF() {
       };
       let canvas;
       try {
-        canvas = await window.html2canvas(slides[i], { ...baseOpts, foreignObjectRendering: true });
+        canvas = await html2canvas(slides[i], { ...baseOpts, foreignObjectRendering: true });
       } catch (e) {
         console.warn('foreignObject mode failed, fallback to JS render:', e);
-        canvas = await window.html2canvas(slides[i], baseOpts);
+        canvas = await html2canvas(slides[i], baseOpts);
       }
       const img = canvas.toDataURL('image/jpeg', 0.92);
       if (i > 0) pdf.addPage([designW, designH], orientation);
@@ -177,7 +155,7 @@ async function exportLongPagePDF() {
   showToast(t('pdf.progress', { i: 0, total: 1 }));
   let canvas;
   try {
-    canvas = await window.html2canvas(document.body, {
+    canvas = await html2canvas(document.body, {
       useCORS: true,
       allowTaint: true,
       logging: false,
@@ -198,7 +176,7 @@ async function exportLongPagePDF() {
   }
 
   try {
-    const { jsPDF } = window.jspdf;
+    
     const PDF_MAX = 14400; // PDF user-space 单页上限
     const fname = (document.title || 'page').replace(/[\\/:*?"<>|]/g, '_') + '-long.pdf';
 

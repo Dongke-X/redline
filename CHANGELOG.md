@@ -6,6 +6,27 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.53 — 2026-05-12  ·  100% offline · html2canvas + jspdf bundle 进 redline.js
+
+### Changed
+- `html2canvas` / `jspdf` 改为 npm 依赖，esbuild 直接 bundle 进 `redline.js`，**不再走 CDN**
+- bundle 大小：239KB → **961KB**（增量主要是 jspdf ~700KB；html2canvas ~150KB）
+- 取舍：
+  - ✅ **任何 CSP 都能跑**：连 connect-src 严格的页面也不影响（不再依赖 fetch 任何外部资源）
+  - ✅ **完全 offline**：装好扩展之后，全套功能（含长图 PDF / 截图）不需要联网
+  - ✅ **首次导出零等待**：之前是首次导出要拉 CDN 几百 KB，现在是 0
+  - ⚠️ 加载 redline 本身从 239KB → 961KB（首次注入慢一点，但浏览器有缓存）
+  - ⚠️ HTML 单文件导出从 ~600KB → ~1.3MB（接收方的 .html 体积翻倍）
+
+### Removed
+- `src/utils/cdn-loader.js` —— 上版引入的 CSP-aware 三层兜底，现在用不上了删掉
+- 所有 `cdn.jsdelivr.net` 引用从代码里清除
+
+### Why now
+上版（v0.1.52）做了 fetch+nonce 兜底，能解决 90% 严 CSP 场景，但还是要求页面 connect-src 放开。bundle 进去是 100% 解决方案，体积成本可接受（用户主动 OK）。
+
+---
+
 ## 0.1.52 — 2026-05-12  ·  CSP-aware CDN 加载（长图 PDF / 截图在严 CSP 页面也尝试可用）
 
 ### Fixed

@@ -1,6 +1,6 @@
 ---
 name: redline
-version: 0.1.52
+version: 0.1.53
 description: Closed-loop HTML feedback for AI-generated outputs. (a) prepare.mjs injects the redline editor into any HTML so the user can review it in their browser without a Chrome extension; (b) apply.mjs reads the feedback session from ~/.redline/sessions/ and patches edits + annotations back into the source HTML. Triggers on Chinese "准备 redline / 给 X 加 redline / 让我 review / 注入编辑器 / 读反馈 / 看反馈 / 应用反馈 / 把反馈应用到源 / 页面 review / 界面 review / 改稿 / 划线反馈 / 标注反馈" and English "prep this html / inject redline / let me review / open for review / apply feedback / read sessions / redline / design review / page review / visual feedback". Trigger proactively after writing any .html file the user might want to review, and after the user has used the in-browser redline UI and asks "what's next / 接下来怎么办".
 ---
 
@@ -41,7 +41,7 @@ description: Closed-loop HTML feedback for AI-generated outputs. (a) prepare.mjs
 # 默认：拷 redline.js 到 HTML 同目录 + 加 <script src="redline.js">
 node ~/.claude/skills/redline/prepare.mjs path/to/report.html
 
-# 自包含模式：把 238KB bundle 直接 inline 进 HTML，不留 sibling 文件
+# 自包含模式：把 961KB bundle 直接 inline 进 HTML，不留 sibling 文件
 node ~/.claude/skills/redline/prepare.mjs path/to/report.html --inline
 
 # 移除注入（恢复原 HTML，干净）

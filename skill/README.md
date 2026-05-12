@@ -22,7 +22,7 @@ cd ~/.claude/skills/redline && npm install
 # 默认：拷 redline.js 到 HTML 同目录 + 加 <script src="redline.js">
 node ~/.claude/skills/redline/prepare.mjs path/to/report.html
 
-# 自包含：把 238KB bundle 直接 inline 进 HTML（单文件可分发）
+# 自包含：把 961KB bundle 直接 inline 进 HTML（单文件可分发）
 node ~/.claude/skills/redline/prepare.mjs path/to/report.html --inline
 
 # 移除注入（恢复原 HTML）

@@ -1,24 +1,13 @@
 // 视口截屏：用 html2canvas 抓当前可视区，扔到 attachments 里。
 // review 模式下尤其有用——线上 webapp 状态是动态的，截屏作为 agent 的视觉锚点。
-// html2canvas 走 CDN 按需加载，CSP-aware 三层兜底见 utils/cdn-loader.js
+// v0.1.53+ html2canvas 直接 bundle，100% offline + CSP-proof
 import { addAttachment } from './attachments.js';
 import { showToast } from '../utils.js';
 import { t } from '../i18n.js';
-import { loadCdnLib } from '../utils/cdn-loader.js';
-
-const H2C_SPEC = {
-  src: 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
-  integrity: 'sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H',
-};
-
-function loadH2C() {
-  return loadCdnLib(H2C_SPEC, () => !!window.html2canvas);
-}
+import html2canvas from 'html2canvas';
 
 export async function captureViewport() {
   showToast(t('shot.loading'));
-  const ok = await loadH2C();
-  if (!ok) { showToast(t('shot.loadFailed')); return; }
 
   // 截屏前隐藏 widget 自己的 UI（否则截图里会有 FAB / 面板）
   document.body.classList.add('fbw-printing');
@@ -26,7 +15,7 @@ export async function captureViewport() {
 
   let canvas;
   try {
-    canvas = await window.html2canvas(document.body, {
+    canvas = await html2canvas(document.body, {
       useCORS: true,
       allowTaint: true,
       logging: false,

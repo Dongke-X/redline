@@ -8,7 +8,7 @@
 
 The agent writes HTML. You review it in the browser. Export back as HTML, PDF, or a structured feedback ZIP. Closed loop, no Figma, no Loom.
 
-[![version](https://img.shields.io/github/v/release/Dongke-X/redline?color=c8242c&label=version)](https://github.com/Dongke-X/redline/releases) [![tests](https://img.shields.io/badge/tests-18%20passing-brightgreen)](./tests) [![bundle](https://img.shields.io/badge/bundle-238kb-blue)](./dist) [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![version](https://img.shields.io/github/v/release/Dongke-X/redline?color=c8242c&label=version)](https://github.com/Dongke-X/redline/releases) [![tests](https://img.shields.io/badge/tests-18%20passing-brightgreen)](./tests) [![bundle](https://img.shields.io/badge/bundle-961kb-blue)](./dist) [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 [![English](https://img.shields.io/badge/lang-English-c8242c?style=flat-square)](./README.md) [![简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-555555?style=flat-square)](./README.zh.md)
 
@@ -135,7 +135,7 @@ Zero collection. No servers, no analytics, no third-party SDKs. Everything stays
 
 ```bash
 npm install              # esbuild + vitest + happy-dom
-npm run build            # → dist/redline.js (minified, ~238kb)
+npm run build            # → dist/redline.js (minified, ~961kb)
 npm run build:ext        # build + copy bundle to extension/ + skill/
 npm run watch            # watch mode for src/
 npm test                 # vitest, 18 tests
