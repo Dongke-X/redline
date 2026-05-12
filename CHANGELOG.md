@@ -6,6 +6,16 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.27 — 2026-05-12  ·  快捷键面板文本化
+
+### Changed
+- 之前每个 kbd 画成"按键样"小框，长度参差不齐导致 label 起始 x 跳来跳去，视觉很散
+- 现在 kbd 全文本化：monospace 字体，组合用 `+` 连接，比如「⌘+S」「⌘+⇧+Z」「Alt+hover」「⇧+click」
+- Shift 自动转 `⇧` 字符，其他特殊键（Esc / Alt / hover / click / drag）保留单词
+- 90px keys 列 + 12px gap + label 列，整列对齐，"文档化"产品质感
+
+---
+
 ## 0.1.26 — 2026-05-12  ·  快捷键面板分组重排
 
 ### Changed

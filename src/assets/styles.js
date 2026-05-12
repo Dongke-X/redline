@@ -1179,36 +1179,28 @@ export const CSS = `
       font-weight: 600;
       margin-bottom: 2px;
     }
+    /* 文本化：kbd 不画框，全用 monospace 文字。每行栅格 = 固定 keys 列 + 1fr label */
     .fbw-help-row {
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      align-items: baseline;
+      column-gap: 12px;
       font-size: 12.5px;
       color: rgba(245,245,247,0.85);
       white-space: nowrap !important;
       writing-mode: horizontal-tb !important;
       word-break: keep-all !important;
     }
-    .fbw-help-row > span { margin-left: 8px; }
-    /* 同行多个 kbd 之间留一点呼吸空间，不再用 + 分隔 */
-    .fbw-help-row kbd + kbd { margin-left: 3px; }
-    .fbw-help-row kbd {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 22px;
-      height: 22px;
-      padding: 0 7px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%);
-      border: 1px solid rgba(255,255,255,0.16);
-      border-bottom-color: rgba(255,255,255,0.06);
-      border-bottom-width: 1.5px;
-      border-radius: 5px;
-      font-family: ui-monospace, "SF Mono", monospace;
-      font-size: 10.5px;
-      font-weight: 600;
-      color: rgba(245,245,247,0.95);
-      box-shadow: 0 1px 0 rgba(0,0,0,0.20);
+    .fbw-help-keys {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 11.5px;
+      color: rgba(245,243,239,0.92);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .fbw-help-desc {
+      color: rgba(245,243,239,0.78);
+      letter-spacing: 0.01em;
     }
 
     /* 自定义 tooltip —— 跟 widget panel 同设计语言 */

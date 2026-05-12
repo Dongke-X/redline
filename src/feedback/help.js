@@ -8,11 +8,16 @@ function platformCmdLabel() {
   return isMac ? '⌘' : 'Ctrl';
 }
 
+// 把 key 名转成显示用的 glyph：Shift → ⇧、单字符直接用、其他保留原文（Alt / Esc / hover / click / drag）
+const GLYPH = { Shift: '⇧', '⌘': '⌘', Cmd: '⌘', Ctrl: 'Ctrl' };
+function glyph(k) { return GLYPH[k] || k; }
+
 function row(keys, label) {
   // keys 可以是数组 ['Shift', 'P'] 表示组合键，单键直接传字符串
   const arr = Array.isArray(keys) ? keys : [keys];
-  const kbds = arr.map(k => `<kbd>${k}</kbd>`).join('');
-  return `<div class="fbw-help-row">${kbds} <span>${label}</span></div>`;
+  // 文本化：monospace 列等宽对齐，比 kbd 框紧凑
+  const text = arr.map(glyph).join('+');
+  return `<div class="fbw-help-row"><span class="fbw-help-keys">${text}</span><span class="fbw-help-desc">${label}</span></div>`;
 }
 
 export function buildHelpPopoverHTML() {
