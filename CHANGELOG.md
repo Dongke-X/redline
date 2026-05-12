@@ -6,6 +6,16 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.49 — 2026-05-12  ·  语言切换 badge 化
+
+### Changed
+- README 顶部语言切换从文字链 `**Languages:** English · 简体中文` 改成 shields.io badge：
+  - 当前语言：项目红 `#c8242c` 高亮
+  - 对方语言：灰色 `#555`
+- 视觉上像 tab 切换，跟很多 i18n 网站一致；底层仍是跳页（GitHub README 静态 markdown 限制，没法做"真同页切换"）
+
+---
+
 ## 0.1.48 — 2026-05-12  ·  README 配图 P1（版本链 + Selector 兜底）
 
 ### Added
