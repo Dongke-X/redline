@@ -6,6 +6,21 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.24 — 2026-05-12  ·  前后对比模式
+
+### Added
+- **FAB bar 多了 ↔ 按钮**：点击或按 **O** 键切换"看原稿 / 看改后"
+- 进入「看原稿」时：所有 op 改动 + 文字编辑改动**暂时还原**到改前样子。**栈不清、ops 不清**，只是视觉切换
+- 顶部红色提示条「看原稿 · 再按 O 或工具栏图标切回改后」常驻
+- **改前模式下编辑被锁**：click / dblclick 都跳过，浮窗（工具栏 / popovers）全部隐藏，避免在原稿态误操作
+- 再按一次 / 再点按钮 → 一键切回改后
+
+### 实现要点
+- `src/edit/compare.js` 新模块持有一个 Map cache：进改前时 snapshot 每个被编辑元素的当前 inline state，然后清掉；切回时 restore
+- 完全不动 `state.elementOps` / `state.originals` —— 编辑栈和反馈数据都原样保留
+
+---
+
 ## 0.1.23 — 2026-05-12  ·  样式面板加滑块 + 4 边独立
 
 ### Changed

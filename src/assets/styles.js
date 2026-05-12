@@ -1578,6 +1578,41 @@ export const CSS = `
       line-height: 1;
     }
 
+    /* 前后对比模式：body 加这个 class 时，顶部出一条"在看原稿"提示条 */
+    body.fbw-compare-before::before {
+      content: '看原稿 \xb7 再按 O 或工具栏图标切回改后';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 2147483647;
+      padding: 8px 16px;
+      background: linear-gradient(180deg, rgba(220,60,60,0.95) 0%, rgba(184,40,40,0.95) 100%);
+      color: #fff;
+      font-family: -apple-system, "SF Pro Text", "Noto Sans SC", sans-serif;
+      font-size: 12.5px; font-weight: 600;
+      letter-spacing: 0.02em;
+      text-align: center;
+      pointer-events: none;
+      box-shadow: 0 4px 16px rgba(220,60,60,0.30);
+    }
+    /* 改前模式下编辑相关 outline 全部静音，回到原稿干净视觉 */
+    body.fbw-compare-before .fbw-selected,
+    body.fbw-compare-before .fbw-changed,
+    body.fbw-compare-before .fbw-audit-changed {
+      outline: none !important;
+      background-color: transparent !important;
+      box-shadow: none !important;
+    }
+    body.fbw-compare-before .fbw-audit-changed::after { display: none !important; }
+    body.fbw-compare-before .fbw-elem-toolbar,
+    body.fbw-compare-before .fbw-resize-handles,
+    body.fbw-compare-before .fbw-font-picker,
+    body.fbw-compare-before .fbw-marker-popover,
+    body.fbw-compare-before .fbw-tag-popover,
+    body.fbw-compare-before .fbw-note-popover,
+    body.fbw-compare-before .fbw-style-panel {
+      display: none !important;
+    }
+
     /* Rubber-band 框选：edit 模式下空白处拖出的选择矩形 */
     .fbw-rubber-band {
       position: fixed;

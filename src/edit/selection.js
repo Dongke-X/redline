@@ -11,6 +11,7 @@ import { closeNotePopover } from './toolbar.js';
 import { closeMarkerPopover } from './marker.js';
 import { closeTagPopover } from './tag-switch.js';
 import { closeStylePanel } from './style-panel.js';
+import { isCompareBefore } from './compare.js';
 import { pushUndo } from '../core/undo.js';
 import { getElementNote } from '../core/elements.js';
 import { showToast, updateCounter, pendingEditCount } from '../utils.js';
@@ -301,6 +302,7 @@ export function attachSelectionEvents() {
 
   document.addEventListener('click', (e) => {
     if (!state.editMode) return;
+    if (isCompareBefore()) return; // 改前模式下禁止选中编辑
     let target = e.target;
     if (!target || target.closest(UI_GUARD)) return;
 
@@ -335,6 +337,7 @@ export function attachSelectionEvents() {
 
   document.addEventListener('dblclick', (e) => {
     if (!state.editMode) return;
+    if (isCompareBefore()) return;
     let target = e.target;
     if (!target || target.closest(UI_GUARD)) return;
     if (!target.closest(SLIDE_GUARD)) return;

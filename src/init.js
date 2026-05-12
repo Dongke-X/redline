@@ -2,7 +2,7 @@
 import { state } from './core/state.js';
 import { DBG, SECTION_SELECTORS } from './config.js';
 import { CSS } from './assets/styles.js';
-import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_MARQUEE, ICON_KEYBOARD, ICON_FOLD, ICON_UNDO, ICON_REDO } from './assets/icons.js';
+import { ICON_PENCIL, ICON_CHAT, ICON_SHARE, ICON_MARQUEE, ICON_KEYBOARD, ICON_FOLD, ICON_UNDO, ICON_REDO, ICON_COMPARE } from './assets/icons.js';
 import { t } from './i18n.js';
 import { toggleMarqueeMode } from './edit/marquee.js';
 import { attachTooltipDelegation } from './tooltip.js';
@@ -22,6 +22,7 @@ import { toggleAudit, refreshAuditIfOn } from './edit/audit.js';
 import { showMeasurement, hideMeasurement } from './edit/measure.js';
 import { attachRubberBandEvents } from './edit/rubber-band.js';
 import { createStylePanelNode, attachStylePanelEvents } from './edit/style-panel.js';
+import { toggleCompare } from './edit/compare.js';
 import { attachMarqueeEvents, rerenderAllAnnotations } from './edit/marquee.js';
 import { attachPanelEvents, toggleFbPanel } from './feedback/panel.js';
 import { attachSlideTracking } from './feedback/slides.js';
@@ -88,6 +89,13 @@ function createDom() {
   redoFab.style.display = 'none';
   state.redoFab = redoFab;
 
+  const compareFab = document.createElement('button');
+  compareFab.className = 'fbw-fab fbw-compare-fab';
+  compareFab.innerHTML = ICON_COMPARE;
+  compareFab.dataset.tooltip = t('overlay.compare');
+  compareFab.setAttribute('aria-label', t('overlay.compare'));
+  state.compareFab = compareFab;
+
   const exportFab = document.createElement('button');
   exportFab.className = 'fbw-fab fbw-export-fab';
   exportFab.innerHTML = ICON_SHARE;
@@ -150,6 +158,7 @@ function createDom() {
   // undo / redo 默认隐藏；栈非空才显示，避免空状态占视觉
   fabBar.appendChild(undoFab);
   fabBar.appendChild(redoFab);
+  fabBar.appendChild(compareFab);
   const fabDivider = document.createElement('span');
   fabDivider.className = 'fbw-fab-divider';
   fabBar.appendChild(fabDivider);
@@ -249,6 +258,7 @@ function attachKeyboardShortcuts() {
     else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFbPanel(); }
     else if (e.key === 'm' || e.key === 'M') { e.preventDefault(); toggleMarqueeMode(); }
     else if (e.key === 'a' || e.key === 'A') { e.preventDefault(); toggleAudit(); }
+    else if (e.key === 'o' || e.key === 'O') { e.preventDefault(); toggleCompare(); }
     else if (e.key === '?') { e.preventDefault(); toggleHelpPopover(); }
     else if ((e.key === 'Delete' || e.key === 'Backspace') && state.selectedEl && state.editMode) {
       e.preventDefault();
@@ -312,6 +322,7 @@ function attachFabClicks() {
   state.marqueeFab.addEventListener('click', toggleMarqueeMode);
   state.undoFab.addEventListener('click', (e) => { e.stopPropagation(); undo(); refreshUndoFabs(); });
   state.redoFab.addEventListener('click', (e) => { e.stopPropagation(); redo(); refreshUndoFabs(); });
+  state.compareFab.addEventListener('click', (e) => { e.stopPropagation(); toggleCompare(); });
   state.helpFab.addEventListener('click', (e) => { e.stopPropagation(); toggleHelpPopover(); });
   state.foldFab.addEventListener('click', (e) => { e.stopPropagation(); setFabCollapsed(true); });
   // fbFab click 由 panel.js 装载

@@ -36,6 +36,7 @@ export function buildHelpPopoverHTML() {
           ${row([cmd, 'Shift', 'Z'], t('help.shortcut.redo'))}
           ${row([cmd, 'C'], t('help.shortcut.copyDescriptor'))}
           ${row('A', t('help.shortcut.audit'))}
+          ${row('O', t('help.shortcut.compare'))}
           ${row(['Alt', 'hover'], t('help.shortcut.measure'))}
           ${row(['Shift', 'click'], t('help.shortcut.multiSelect'))}
           ${row('drag', t('help.shortcut.rubberBand'))}
