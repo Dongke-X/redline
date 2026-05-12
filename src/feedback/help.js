@@ -35,14 +35,20 @@ export function buildHelpPopoverHTML() {
           ${row([cmd, 'Z'], t('help.shortcut.undo'))}
           ${row([cmd, 'Shift', 'Z'], t('help.shortcut.redo'))}
           ${row([cmd, 'C'], t('help.shortcut.copyDescriptor'))}
+        </div>
+      </div>
+      <div class="fbw-help-col">
+        <div class="fbw-help-group">
+          <div class="fbw-help-group-label">${t('help.group.view')}</div>
           ${row('A', t('help.shortcut.audit'))}
           ${row('O', t('help.shortcut.compare'))}
+        </div>
+        <div class="fbw-help-group">
+          <div class="fbw-help-group-label">${t('help.group.pointer')}</div>
           ${row(['Alt', 'hover'], t('help.shortcut.measure'))}
           ${row(['Shift', 'click'], t('help.shortcut.multiSelect'))}
           ${row('drag', t('help.shortcut.rubberBand'))}
         </div>
-      </div>
-      <div class="fbw-help-col">
         <div class="fbw-help-group">
           <div class="fbw-help-group-label">${t('help.group.export')}</div>
           ${row(['Space', 'P'], t('help.shortcut.pdfVector'))}

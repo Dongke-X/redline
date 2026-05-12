@@ -1150,26 +1150,26 @@ export const CSS = `
     }
     .fbw-help-rows { display: flex; flex-direction: column; gap: 8px; }
     .fbw-help-groups { display: flex; flex-direction: column; gap: 14px; }
-    /* 双列布局：左=模式+操作（高频），右=导出+其他（低频） */
+    /* 双列布局：左=模式+核心操作，右=视图工具 + 鼠标手势 + 导出 + 其他 */
     .fbw-help-cols {
       display: flex;
-      gap: 22px;
+      gap: 18px;
       align-items: flex-start;
     }
     .fbw-help-col {
       flex: 1;
-      min-width: 0;
+      min-width: 160px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
     /* 左右两列之间加一条极淡的分隔线，强化分栏视觉 */
     .fbw-help-col + .fbw-help-col {
-      padding-left: 22px;
+      padding-left: 18px;
       margin-left: 0;
       border-left: 1px solid rgba(255,255,255,0.06);
     }
-    .fbw-help-group { display: flex; flex-direction: column; gap: 6px; }
+    .fbw-help-group { display: flex; flex-direction: column; gap: 5px; }
     .fbw-help-group-label {
       font-family: ui-monospace, "SF Mono", monospace;
       font-size: 9px;

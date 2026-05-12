@@ -1,5 +1,5 @@
 // 全局常量、调试开关、可编辑选择器
-export const VERSION = '0.1.25';
+export const VERSION = '0.1.26';
 
 export const STORAGE_KEY = 'fbw-state::' + (location.pathname || '/').slice(0, 200);
 
