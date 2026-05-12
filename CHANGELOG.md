@@ -6,6 +6,13 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.45 — 2026-05-12  ·  折叠 tooltip 收短
+
+### Fixed
+- 折叠 FAB 在最右侧，tooltip 被挤换行成 3 行。ZH 第二行 `点编辑 FAB 可重新展开` 收短为 `点编辑展开`
+
+---
+
 ## 0.1.44 — 2026-05-12  ·  所有 FAB tooltip 统一两行排版
 
 ### Changed

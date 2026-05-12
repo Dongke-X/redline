@@ -188,7 +188,7 @@ const DICT = {
     'overlay.save': '保存编辑\n改动写回源 HTML · 自动备份 · 右键重选目录',
     'overlay.marquee': '框选标注 (M)\n拖一个框 → 写文字 / 加图片',
     'overlay.help': '快捷键 / 帮助 (?)\n查所有快捷键',
-    'overlay.fold': '折叠工具条\n点编辑 FAB 可重新展开',
+    'overlay.fold': '折叠工具条\n点编辑展开',
     // 帮助弹窗
     'help.title': '快捷键',
     'help.group.modes': '模式',
