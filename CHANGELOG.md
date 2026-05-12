@@ -6,6 +6,19 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.39 — 2026-05-12  ·  .gitignore zip · 导出措辞
+
+### Changed
+- 导出 FAB tooltip：`导出 PDF / HTML` → `导出 PDF（矢量 / 长图）· HTML（预览 / 编辑）`
+- ZH 菜单项措辞统一：`可编辑 HTML` → `编辑 HTML`，`只读 HTML` → `预览 HTML`（更友好 / 更短）
+- EN 保留 `Editable` / `Read-only`（英文不需要改）
+
+### Chore
+- `.gitignore` 加 `redline-extension-v*.zip` 排除规则
+- 把已 track 的 39 个旧版本 zip 从 git 移除（`git rm --cached`，本地文件保留）
+
+---
+
 ## 0.1.38 — 2026-05-12  ·  导出菜单显示快捷键 chip
 
 ### Added

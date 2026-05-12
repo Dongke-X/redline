@@ -6,3 +6,6 @@ node_modules/
 .vscode/
 dist/
 *.tmp
+
+# 扩展打包产物（每次 build:ext 重新生成，无需进 git）
+redline-extension-v*.zip

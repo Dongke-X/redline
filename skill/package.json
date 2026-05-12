@@ -1,6 +1,6 @@
 {
   "name": "redline-skill",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "private": true,
   "type": "module",
   "description": "Skill helper to apply redline sessions to source HTML",
