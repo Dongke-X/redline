@@ -40,13 +40,21 @@ chrome.action.onClicked.addListener(async (tab) => {
       return;
     }
 
-    // 首次注入：先把 bundle URL stash 到页面，给 single-file export 用（MAIN world 拿不到 chrome.runtime）
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      world: 'MAIN',
-      func: (url) => { window.__fbwBundleURL = url; },
-      args: [chrome.runtime.getURL('redline.js')],
-    });
+    // 首次注入：先把 bundle 源码（完整字符串）stash 到页面，
+    // 给 single-file export 用（MAIN world 拿不到 chrome.runtime，CSP 也可能拦 fetch）
+    let bundleText = null;
+    try {
+      const res = await fetch(chrome.runtime.getURL('redline.js'));
+      bundleText = await res.text();
+    } catch (_) {}
+    if (bundleText) {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        world: 'MAIN',
+        func: (src) => { window.__fbwBundleSource = src; },
+        args: [bundleText],
+      });
+    }
     // 然后把 bundle 灌进 page MAIN world
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },

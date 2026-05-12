@@ -6,6 +6,18 @@ skill 版本同步源：`package.json` → 由 `scripts/sync-version.mjs` 自动
 
 ---
 
+## 0.1.34 — 2026-05-12  ·  Single-file 导出再修：直接 stash 源码字符串
+
+### Fixed
+- v0.1.33 还是失败：MAIN world 里 fetch `chrome-extension://...` 可能被 CSP / CORS 拦
+- 改成在 background 端 fetch bundle 源码（service worker 上下文，权限最全），把**完整字符串** stash 到 `window.__fbwBundleSource`
+- singlefile 直接读 `window.__fbwBundleSource`，不再走 fetch；source 字符串就在那，绕掉所有网络层麻烦
+
+### 简化掉的 + tooltip 简化
+- 也把 export FAB tooltip 从「导出 · PDF / HTML（Shift+点击 = 直接长图 PDF）」缩成「导出 PDF / HTML」，Shift+click 的提示在菜单内体现就够了
+
+---
+
 ## 0.1.33 — 2026-05-12  ·  修 single-file 导出"redline.js not found"
 
 ### Fixed
