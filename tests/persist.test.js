@@ -3,6 +3,16 @@ import { state } from '../src/core/state.js';
 import { saveState, loadState } from '../src/core/persist.js';
 import { STORAGE_KEY } from '../src/config.js';
 
+function makeMemoryStorage() {
+  const store = new Map();
+  return {
+    getItem: (key) => store.has(key) ? store.get(key) : null,
+    setItem: (key, value) => store.set(key, String(value)),
+    removeItem: (key) => store.delete(key),
+    clear: () => store.clear(),
+  };
+}
+
 function setupPanel() {
   document.body.innerHTML = '';
   const panel = document.createElement('div');
@@ -14,6 +24,9 @@ function setupPanel() {
   state.attachments.length = 0;
   state.annotations.length = 0;
   state.originals.clear();
+  // Node 25 exposes a partial global localStorage behind --localstorage-file.
+  // Use an in-memory browser-like stub so app code sees removeItem/getItem/setItem.
+  Object.defineProperty(globalThis, 'localStorage', { value: makeMemoryStorage(), configurable: true });
   localStorage.removeItem(STORAGE_KEY);
 }
 

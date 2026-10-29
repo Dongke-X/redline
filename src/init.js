@@ -458,9 +458,12 @@ function attachFabBgDetection() {
   onResize(schedule);
 }
 
-// 应用模式探测：deck（有 <deck-stage>）/ doc（结构化 HTML 匹配 SECTION_SELECTORS）/ review（任意网页）
-function detectAppMode() {
+// 应用模式探测：deck（有 <deck-stage>）/ doc（本地/结构化/可编辑 HTML）/ review（任意远程网页）
+export function detectAppMode({ protocol = window.location.protocol } = {}) {
   if (document.querySelector('deck-stage')) return 'deck';
+  const exportMode = document.querySelector('meta[name="fbw-export-mode"]')?.getAttribute('content');
+  if (exportMode === 'editable') return 'doc';
+  if (protocol === 'file:') return 'doc';
   if (document.querySelectorAll(SECTION_SELECTORS).length > 0) return 'doc';
   return 'review';
 }

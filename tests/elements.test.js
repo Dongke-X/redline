@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { state } from '../src/core/state.js';
-import { recordOp, getChanges } from '../src/core/elements.js';
+import { recordOp, getChanges, registerEditableElements } from '../src/core/elements.js';
 
 beforeEach(() => {
   document.body.innerHTML = '';
@@ -59,6 +59,30 @@ describe('elements / recordOp', () => {
     recordOp(el, 'scale', { scale: 1.2 });
     const rec = state.elementOps.get(el);
     expect(rec.ops[0].proposed).toBeUndefined();
+  });
+});
+
+describe('elements / registerEditableElements', () => {
+  it('marks nested document sections as editable guards', () => {
+    document.body.innerHTML = `
+      <div class="page">
+        <article class="document">
+          <section class="summary">
+            <h2>执行摘要</h2>
+            <p>机制重点不是平均分钱。</p>
+          </section>
+        </article>
+      </div>
+    `;
+
+    const sections = registerEditableElements();
+    const summary = document.querySelector('section.summary');
+    const paragraph = document.querySelector('section.summary p');
+
+    expect(sections).toContain(summary);
+    expect(summary.dataset.fbwSecId).toBeTruthy();
+    expect(paragraph.dataset.fbwEditId).toBeTruthy();
+    expect(paragraph.closest('[data-fbw-sec-id]')).toBe(summary);
   });
 });
 

@@ -1932,10 +1932,6 @@ export const CSS = `
 
     /* 长截图 / 截屏：html2canvas 不进 print 媒介，要靠 body.fbw-printing 来藏 widget UI */
     body.fbw-printing .fbw-panel,
-    body.fbw-printing .fbw-fab,
-    body.fbw-printing .fbw-fab-bar,
-    body.fbw-printing .fbw-fab-divider,
-    body.fbw-printing .fbw-toast,
     body.fbw-printing .fbw-confirm,
     body.fbw-printing .fbw-elem-toolbar,
     body.fbw-printing .fbw-font-picker,

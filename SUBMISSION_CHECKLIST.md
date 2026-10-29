@@ -33,7 +33,7 @@
 
 ## C. 视觉素材 🧑
 
-放到 `~/Desktop/开发项目管理/feedback-widget/store-assets/`（自建）
+放到 `~/Desktop/开发项目/feedback-widget/store-assets/`（自建）
 
 - [ ] **screenshot-01.png** 1280×800 — popup "Active on this tab"
 - [ ] **screenshot-02.png** 1280×800 — 编辑文字（before/after 高亮）

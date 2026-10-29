@@ -7,6 +7,16 @@ import { t } from '../i18n.js';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
+export function ignoreRedlineChrome(el) {
+  return !!el.closest?.(
+    '.fbw-panel, .fbw-fab, .fbw-fab-bar, .fbw-fab-divider, .fbw-toast, .fbw-confirm, ' +
+    '.fbw-elem-toolbar, .fbw-font-picker, .fbw-note-popover, .fbw-marker-popover, ' +
+    '.fbw-tag-popover, .fbw-style-panel, .fbw-export-menu, .fbw-help-popover, ' +
+    '.fbw-tooltip, .fbw-anno, .fbw-anno-actions, .fbw-marquee-drawing, ' +
+    '.fbw-resize-handles, .fbw-drag-readout, .fbw-measure-overlay'
+  );
+}
+
 // 矢量 PDF：deck-stage 内置 print mode，body 加 fbw-printing 类，window.print()
 export function exportPDF(opts, deselectFn) {
   opts = opts || {};
@@ -105,6 +115,7 @@ export async function exportImagePDF() {
         allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
+        ignoreElements: ignoreRedlineChrome,
       };
       let canvas;
       try {
@@ -140,83 +151,181 @@ export async function exportImagePDF() {
   }
 }
 
+const PDF_MAX_DIMENSION = 14400;
+const MAX_CANVAS_DIMENSION = 16000;
+const MAX_CANVAS_AREA = 268_000_000;
+const LONG_PAGE_TARGET_SELECTORS = [
+  'article.document',
+  '.document',
+  '.page > article',
+  '.page > main',
+  '.page',
+  'main',
+  'article',
+];
+const MAX_INTERNAL_BLANK_CSS_PX = 120;
+
+export function findLongPageCaptureTarget(root = document) {
+  for (const selector of LONG_PAGE_TARGET_SELECTORS) {
+    const el = root.querySelector?.(selector);
+    if (el) return el;
+  }
+  return root.body || document.body;
+}
+
+export function measureLongPageTarget(target) {
+  const rect = target.getBoundingClientRect();
+  return {
+    width: Math.ceil(Math.max(target.scrollWidth || 0, rect.width || 0, 1)),
+    height: Math.ceil(Math.max(target.scrollHeight || 0, rect.height || 0, 1)),
+  };
+}
+
+export function planLongPageSlices(pageW, pageH, scale, limits = {}) {
+  const pdfMax = limits.pdfMax || PDF_MAX_DIMENSION;
+  const maxCanvasDim = limits.maxCanvasDim || MAX_CANVAS_DIMENSION;
+  const maxCanvasArea = limits.maxCanvasArea || MAX_CANVAS_AREA;
+  const preferredPageH = limits.pageHeight || Math.round(pageW * (limits.pageRatio || Math.SQRT2));
+  const safeByDim = Math.floor(maxCanvasDim / scale);
+  const safeByArea = Math.floor(maxCanvasArea / Math.max(1, pageW * scale * scale));
+  const sliceH = Math.max(1, Math.min(preferredPageH, pdfMax, safeByDim, safeByArea, pageH));
+  const slices = [];
+  for (let y = 0; y < pageH; y += sliceH) {
+    slices.push({ y, height: Math.min(sliceH, pageH - y) });
+  }
+  return slices;
+}
+
+function getPixelData(canvas) {
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  return { ctx, image: ctx.getImageData(0, 0, canvas.width, canvas.height) };
+}
+
+function isInkPixel(data, idx) {
+  const alpha = data[idx + 3];
+  if (alpha < 16) return false;
+  // Treat near-white paper, pale page rules, and off-white preview chrome as blank.
+  const darkness = 255 - Math.min(data[idx], data[idx + 1], data[idx + 2]);
+  return darkness > 72;
+}
+
+export function compactCanvasVerticalWhitespace(canvas, scale, opts = {}) {
+  const maxBlankRows = Math.max(1, Math.round((opts.maxBlankCssPx || MAX_INTERNAL_BLANK_CSS_PX) * scale));
+  const { image } = getPixelData(canvas);
+  const { data, width, height } = image;
+  const rowHasInk = new Uint8Array(height);
+  let top = height;
+  let bottom = -1;
+
+  for (let y = 0; y < height; y++) {
+    const rowStart = y * width * 4;
+    let hasInk = false;
+    for (let x = 0; x < width; x++) {
+      if (isInkPixel(data, rowStart + x * 4)) {
+        hasInk = true;
+        break;
+      }
+    }
+    if (!hasInk) continue;
+    rowHasInk[y] = 1;
+    if (y < top) top = y;
+    bottom = y;
+  }
+
+  if (bottom < top) return null;
+
+  const ranges = [];
+  let y = top;
+  while (y <= bottom) {
+    const start = y;
+    const ink = rowHasInk[y] === 1;
+    while (y <= bottom && (rowHasInk[y] === 1) === ink) y++;
+    const end = y;
+    if (ink || end - start <= maxBlankRows) {
+      ranges.push([start, end]);
+      continue;
+    }
+    const keepHead = Math.floor(maxBlankRows / 2);
+    const keepTail = maxBlankRows - keepHead;
+    ranges.push([start, start + keepHead], [end - keepTail, end]);
+  }
+
+  const outHeight = ranges.reduce((sum, [start, end]) => sum + (end - start), 0);
+  const out = document.createElement('canvas');
+  out.width = width;
+  out.height = Math.max(1, outHeight);
+  const outCtx = out.getContext('2d');
+  outCtx.fillStyle = '#ffffff';
+  outCtx.fillRect(0, 0, out.width, out.height);
+  let dy = 0;
+  ranges.forEach(([start, end]) => {
+    const h = end - start;
+    if (h <= 0) return;
+    outCtx.drawImage(canvas, 0, start, width, h, 0, dy, width, h);
+    dy += h;
+  });
+  return out;
+}
+
 // 长截图版 PDF：没有 deck-stage / section.slide 时的 fallback。
-// 整页一次性截下来，作为单张超长 PDF 页面输出 —— 不分页、不在尴尬位置断开。
-// PDF user-space 上限 14400px，遇超长页面会自动 fallback 切片。
+// 超长页面不能先整页截图再切片：Chrome canvas 高度超限后会返回透明图。
+// 因此按安全高度逐段 html2canvas，再逐页写入 PDF。
 async function exportLongPagePDF() {
   document.body.classList.add('fbw-printing');
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   try { await document.fonts.ready; } catch (_) {}
 
-  const docEl = document.documentElement;
-  const pageW = Math.max(docEl.scrollWidth, document.body.scrollWidth);
-  const pageH = Math.max(docEl.scrollHeight, document.body.scrollHeight);
-
-  showToast(t('pdf.progress', { i: 0, total: 1 }));
-  let canvas;
-  try {
-    canvas = await html2canvas(document.body, {
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      scale: 2,
-      x: 0,
-      y: 0,
-      width: pageW,
-      height: pageH,
-      windowWidth: pageW,
-      windowHeight: pageH,
-    });
-  } catch (err) {
-    console.error(err);
-    showToast(t('pdf.failed', { reason: err.message || err }));
-    document.body.classList.remove('fbw-printing');
-    return;
-  }
+  const target = findLongPageCaptureTarget();
+  const targetSize = measureLongPageTarget(target);
+  const pageW = targetSize.width;
+  const pageH = targetSize.height;
 
   try {
-    
-    const PDF_MAX = 14400; // PDF user-space 单页上限
     const fname = (document.title || 'page').replace(/[\\/:*?"<>|]/g, '_') + '-long.pdf';
+    const scale = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+    const slices = planLongPageSlices(pageW, pageH, scale);
+    let pdf = null;
+    let pageCount = 0;
 
-    if (pageH <= PDF_MAX) {
-      // 主路径：整页一张超长 PDF 单页，阅读体验最佳
-      const pdf = new jsPDF({
-        unit: 'px', format: [pageW, pageH], orientation: 'portrait',
-        hotfixes: ['px_scaling'],
+    for (let i = 0; i < slices.length; i++) {
+      const slice = slices[i];
+      showToast(t('pdf.progress', { i: i + 1, total: slices.length }));
+      const rawCanvas = await html2canvas(target, {
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        scale,
+        x: 0,
+        y: slice.y,
+        width: pageW,
+        height: slice.height,
+        windowWidth: pageW,
+        windowHeight: slice.height,
+        scrollX: 0,
+        scrollY: 0,
+        ignoreElements: ignoreRedlineChrome,
       });
+      const canvas = compactCanvasVerticalWhitespace(rawCanvas, scale);
+      if (!canvas) continue;
+      const pdfW = canvas.width / scale;
+      const pdfH = canvas.height / scale;
+      const orientation = pdfW > pdfH ? 'landscape' : 'portrait';
       const img = canvas.toDataURL('image/jpeg', 0.9);
-      pdf.addImage(img, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
-      pdf.save(fname);
-    } else {
-      // 兜底：页面太长超过 PDF 单页上限，按 PDF_MAX 切片
-      const sliceH = PDF_MAX;
-      const cScale = canvas.width / pageW;
-      const cSliceH = Math.floor(sliceH * cScale);
-      const total = Math.ceil(canvas.height / cSliceH);
-      const pdf = new jsPDF({
-        unit: 'px', format: [pageW, sliceH], orientation: 'portrait',
-        hotfixes: ['px_scaling'],
-      });
-      for (let i = 0; i < total; i++) {
-        showToast(t('pdf.progress', { i: i + 1, total }));
-        const sy = i * cSliceH;
-        const sh = Math.min(cSliceH, canvas.height - sy);
-        const slice = document.createElement('canvas');
-        slice.width = canvas.width;
-        slice.height = sh;
-        const ctx = slice.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, slice.width, slice.height);
-        ctx.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
-        const img = slice.toDataURL('image/jpeg', 0.9);
-        if (i > 0) pdf.addPage([pageW, sliceH], 'portrait');
-        pdf.addImage(img, 'JPEG', 0, 0, pageW, sh / cScale, undefined, 'FAST');
-        await new Promise(r => setTimeout(r, 0));
+      if (!pdf) {
+        pdf = new jsPDF({
+          unit: 'px', format: [pdfW, pdfH], orientation,
+          hotfixes: ['px_scaling'],
+        });
+      } else {
+        pdf.addPage([pdfW, pdfH], orientation);
       }
-      pdf.save(fname);
+      pdf.addImage(img, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
+      pageCount++;
+      await new Promise(r => setTimeout(r, 0));
     }
+    if (!pdf || pageCount === 0) throw new Error('empty capture');
+    pdf.save(fname);
     showToast(t('pdf.saved', { file: fname }));
   } catch (err) {
     console.error(err);

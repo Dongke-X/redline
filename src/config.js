@@ -31,4 +31,6 @@ export const EDITABLE_SELECTORS = [
 // 否则 click handler 早 return 不 preventDefault → 链接默认跳走。
 // section[data-provider]：wenyan / wechat-publisher 这类生成器的标志位，常被包在
 // <div id="preview"> 之类的包装层里，不直接挂 body 下 —— 加这条让公众号排版稿也进 doc 模式。
-export const SECTION_SELECTORS = 'section.slide, section.section, section[data-screen-label], section.cover, section.toc, section.chapter, section[data-provider], main > section, main > article, body > section, body > article, body > header, body > nav, body > footer, header[data-screen-label], nav[data-screen-label]';
+// article > section / .document > section：Kami / print-preview 这类文档常包在 article.document 内，
+// 这些 section 必须成为编辑 guard，否则段落可 hover 但双击进不了 contenteditable。
+export const SECTION_SELECTORS = 'section.slide, section.section, section[data-screen-label], section.cover, section.toc, section.chapter, section[data-provider], article > section, article > main, .document > section, .document > main, main > section, main > article, body > section, body > article, body > header, body > nav, body > footer, header[data-screen-label], nav[data-screen-label]';
